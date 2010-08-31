@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jvnet.hudson.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.343</version><!-- which version of Hudson is this plugin built against? -->
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <groupId>hudson.queueSorter</groupId>
+  <artifactId>PrioritySorter</artifactId>
+  <version>1.0</version>
+  <packaging>hpi</packaging>
+  <name>Priority Sorter</name>
+  <description>This plugin allows for the build queue to be sorted based on pre-assigned priorities for each job.</description>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <comments>Copyright 2010 Brad Larson. All rights reserved.</comments>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>bklarson</id>
+      <name>Brad Larson</name>
+      <email>bklarson@gmail.com</email>
+      <roles>
+        <role>developer</role>
+        <role>maintainer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+  </developers>
+
+  <!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
+  <repositories>
+    <repository>
+      <id>m.g.o-public</id>
+      <url>http://maven.glassfish.org/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>m.g.o-public</id>
+      <url>http://maven.glassfish.org/content/groups/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+</project>
