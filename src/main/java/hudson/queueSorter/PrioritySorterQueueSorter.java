@@ -55,7 +55,13 @@ public class PrioritySorterQueueSorter extends QueueSorter {
 			AbstractProject<?, ?> project = (AbstractProject<?, ?>) buildable.task;
 			PrioritySorterJobProperty priority = project
 					.getProperty(PrioritySorterJobProperty.class);
-			return priority.priority;
+			if (priority != null) {
+				return priority.priority;
+			} else {
+				// No priority has been set for this job - use the default (from
+				// config.jelly)
+				return 100;
+			}
 		}
 	}
 
