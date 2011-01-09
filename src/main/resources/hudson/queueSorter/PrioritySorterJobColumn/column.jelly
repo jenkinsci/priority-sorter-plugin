@@ -2,3 +2,4 @@
   <j:set var="priority" value="${it.getPriority(job)}"/>
   <td>${priority}</td>
 </j:jelly>
+
