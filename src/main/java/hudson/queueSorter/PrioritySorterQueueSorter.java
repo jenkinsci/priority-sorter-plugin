@@ -58,9 +58,9 @@ public class PrioritySorterQueueSorter extends QueueSorter {
 			if (priority != null) {
 				return priority.priority;
 			} else {
-				// No priority has been set for this job - use the default (from
-				// config.jelly)
-				return 100;
+				// No priority has been set for this job - use the
+				// default
+				return PrioritySorterDefaults.getDefault();
 			}
 		}
 	}

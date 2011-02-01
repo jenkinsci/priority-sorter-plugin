@@ -9,7 +9,7 @@
 	<f:entry title="Job Priority"  field="priority">
 		<f:textbox name="prioritySorter.priority" value="${instance.priority}"
 			clazz="required number"
-			default="100"
+			default="${descriptor.getDefault()}"
 			/>
 	</f:entry>
 

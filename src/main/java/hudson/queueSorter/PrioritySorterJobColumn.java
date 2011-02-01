@@ -41,8 +41,8 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 		if (jp != null) {
 			return Integer.toString(jp.priority);
 		} else {
-			// No priority has been set for this job
-			return "100";
+			// No priority has been set for this job - use the default
+			return Integer.toString(PrioritySorterDefaults.getDefault());
 		}
 	}
 

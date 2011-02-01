@@ -23,41 +23,11 @@
  */
 package hudson.queueSorter;
 
-import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
+public class PrioritySorterDefaults {
 
-import org.kohsuke.stapler.DataBoundConstructor;
+	final static int defaultPriority = 100;
 
-public class PrioritySorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
-
-	public final int priority;
-
-	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
-		this.priority = priority;
-	}
-
-	public int getPriority() {
-		return priority;
-	}
-
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
-
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-		@Override
-		public String getDisplayName() {
-			return "Job Priority";
-		}
-
-		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
-		}
+	static int getDefault() {
+		return defaultPriority;
 	}
 }
