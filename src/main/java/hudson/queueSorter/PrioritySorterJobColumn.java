@@ -25,6 +25,9 @@ import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
+import hudson.model.JobProperty;
+import hudson.model.JobPropertyDescriptor;
+import hudson.model.AbstractProject;
 
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
@@ -40,13 +43,13 @@ import org.kohsuke.stapler.StaplerRequest;
 public class PrioritySorterJobColumn extends ListViewColumn {
 
     public String getPriority(Job job) {
-        PrioritySorterJobProperty jp = (PrioritySorterJobProperty) job.getProperty(PrioritySorterJobProperty.class);
+        PrioritySorterJobProperty jp = (PrioritySorterJobProperty)job.getProperty(PrioritySorterJobProperty.class);
         if (jp != null) {
             return Integer.toString(jp.priority);
         } else {
             // No priority has been set for this job - use empty as defined in PrioritySorterQueueSorter
             // This should be defined so that it is common and can be accesed as an int or string for the two different classes.
-            return "100";
+            return Integer.toString(PrioritySorterDefaults.getDefault());
         }
     }
     @Extension
