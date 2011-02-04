@@ -64,6 +64,9 @@
             <version>1.3</version>
           </dependency>
         </dependencies>
+        <configuration>
+          <goals>deploy</goals>
+        </configuration>
       </plugin>
     </plugins>
     <extensions>
@@ -76,9 +79,16 @@
   </build>
 
   <scm>
-    <connection>scm:git:git://github.com/hudson/Hudson-Priority-Sorter-Plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:hudson/Hudson-Priority-Sorter-Plugin.git</developerConnection>
-    <url>http://github.com/hudson/Hudson-Priority-Sorter-Plugin</url>
+    <connection>scm:git:git://github.com/jenkinsci/Hudson-Priority-Sorter-Plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/Hudson-Priority-Sorter-Plugin.git</developerConnection>
+    <url>http://github.com/jenkinsci/Hudson-Priority-Sorter-Plugin</url>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>java.net-m2-repository</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
 
 </project>
