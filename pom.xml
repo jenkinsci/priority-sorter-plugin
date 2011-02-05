@@ -9,7 +9,7 @@
 
   <groupId>hudson.queueSorter</groupId>
   <artifactId>PrioritySorter</artifactId>
-  <version>1.2</version>
+  <version>1.3-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Priority Sorter</name>
   <description>This plugin allows for the build queue to be sorted based on pre-assigned priorities for each job.</description>
