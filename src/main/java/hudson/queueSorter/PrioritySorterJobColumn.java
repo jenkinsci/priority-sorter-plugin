@@ -22,14 +22,11 @@
 package hudson.queueSorter;
 
 import hudson.Extension;
-import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
 
 import hudson.views.ListViewColumnDescriptor;
-import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Priority column on the jobs overview page. The column displays priority set
