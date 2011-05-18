@@ -26,7 +26,9 @@ import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
 
+import hudson.views.ListViewColumnDescriptor;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -34,6 +36,9 @@ import org.kohsuke.stapler.StaplerRequest;
  * for the job and is an easy way to compare the priorities of many jobs.
  */
 public class PrioritySorterJobColumn extends ListViewColumn {
+    @DataBoundConstructor
+    public PrioritySorterJobColumn() {
+    }
 
 	public String getPriority(final Job<?, ?> job) {
 		final PrioritySorterJobProperty jp =
@@ -46,26 +51,17 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 		}
 	}
 
-	@Extension
-	public static final Descriptor<ListViewColumn> DESCRIPTOR =
-			new DescriptorImpl();
-
-	@Override
-	public Descriptor<ListViewColumn> getDescriptor() {
-		return DESCRIPTOR;
-	}
-
-	private static class DescriptorImpl extends Descriptor<ListViewColumn> {
-
-		@Override
-		public ListViewColumn newInstance(final StaplerRequest req,
-				final JSONObject formData) throws FormException {
-			return new PrioritySorterJobColumn();
-		}
+    @Extension
+	public static class DescriptorImpl extends ListViewColumnDescriptor {
 
 		@Override
 		public String getDisplayName() {
 			return "Priority Value";
 		}
+
+        @Override
+        public boolean shownByDefault() {
+            return false;
+        }
 	}
 }
