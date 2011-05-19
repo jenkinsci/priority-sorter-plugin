@@ -33,9 +33,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * for the job and is an easy way to compare the priorities of many jobs.
  */
 public class PrioritySorterJobColumn extends ListViewColumn {
-    @DataBoundConstructor
-    public PrioritySorterJobColumn() {
-    }
+	@DataBoundConstructor
+	public PrioritySorterJobColumn() {
+	}
 
 	public String getPriority(final Job<?, ?> job) {
 		final PrioritySorterJobProperty jp =
@@ -48,7 +48,7 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 		}
 	}
 
-    @Extension
+	@Extension
 	public static class DescriptorImpl extends ListViewColumnDescriptor {
 
 		@Override
@@ -56,9 +56,9 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 			return "Priority Value";
 		}
 
-        @Override
-        public boolean shownByDefault() {
-            return false;
-        }
+		@Override
+		public boolean shownByDefault() {
+			return false;
+		}
 	}
 }
