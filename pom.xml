@@ -79,9 +79,9 @@
   </build>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/Hudson-Priority-Sorter-Plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/Hudson-Priority-Sorter-Plugin.git</developerConnection>
-    <url>http://github.com/jenkinsci/Hudson-Priority-Sorter-Plugin</url>
+    <connection>scm:git:git://github.com/jenkinsci/priority-sorter-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/priority-sorter-plugin.git</developerConnection>
+    <url>http://github.com/jenkinsci/priority-sorter-plugin</url>
   </scm>
 
   <distributionManagement>
