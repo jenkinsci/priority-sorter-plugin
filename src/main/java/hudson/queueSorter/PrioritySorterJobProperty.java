@@ -33,14 +33,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class PrioritySorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
-	public final int priority;
+	public final String priority;
 
 	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
+	public PrioritySorterJobProperty(String priority) {
 		this.priority = priority;
 	}
 
-	public int getPriority() {
+	public String getPriority() {
 		return priority;
 	}
 

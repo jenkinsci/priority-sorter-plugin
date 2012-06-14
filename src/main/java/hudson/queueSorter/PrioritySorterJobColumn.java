@@ -41,7 +41,7 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 		final PrioritySorterJobProperty jp =
 				job.getProperty(PrioritySorterJobProperty.class);
 		if (jp != null) {
-			return Integer.toString(jp.priority);
+			return jp.priority;
 		} else {
 			// No priority has been set for this job - use the default
 			return Integer.toString(PrioritySorterDefaults.getDefault());

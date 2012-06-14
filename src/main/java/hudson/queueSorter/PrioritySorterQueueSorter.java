@@ -25,7 +25,10 @@ package hudson.queueSorter;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
+import hudson.model.ParametersAction;
 import hudson.model.Queue.BuildableItem;
+import hudson.model.StringParameterValue;
 import hudson.model.queue.QueueSorter;
 
 import java.util.Collections;
@@ -53,10 +56,9 @@ public class PrioritySorterQueueSorter extends QueueSorter {
 				return 0;
 			}
 			AbstractProject<?, ?> project = (AbstractProject<?, ?>) buildable.task;
-			PrioritySorterJobProperty priority = project
-					.getProperty(PrioritySorterJobProperty.class);
-			if (priority != null) {
-				return priority.priority;
+			PrioritySorterJobProperty jobProperty = project.getProperty(PrioritySorterJobProperty.class);
+			if (jobProperty != null) {
+                                return getPriorityParamValue(jobProperty, buildable);
 			} else {
 				// No priority has been set for this job - use the
 				// default
@@ -65,6 +67,17 @@ public class PrioritySorterQueueSorter extends QueueSorter {
 		}
 	}
 
+        
+        private static int getPriorityParamValue(PrioritySorterJobProperty jobProperty, BuildableItem buildable) {
+            try {
+                return Integer.parseInt(jobProperty.priority);
+            } catch (NumberFormatException e) {
+                ParametersAction parameters = buildable.getAction(ParametersAction.class);
+                StringParameterValue priorityParameter = (StringParameterValue)parameters.getParameter(jobProperty.priority);
+                int priority  = Integer.parseInt(priorityParameter.value);
+                return priority;
+            }
+        }
 	private static final BuildableComparitor comparitor = new BuildableComparitor();
 
 	@Override
