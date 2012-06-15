@@ -24,11 +24,8 @@
 package hudson.queueSorter;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.Action;
-import hudson.model.ParametersAction;
+import hudson.model.*;
 import hudson.model.Queue.BuildableItem;
-import hudson.model.StringParameterValue;
 import hudson.model.queue.QueueSorter;
 
 import java.util.Collections;
@@ -48,7 +45,7 @@ public class PrioritySorterQueueSorter extends QueueSorter {
 			return priority1.compareTo(getPriority(arg0));
 		}
 
-		private static int getPriority(BuildableItem buildable) {
+		private int getPriority(BuildableItem buildable) {
 			if (!(buildable.task instanceof AbstractProject)) {
 				// This shouldn't happen... but just in case, let's give this
 				// task a really low priority so jobs with valid priorities
@@ -65,19 +62,40 @@ public class PrioritySorterQueueSorter extends QueueSorter {
 				return PrioritySorterDefaults.getDefault();
 			}
 		}
+                
+                private int getPriorityParamValue(PrioritySorterJobProperty jobProperty, BuildableItem buildable) {
+                    try {
+                        return Integer.parseInt(jobProperty.priority);
+                    } catch (NumberFormatException e) {
+                        return substituteParamVariable(jobProperty.priority, buildable);
+                    }
+                }
+                
+                private int substituteParamVariable(String paramName, BuildableItem buildable) {
+                    ParametersAction parameters = buildable.getAction(ParametersAction.class);
+                    StringParameterValue priorityParameter = (StringParameterValue)parameters.getParameter(paramName);
+                    
+                    if (priorityParameter == null) {
+                        return getDefaultParamValue(paramName, buildable);
+                    }
+                    int priority  = Integer.parseInt(priorityParameter.value);
+                    return priority;
+                }
+                
+                private int getDefaultParamValue(String paramName, BuildableItem buildable) {
+                    AbstractProject<?, ?> project = (AbstractProject<?, ?>) buildable.task;
+                    ParametersDefinitionProperty paramDefinitions = project.getAction(ParametersDefinitionProperty.class);
+                    ParameterDefinition priorityDefinition = paramDefinitions.getParameterDefinition(paramName);
+                    try {
+                        return Integer.parseInt(((StringParameterValue)priorityDefinition.getDefaultParameterValue()).value);
+                    } catch (NumberFormatException e) {
+                        return PrioritySorterDefaults.getDefault();
+                    }
+                }
 	}
 
         
-        private static int getPriorityParamValue(PrioritySorterJobProperty jobProperty, BuildableItem buildable) {
-            try {
-                return Integer.parseInt(jobProperty.priority);
-            } catch (NumberFormatException e) {
-                ParametersAction parameters = buildable.getAction(ParametersAction.class);
-                StringParameterValue priorityParameter = (StringParameterValue)parameters.getParameter(jobProperty.priority);
-                int priority  = Integer.parseInt(priorityParameter.value);
-                return priority;
-            }
-        }
+        
 	private static final BuildableComparitor comparitor = new BuildableComparitor();
 
 	@Override
