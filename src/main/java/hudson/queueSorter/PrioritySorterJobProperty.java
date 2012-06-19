@@ -39,6 +39,11 @@ public class PrioritySorterJobProperty extends
 	public PrioritySorterJobProperty(String priority) {
 		this.priority = priority;
 	}
+        
+	@Deprecated
+	public PrioritySorterJobProperty(int priority) {
+		this(((Integer)priority).toString());
+	}
 
 	public String getPriority() {
 		return priority;
