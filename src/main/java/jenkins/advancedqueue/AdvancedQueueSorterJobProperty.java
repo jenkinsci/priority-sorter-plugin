@@ -21,28 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.model.AbstractProject;
+import hudson.util.ListBoxModel;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class PrioritySorterJobProperty extends
+public class AdvancedQueueSorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
+	public final boolean useJobPriority;
 	public final int priority;
 
 	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
+	public AdvancedQueueSorterJobProperty(boolean useJobPriority, int priority) {
+		this.useJobPriority = useJobPriority;
 		this.priority = priority;
 	}
 
 	public int getPriority() {
 		return priority;
+	}
+	
+	public boolean getUseJobPriority() {
+		return useJobPriority;
 	}
 
 	@Override
@@ -58,11 +64,18 @@ public class PrioritySorterJobProperty extends
 		}
 
 		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
+			return PrioritySorterConfiguration.get().getDefaultPriority();
+		}
+		
+		public ListBoxModel getPriorities() {
+			ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
+			return items;
 		}
 		
 		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
+			PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
+			return !configuration.getLegacyMode() && configuration.getAllowPriorityOnJobs();
 		}
+
 	}
 }

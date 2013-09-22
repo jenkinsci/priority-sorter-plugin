@@ -21,11 +21,13 @@
  */
 package hudson.queueSorter;
 
+import jenkins.advancedqueue.PriorityConfiguration;
+import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
-
 import hudson.views.ListViewColumnDescriptor;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -38,13 +40,17 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 	}
 
 	public String getPriority(final Job<?, ?> job) {
-		final PrioritySorterJobProperty jp =
-				job.getProperty(PrioritySorterJobProperty.class);
-		if (jp != null) {
-			return Integer.toString(jp.priority);
+		if(PrioritySorterConfiguration.get().getLegacyMode()) {
+			final PrioritySorterJobProperty jp =
+					job.getProperty(PrioritySorterJobProperty.class);
+			if (jp != null) {
+				return Integer.toString(jp.priority);
+			} else {
+				// No priority has been set for this job - use the default
+				return Integer.toString(PrioritySorterDefaults.getDefault());
+			}
 		} else {
-			// No priority has been set for this job - use the default
-			return Integer.toString(PrioritySorterDefaults.getDefault());
+			return String.valueOf(PriorityConfiguration.get().getPriority(job));
 		}
 	}
 

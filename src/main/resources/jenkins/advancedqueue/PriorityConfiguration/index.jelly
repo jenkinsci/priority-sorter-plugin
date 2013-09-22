@@ -1,0 +1,74 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout">
+	<l:layout norefresh="true">
+	 	<l:side-panel>
+            <l:tasks>
+                <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}"/>
+            </l:tasks>
+        </l:side-panel>
+		<l:main-panel>
+			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
+				<f:entry>
+					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
+						<table>
+							<f:entry title="Apply to Jobs in View">
+			 					<select name="view">
+			                		<j:forEach var="view" items="${it.listViewItems}">
+			                			<j:if test="${view.value == jobGroup.view}">
+			                				<f:option value="${view.value}" selected="true">${view.name}</f:option>
+			                			</j:if>
+			                			<j:if test="${view.value != jobGroup.view}">
+			                    			<f:option value="${view.value}">${view.name}</f:option>
+			                    		</j:if>															
+			                		</j:forEach>
+			            		</select>
+		            		</f:entry>
+		            		<f:entry title="Priority">
+			 					<select name="priority">
+			                		<j:forEach var="priority" items="${it.priorities}">
+			                			<j:if test="${priority.value == jobGroup.priority}">
+			                				<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
+			                			</j:if>
+			                			<j:if test="${priority.value != jobGroup.priority}">
+			                    			<f:option value="${priority.value}">${priority.name}</f:option>
+			                    		</j:if>															
+			                		</j:forEach>
+			            		</select>
+							</f:entry>
+							<f:optionalBlock name="useJobFilter" checked="${jobGroup.useJobFilter}" title="Use a regular expression to only include a subset of the jobs in the view">
+		            			<f:entry title="Regular Expression">                   
+		            				<f:textbox name="jobPattern" value="${jobGroup.jobPattern}"/>
+		            			</f:entry>           					
+	    					</f:optionalBlock>
+							<f:entry>	
+								<div align="right">	    									
+	            					<f:repeatableDeleteButton />
+	            				</div>
+	            			</f:entry>
+	            		</table>
+					</f:repeatable>
+					<f:entry>
+						<f:submit value="Save" />
+					</f:entry>
+				</f:entry>
+			</f:form>
+		</l:main-panel>
+	</l:layout>
+</j:jelly>
+
+<!--
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <l:layout title="YYY">
+    <l:main-panel>
+		<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
+	    	<f:repeatable name="artifactoryServer" var="server" items="${it.patterns}" header="Artifactory">
+	    		<f:entry>
+    	 			<f:repeatableDeleteButton />
+    	 		</f:entry>
+			</f:repeatable>
+			<f:submit value="Submit" />
+	  	</f:form>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>
+-->
