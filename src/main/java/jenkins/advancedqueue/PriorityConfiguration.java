@@ -3,13 +3,12 @@ package jenkins.advancedqueue;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.Describable;
-import hudson.model.Descriptor;
-import hudson.model.Job;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
+import hudson.model.Descriptor;
+import hudson.model.Job;
 import hudson.model.View;
-import hudson.queueSorter.PrioritySorterDefaults;
-import hudson.queueSorter.PrioritySorterJobProperty;
+import hudson.security.Permission;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
@@ -45,11 +44,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public String getIconFileName() {
-		return "clock.png";
+		if(PrioritySorterConfiguration.get().getLegacyMode()) {
+			return null;
+		}
+		return "/plugin/PrioritySorter/advqueue.png";
 	}
 
 	public String getDisplayName() {
-		return "Build Queue Settings";
+		return "Job Priorities";
 	}
 
 	public String getUrlName() {
@@ -80,12 +82,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		jobGroups = new LinkedList<JobGroup>();
 		//
 		String parameter = req.getParameter("json");
-		System.out.println(parameter);
 		JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
 		JSONArray jsonArray = JSONArray.fromObject(jobGroupsObject.get("jobGroup"));
 		int id = 0;
 		for (Object object : jsonArray) {
 			JSONObject jobGroupObject = JSONObject.fromObject(object);
+			if(jobGroupObject.size() == 0) {
+				break;
+			}
 			JobGroup jobGroup = new JobGroup();
 			jobGroup.id = id++;
 			jobGroup.priority = jobGroupObject.getInt("priority");
@@ -98,6 +102,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			jobGroups.add(jobGroup);
 		}
 		save();
+		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
 	}
 
 	public Descriptor<PriorityConfiguration> getDescriptor() {

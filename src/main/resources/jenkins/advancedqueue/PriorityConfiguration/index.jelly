@@ -6,6 +6,13 @@
             </l:tasks>
         </l:side-panel>
 		<l:main-panel>
+			<div>
+				<h2>Job Priorities</h2>
+				Assign Priorities by creating JobGroups. Priorities are assigned top down by first match.
+				If a Job has a Priority assigned directly on the Job that Priority will be used and the below will not be used.
+				<br/>
+				<br/> 
+			</div>
 			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 				<f:entry>
 					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
@@ -46,6 +53,8 @@
 	            			</f:entry>
 	            		</table>
 					</f:repeatable>
+					<br/>
+					<br/>
 					<f:entry>
 						<f:submit value="Save" />
 					</f:entry>
@@ -54,21 +63,3 @@
 		</l:main-panel>
 	</l:layout>
 </j:jelly>
-
-<!--
-<?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <l:layout title="YYY">
-    <l:main-panel>
-		<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
-	    	<f:repeatable name="artifactoryServer" var="server" items="${it.patterns}" header="Artifactory">
-	    		<f:entry>
-    	 			<f:repeatableDeleteButton />
-    	 		</f:entry>
-			</f:repeatable>
-			<f:submit value="Submit" />
-	  	</f:form>
-    </l:main-panel>
-  </l:layout>
-</j:jelly>
--->
