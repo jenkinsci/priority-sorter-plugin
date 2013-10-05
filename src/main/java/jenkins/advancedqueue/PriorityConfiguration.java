@@ -125,16 +125,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			Collection<View> views = Jenkins.getInstance().getViews();
 			for (View view : views) {
 				if(view.getViewName().equals(jobGroup.view)) {
-					Collection<TopLevelItem> allItems = view.getItems();
-					for (TopLevelItem topLevelItem : allItems) {
-						if(topLevelItem.getName().equals(job.getName())) {
-							if(jobGroup.jobPattern.trim().isEmpty() || job.getName().matches(jobGroup.jobPattern)) {
-								int priority = jobGroup.priority;
-								if(priority == PrioritySorterConfiguration.get().getUseDefaultPriorityPriority()) {
-									priority = PrioritySorterConfiguration.get().getDefaultPriority();
-								}
-								return priority;
+					TopLevelItem jobItem = view.getItem(job.getName());
+					if(jobItem != null) {
+						if(jobGroup.jobPattern.trim().isEmpty() || job.getName().matches(jobGroup.jobPattern)) {
+							int priority = jobGroup.priority;
+							if(priority == PrioritySorterConfiguration.get().getUseDefaultPriorityPriority()) {
+								priority = PrioritySorterConfiguration.get().getDefaultPriority();
 							}
+							return priority;
 						}
 					}
 				}
