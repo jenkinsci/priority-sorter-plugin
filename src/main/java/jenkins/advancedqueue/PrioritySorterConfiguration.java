@@ -181,6 +181,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				try {
 					project.removeProperty(priorityProperty);
 					project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(), newPriority));
+					project.save();
 				} catch (IOException e) {
 					LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());				
 				}
@@ -210,12 +211,14 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 					AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(true, advancedPriority);
 					try {
 						project.addProperty(advancedQueueSorterJobProperty);
+						project.save();
 					} catch (IOException e) {
 						LOGGER.warning("Failed to add Advanced Job Priority To " + project.getName());
 					}
 				}
 				try {
 					project.removeProperty(legacyPriorityProperty);
+					project.save();
 				} catch (IOException e) {
 					LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
 				}
