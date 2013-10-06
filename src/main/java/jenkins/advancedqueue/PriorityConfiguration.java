@@ -55,6 +55,9 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public String getUrlName() {
+		if(PrioritySorterConfiguration.get().getLegacyMode()) {
+			return null;
+		}
 		return "advanced-build-queue";
 	}
 
