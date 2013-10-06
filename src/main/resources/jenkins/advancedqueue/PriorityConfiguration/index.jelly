@@ -43,7 +43,7 @@
 							</f:entry>
 							<f:optionalBlock name="useJobFilter" checked="${jobGroup.useJobFilter}" title="Use a regular expression to only include a subset of the jobs in the view">
 		            			<f:entry title="Regular Expression">                   
-		            				<f:textbox name="jobPattern" value="${jobGroup.jobPattern}"/>
+		            				<f:textbox name="jobPattern" value="${jobGroup.jobPattern}" checkUrl="'${rootURL}/descriptorByName/jenkins.advancedqueue.PriorityConfiguration/checkJobPattern?value='+encode(this.value)"/>
 		            			</f:entry>           					
 	    					</f:optionalBlock>
 							<f:entry>	

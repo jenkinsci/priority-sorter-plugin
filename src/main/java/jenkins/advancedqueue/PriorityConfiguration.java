@@ -9,6 +9,7 @@ import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.View;
 import hudson.security.Permission;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
@@ -17,6 +18,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
 
@@ -24,6 +27,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -101,6 +105,12 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			if(jobGroup.useJobFilter) {
 				JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
 				jobGroup.jobPattern = jsonObject.getString("jobPattern");
+				// Disable the filter if the pattern is invalid
+				try {
+					Pattern.compile(jobGroup.jobPattern);
+				} catch (PatternSyntaxException e) {
+					jobGroup.useJobFilter = false;		
+				}
 			}
 			jobGroups.add(jobGroup);
 		}
@@ -110,6 +120,18 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	public Descriptor<PriorityConfiguration> getDescriptor() {
 		return this;
+	}
+	
+	public FormValidation doCheckJobPattern(@QueryParameter String value)
+			throws IOException, ServletException {
+		if (value.length() > 0) {
+			try {
+				Pattern.compile(value);
+			} catch (PatternSyntaxException e) {
+				return FormValidation.warning("The expression is not valid, please enter a valid expression.");				
+			}
+		}
+		return FormValidation.ok();
 	}
 	
 	public int getPriority(Job<?,?> job) {
@@ -126,17 +148,32 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		//
 		for (JobGroup jobGroup : jobGroups) {
 			Collection<View> views = Jenkins.getInstance().getViews();
-			for (View view : views) {
+			nextView: for (View view : views) {
 				if(view.getViewName().equals(jobGroup.view)) {
 					TopLevelItem jobItem = view.getItem(job.getName());
 					if(jobItem != null) {
-						if(jobGroup.jobPattern.trim().isEmpty() || job.getName().matches(jobGroup.jobPattern)) {
-							int priority = jobGroup.priority;
-							if(priority == PrioritySorterConfiguration.get().getUseDefaultPriorityPriority()) {
-								priority = PrioritySorterConfiguration.get().getDefaultPriority();
+						int priority = PrioritySorterConfiguration.get().getUseDefaultPriorityPriority();
+						// If filtering is not used use the priority
+						// If filtering is used but the pattern is empty regard it as a match all
+						if(!jobGroup.useJobFilter || jobGroup.jobPattern.trim().isEmpty()) {
+							priority = jobGroup.priority;
+						} else {
+							// So filtering is on - use the priority if there's a match
+							try {
+								if(job.getName().matches(jobGroup.jobPattern)) {
+									priority = jobGroup.priority;								
+								} else {
+									continue nextView;
+								}
+							} catch (PatternSyntaxException e) {
+								// If the pattern is broken treat this a non match
+								continue nextView;
 							}
-							return priority;
 						}
+						if(priority == PrioritySorterConfiguration.get().getUseDefaultPriorityPriority()) {
+							priority = PrioritySorterConfiguration.get().getDefaultPriority();
+						}
+						return priority;
 					}
 				}
 			}
