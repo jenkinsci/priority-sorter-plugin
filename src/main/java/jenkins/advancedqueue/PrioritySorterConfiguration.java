@@ -9,6 +9,7 @@ import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -16,13 +17,14 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 @Extension
 public class PrioritySorterConfiguration extends GlobalConfiguration {
 
+	private final static Logger LOGGER = Logger.getLogger(PrioritySorterConfiguration.class.getName());
+	
 	static int PRIORITY_USE_DEFAULT_PRIORITY = -1; 
 	
 	private boolean legacyMode = false;
@@ -180,7 +182,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 					project.removeProperty(priorityProperty);
 					project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(), newPriority));
 				} catch (IOException e) {
-					System.out.println("Failed to update Advanced Job Priority To " + project.getName());				
+					LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());				
 				}
 			}
 		}
@@ -209,13 +211,13 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 					try {
 						project.addProperty(advancedQueueSorterJobProperty);
 					} catch (IOException e) {
-						System.out.println("Failed to add Advanced Job Priority To " + project.getName());
+						LOGGER.warning("Failed to add Advanced Job Priority To " + project.getName());
 					}
 				}
 				try {
 					project.removeProperty(legacyPriorityProperty);
 				} catch (IOException e) {
-					System.out.println("Failed to remove Legacy Job Priority From " + project.getName());
+					LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
 				}
 			}
 		}
