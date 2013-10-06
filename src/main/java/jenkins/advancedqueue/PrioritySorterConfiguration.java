@@ -163,8 +163,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
 			if (priority != null) {
 				legacyMode = true;
-				Math.min(legacyMinPriority, priority.priority);
-				Math.max(legacyMaxPriority, priority.priority);
+				legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
+				legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
 			}
 		}
 	}
