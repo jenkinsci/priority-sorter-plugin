@@ -50,9 +50,14 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	@Override
 	public boolean configure(StaplerRequest req, JSONObject json)
 			throws FormException {
-		System.out.println(json);	
 		int prevNumberOfPriorities = numberOfPriorities;
+		//
 		numberOfPriorities = json.getInt("numberOfPriorities");
+		FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String.valueOf(numberOfPriorities));
+		if(numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
+			throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
+		}
+		//
 		defaultPriority = json.getInt("defaultPriority");
 		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
 		strategy = SorterStrategy.valueOf(json.getString("strategy"));
@@ -136,8 +141,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return items;
 	}
 
-	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value)
-			throws IOException, ServletException {
+	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
 		if (value.length() == 0) {
 			return FormValidation.error("Please enter a value.");
 		}
