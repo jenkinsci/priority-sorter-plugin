@@ -183,13 +183,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 	
 	static public PriorityConfiguration get() {
-		ExtensionList<RootAction> extensionList = Jenkins.getInstance().getExtensionList(RootAction.class);
-		for (RootAction rootAction : extensionList) {
-			if (rootAction instanceof PriorityConfiguration) {
-				return (PriorityConfiguration) rootAction;
-			}
-		}
-		throw new RuntimeException();
+		return (PriorityConfiguration) Jenkins.getInstance().getDescriptor(PriorityConfiguration.class);
 	}
 
 	

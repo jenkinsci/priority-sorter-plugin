@@ -264,13 +264,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 
 	static public PrioritySorterConfiguration get() {
-		ExtensionList<GlobalConfiguration> extensionList = GlobalConfiguration.all();
-		for (GlobalConfiguration globalConfiguration : extensionList) {
-			if (globalConfiguration instanceof PrioritySorterConfiguration) {
-				return (PrioritySorterConfiguration) globalConfiguration;
-			}
-		}
-		throw new RuntimeException();
+		return (PrioritySorterConfiguration) Jenkins.getInstance().getDescriptor(PrioritySorterConfiguration.class);
 	}
 
 }
