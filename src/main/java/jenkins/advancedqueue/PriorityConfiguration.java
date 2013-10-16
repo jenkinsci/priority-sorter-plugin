@@ -3,8 +3,10 @@ package jenkins.advancedqueue;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.Describable;
+import hudson.model.JobProperty;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
+import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.View;
@@ -18,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -34,6 +37,8 @@ import org.kohsuke.stapler.StaplerResponse;
 @Extension
 public class PriorityConfiguration extends Descriptor<PriorityConfiguration> implements RootAction, Describable<PriorityConfiguration> {
 	
+	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
+			
 	private List<JobGroup> jobGroups;
 	
 	public PriorityConfiguration() {
@@ -115,6 +120,19 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			jobGroups.add(jobGroup);
 		}
 		save();
+		// Removed cached priority values
+		@SuppressWarnings("rawtypes")
+		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+		for (AbstractProject<?, ?> project : allProjects) {
+			try {
+				// Remove the calculated priority 
+				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
+				project.save();
+			} catch (IOException e) {
+				LOGGER.warning("Failed to update Actual Advanced Job Priority To " + project.getName());				
+			}
+		}
+		//
 		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
 	}
 
@@ -133,8 +151,27 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return FormValidation.ok();
 	}
-	
+
 	public int getPriority(Job<?,?> job) {
+		// Get priority
+		int priority = getPriorityValue(job);
+		try {
+			// And cache the calculated value on the Job
+			ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
+			if(jp == null) {
+				jp = new ActualAdvancedQueueSorterJobProperty(priority);
+				((AbstractProject<?,?>) job).addProperty(jp);
+			} else {
+				jp.priority = priority;			
+			}
+			job.save();
+		} catch (Exception e) {
+			LOGGER.warning("Failed to add Actual Advanced Job Priority To " + job.getName());
+		}
+		return priority;
+	}
+	
+	private int getPriorityValue(Job<?,?> job) {
 		if(PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
 			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
 			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {

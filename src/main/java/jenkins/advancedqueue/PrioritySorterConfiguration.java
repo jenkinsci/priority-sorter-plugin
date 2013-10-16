@@ -179,16 +179,20 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		@SuppressWarnings("rawtypes")
 		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
 		for (AbstractProject<?, ?> project : allProjects) {
-			AdvancedQueueSorterJobProperty priorityProperty = project.getProperty(AdvancedQueueSorterJobProperty.class);
-			if(priorityProperty != null) {
-				int newPriority = scale(prevNumberOfPriorities, getNumberOfPriorities(), priorityProperty.priority); 
-				try {
-					project.removeProperty(priorityProperty);
-					project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(), newPriority));
-					project.save();
-				} catch (IOException e) {
-					LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());				
+			try {
+				// Remove the calculated priority 
+				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
+				// Scale any priority on the Job
+				AdvancedQueueSorterJobProperty priorityProperty = project.getProperty(AdvancedQueueSorterJobProperty.class);
+				if(priorityProperty != null) {
+					int newPriority = scale(prevNumberOfPriorities, getNumberOfPriorities(), priorityProperty.priority); 
+						project.removeProperty(priorityProperty);
+						project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(), newPriority));
+						project.save();
 				}
+				project.save();
+			} catch (IOException e) {
+				LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());				
 			}
 		}
 		//
