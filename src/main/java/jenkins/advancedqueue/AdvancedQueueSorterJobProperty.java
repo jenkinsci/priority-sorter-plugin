@@ -27,15 +27,35 @@ import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.model.AbstractProject;
+import hudson.model.Descriptor.FormException;
 import hudson.util.ListBoxModel;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 public class AdvancedQueueSorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
+	private final static Logger LOGGER = Logger.getLogger(AdvancedQueueSorterJobProperty.class.getName());
+			
 	public final boolean useJobPriority;
 	public final int priority;
+
+	@Override
+	public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form)
+			throws FormException {
+		try {
+			owner.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
+		} catch (IOException e) {
+			LOGGER.warning("Failed to remove Actual Advanced Job Priority on " + owner.getName());
+		}
+		return super.reconfigure(req, form);
+	}
 
 	@DataBoundConstructor
 	public AdvancedQueueSorterJobProperty(boolean useJobPriority, int priority) {
