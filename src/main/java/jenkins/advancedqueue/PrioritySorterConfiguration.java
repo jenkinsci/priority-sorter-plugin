@@ -142,17 +142,17 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
 		if (value.length() == 0) {
-			return FormValidation.error("Please enter a value.");
+			return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
 		}
 		try {
 			int intValue = Integer.parseInt(value);
 			if (intValue <= 0) {
 				return FormValidation
-						.error("Please enter a positive numeric value.");
+						.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
 			}
 		} catch (NumberFormatException e) {
 			return FormValidation
-					.error("Please enter a positive numeric value.");
+					.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
 		}
 		return FormValidation.ok();
 	}

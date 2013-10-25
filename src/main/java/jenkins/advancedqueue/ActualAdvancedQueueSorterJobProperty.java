@@ -58,7 +58,7 @@ public class ActualAdvancedQueueSorterJobProperty extends
 
 		@Override
 		public String getDisplayName() {
-			return "Actual (Calculated) Job Priority";
+			return Messages.ActualAdvancedQueueSorterJobProperty_displayName();
 		}
 
 	}
