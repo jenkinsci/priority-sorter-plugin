@@ -3,7 +3,12 @@
 	<f:section title="Priority Sorter">
 		<j:if test="${instance.legacyMode}">
 			<f:optionalBlock title="Priority Sorter is currently in Legacy Mode check to switch to Advanced Mode" checked="false" inline="true" field="advanced">
-	        	<f:description><h2>Please note that after switching to Advanced Mode you cannot switch back to Legacy Mode!</h2></f:description>
+	        	<f:description>
+	        		<h3>After switching to Advanced Mode
+	        		<li>you cannot switch back to Legacy Mode.</li>
+	        		<li>the legacy priority property on Jobs is no longer used.</li>
+	        		<li>the Configuration Slicing Plugin cannot be used to configure priorities.</li></h3>
+	        	</f:description>
 	        	<f:entry title="Strategy" field="strategy">
    					<f:select id="ps_strategy" onchange="prioritySorterGlobalConfUpdate()"/>
  				</f:entry>
