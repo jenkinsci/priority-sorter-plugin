@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.AbstractProject;
 import hudson.queueSorter.PrioritySorterJobProperty;
+import hudson.slaves.OfflineCause;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -213,9 +214,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			for (AbstractProject<?, ?> project : allProjects) {
 				PrioritySorterJobProperty legacyPriorityProperty = project.getProperty(PrioritySorterJobProperty.class);
 				if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
-					int offset = normalizedOffset(legacyMinPriority, legacyMaxPriority);
-					int normalized = inverseAndNormalize(legacyMinPriority, legacyMaxPriority, legacyPriorityProperty.priority);
-					int advancedPriority = scale(legacyMaxPriority + offset, getNumberOfPriorities(), legacyPriorityProperty.priority);					
+					int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority, getNumberOfPriorities(), legacyPriorityProperty.priority);
 					AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(true, advancedPriority);
 					try {
 						project.addProperty(advancedQueueSorterJobProperty);
@@ -233,25 +232,24 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			}
 		}
 	}
+	
+	static int legacyPriorityToAdvancedPriority(int legacyMinPriority, int legacyMaxPriority, int numberOfPriorities, int priority) {
+		int offset = normalizedOffset(legacyMinPriority);
+		int normalized = inverseAndNormalize(legacyMinPriority, legacyMaxPriority, priority);
+		int advancedPriority = scale(legacyMaxPriority + offset, numberOfPriorities, normalized);
+		return advancedPriority;
+	}
 
-	static int normalizedOffset(int min, int max) {
-		// Normalise from 1-<max>
-		int offset = 0;
-		if(min == 0) {
-			offset = 1;
-		}
-		if(min < 1) {
-			offset = -min + 1;
-		}
-		if(min > 1) {
-			offset = min;
-		}
+	/**
+	 * Calculates how much must be added to a legacy value to get into the positive numbers
+	 */
+	static int normalizedOffset(int min) {
+		int offset = -min + 1;
 		return offset;
 	}
 
 	static int inverseAndNormalize(int min, int max, int value) {
-		int offset = normalizedOffset(min, max);
-		min += offset;
+		int offset = normalizedOffset(min);
 		max += offset;
 		value += offset;
 		// Inverse

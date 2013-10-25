@@ -7,8 +7,9 @@ public class PrioritySorterConfigurationTest {
 
 	@Test
 	public void testNormalizedOffset() {
-		Assert.assertEquals(  1, PrioritySorterConfiguration.normalizedOffset(0, 100));
-		Assert.assertEquals( 11, PrioritySorterConfiguration.normalizedOffset(-10, 10));
+		Assert.assertEquals(  1, PrioritySorterConfiguration.normalizedOffset(  0));
+		Assert.assertEquals( 11, PrioritySorterConfiguration.normalizedOffset(-10));
+		Assert.assertEquals( -9, PrioritySorterConfiguration.normalizedOffset( 10));
 	}
 
 	@Test
@@ -36,6 +37,16 @@ public class PrioritySorterConfigurationTest {
 		Assert.assertEquals(  8, PrioritySorterConfiguration.scale(5, 10, 4));
 		Assert.assertEquals( 10, PrioritySorterConfiguration.scale(5, 10, 5));
 	}
+		
+	@Test
+	public void testLegacyPriorityToAdvancedPriority() {
+		Assert.assertEquals(  1, PrioritySorterConfiguration.legacyPriorityToAdvancedPriority(100, 200, 10, 200));		
+		Assert.assertEquals( 10, PrioritySorterConfiguration.legacyPriorityToAdvancedPriority(100, 200, 10, 100));		
+		Assert.assertEquals(  5, PrioritySorterConfiguration.legacyPriorityToAdvancedPriority(100, 200, 10, 150));		
+
+		Assert.assertEquals(  1, PrioritySorterConfiguration.legacyPriorityToAdvancedPriority(-10, 10, 10, 10));		
+		Assert.assertEquals( 10, PrioritySorterConfiguration.legacyPriorityToAdvancedPriority(-10, 10, 10, -10));		
+	}
 	
 	@Test
 	public void testScaleUseDefaultPriority() {
@@ -43,4 +54,5 @@ public class PrioritySorterConfigurationTest {
 				PrioritySorterConfiguration.scale(5, 10, 
 						PrioritySorterConfiguration.PRIORITY_USE_DEFAULT_PRIORITY));
 	}
+
 }
