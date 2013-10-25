@@ -44,7 +44,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		load();
 		Collections.sort(jobGroups, new Comparator<JobGroup>() {
 			public int compare(JobGroup o1, JobGroup o2) {
-				return o1.id - o2.id;
+				return o1.getId() - o2.getId();
 			}
 		});
 	}
@@ -99,21 +99,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			if(jobGroupObject.isEmpty()) {
 				break;
 			}
-			JobGroup jobGroup = new JobGroup();
-			jobGroup.id = id++;
-			jobGroup.priority = jobGroupObject.getInt("priority");
-			jobGroup.view = jobGroupObject.getString("view");
-			jobGroup.useJobFilter = jobGroupObject.has("useJobFilter");
-			if(jobGroup.useJobFilter) {
-				JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
-				jobGroup.jobPattern = jsonObject.getString("jobPattern");
-				// Disable the filter if the pattern is invalid
-				try {
-					Pattern.compile(jobGroup.jobPattern);
-				} catch (PatternSyntaxException e) {
-					jobGroup.useJobFilter = false;		
-				}
-			}
+			JobGroup jobGroup = JobGroup.Create(jobGroupObject, id++);
 			jobGroups.add(jobGroup);
 		}
 		save();
@@ -183,19 +169,19 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		for (JobGroup jobGroup : jobGroups) {
 			Collection<View> views = Jenkins.getInstance().getViews();
 			nextView: for (View view : views) {
-				if(view.getViewName().equals(jobGroup.view)) {
+				if(view.getViewName().equals(jobGroup.getView())) {
 					TopLevelItem jobItem = view.getItem(job.getName());
 					if(jobItem != null) {
 						int priority = PrioritySorterConfiguration.get().getUseDefaultPriorityPriority();
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard it as a match all
-						if(!jobGroup.useJobFilter || jobGroup.jobPattern.trim().isEmpty()) {
-							priority = jobGroup.priority;
+						if(!jobGroup.isUseJobFilter() || jobGroup.getJobPattern().trim().isEmpty()) {
+							priority = jobGroup.getPriority();
 						} else {
 							// So filtering is on - use the priority if there's a match
 							try {
-								if(job.getName().matches(jobGroup.jobPattern)) {
-									priority = jobGroup.priority;								
+								if(job.getName().matches(jobGroup.getJobPattern())) {
+									priority = jobGroup.getPriority();								
 								} else {
 									continue nextView;
 								}

@@ -64,7 +64,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		int numberOfPriorities = PrioritySorterConfiguration.get().getNumberOfPriorities();
 		// Get the minimum prio we can use due to already started items - this forms the prio-baseline
 		float minPrioToAssign = getLastStartedPrio(items, item2weight);
-		// System.out.println("------------ " + minPrioToAssign);
+
 		// Calculate the minimum prio we can use for each priority-group
 		for (int priority = 1; priority <= numberOfPriorities; priority++) {
 			// The step-size for the priority
@@ -76,12 +76,10 @@ public class AdvancedQueueSorter extends QueueSorter {
 				current = 1;
 			}
 			float prioToUse = priority*current;		
-			//(float)numberOfSlots*current;
 			while(prioToUse < minPrioToAssign) {
 				current++;
 				prioToUse += stepSize;
 			}
-			// System.out.println(priority + ":" + current + " [" + prioToUse + "/" + stepSize+ "]");
 			prio2num.put(priority, current);
 		}
 		// Now let's assign prio to items
@@ -154,15 +152,4 @@ public class AdvancedQueueSorter extends QueueSorter {
 		}
 		return maxRemovedPrio;
 	}
-	
-	private void printQueue(List<BuildableItem> items) {
-		System.err.println("---- QUEUE ----");
-		
-		for (BuildableItem buildableItem : items) {
-			Float priority = item2weight.get(buildableItem.id);
-			System.err.println(buildableItem.task.getName() + " - " + buildableItem.task.getDisplayName() + " " + buildableItem.id + "(" + priority + ")");	
-		}
-		System.err.println("---------------");
-	}
-
 }
