@@ -1,10 +1,8 @@
 package jenkins.advancedqueue;
 
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.model.AbstractProject;
 import hudson.queueSorter.PrioritySorterJobProperty;
-import hudson.slaves.OfflineCause;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -74,7 +72,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return true;
 	}
 
-	public boolean getLegacyMode() {
+	public final boolean getLegacyMode() {
 		return legacyMode;
 	}
 
@@ -199,7 +197,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		//
 		List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
 		for (JobGroup jobGroup : jobGroups) {
-			jobGroup.priority = scale(prevNumberOfPriorities, getNumberOfPriorities(), jobGroup.priority);
+			jobGroup.setPriority(scale(prevNumberOfPriorities, getNumberOfPriorities(), jobGroup.getPriority()));
 		}
 		PriorityConfiguration.get().save();
 	}

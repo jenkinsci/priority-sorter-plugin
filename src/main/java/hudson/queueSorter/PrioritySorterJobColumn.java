@@ -55,7 +55,7 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 			if(jp == null) {
 				return Integer.toString(PriorityConfiguration.get().getPriority(job));
 			}
-			return Integer.toString(jp.priority);
+			return Integer.toString(jp.getPriority());
 		}
 	}
 

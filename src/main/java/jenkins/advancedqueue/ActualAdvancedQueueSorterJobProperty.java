@@ -33,7 +33,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class ActualAdvancedQueueSorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
-	public int priority;
+	private int priority;
 
 	@DataBoundConstructor
 	public ActualAdvancedQueueSorterJobProperty(int priority) {
@@ -43,7 +43,11 @@ public class ActualAdvancedQueueSorterJobProperty extends
 	public int getPriority() {
 		return priority;
 	}
-	
+
+        public void setPriority(int priority) {
+            this.priority = priority;
+        }
+        
 	@Override
 	public DescriptorImpl getDescriptor() {
 		return (DescriptorImpl) super.getDescriptor();
