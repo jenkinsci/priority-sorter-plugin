@@ -52,7 +52,8 @@ public class AdvancedQueueSorterJobProperty extends
 		try {
 			owner.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
 		} catch (IOException e) {
-			LOGGER.warning("Failed to remove Actual Advanced Job Priority on " + owner.getName());
+			LOGGER.warning("Failed to remove Actual Advanced Job Priority on " 
+                                + owner.getName() + ". " + e.getMessage());
 		}
 		return super.reconfigure(req, form);
 	}
@@ -96,6 +97,5 @@ public class AdvancedQueueSorterJobProperty extends
 			PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
 			return !configuration.getLegacyMode() && configuration.getAllowPriorityOnJobs();
 		}
-
 	}
 }

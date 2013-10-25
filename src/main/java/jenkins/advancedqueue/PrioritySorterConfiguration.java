@@ -74,7 +74,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return true;
 	}
 
-	public boolean getLegacyMode() {
+	public final boolean getLegacyMode() {
 		return legacyMode;
 	}
 

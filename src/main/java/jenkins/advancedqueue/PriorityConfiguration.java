@@ -1,16 +1,13 @@
 package jenkins.advancedqueue;
 
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.model.Describable;
-import hudson.model.JobProperty;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.View;
-import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -99,7 +96,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		int id = 0;
 		for (Object object : jsonArray) {
 			JSONObject jobGroupObject = JSONObject.fromObject(object);
-			if(jobGroupObject.size() == 0) {
+			if(jobGroupObject.isEmpty()) {
 				break;
 			}
 			JobGroup jobGroup = new JobGroup();
@@ -162,7 +159,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				jp = new ActualAdvancedQueueSorterJobProperty(priority);
 				((AbstractProject<?,?>) job).addProperty(jp);
 			} else {
-				jp.priority = priority;			
+				jp.setPriority(priority);			
 			}
 			job.save();
 		} catch (Exception e) {
