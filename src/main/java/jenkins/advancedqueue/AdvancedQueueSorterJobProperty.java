@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,10 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
 public class AdvancedQueueSorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 

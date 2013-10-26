@@ -23,6 +23,10 @@
  */
 package jenkins.advancedqueue;
 
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
 public class SorterStrategy {
 
 	private final String key;
