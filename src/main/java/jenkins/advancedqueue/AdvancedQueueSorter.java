@@ -100,7 +100,6 @@ public class AdvancedQueueSorter extends QueueSorter {
 				item2weight.put(buildableItem.id, weighted_priority);
 				current++;
 				prio2num.put(priority, current);
-				// System.err.println(buildableItem.task.getDisplayName() + " " + buildableItem.id + "(" + priority + ") => " + weighted_priority);
 			}
 		}
 		// Now sort on weight
@@ -115,7 +114,6 @@ public class AdvancedQueueSorter extends QueueSorter {
 				return (int) (o1.getInQueueSince() - o2.getInQueueSince());
 			}
 		});
-		// printQueue(items);
 	}
 	
 	private float getLastStartedPrio(List<BuildableItem> items, Map<Integer, Float> item2prio) {

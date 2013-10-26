@@ -81,7 +81,7 @@ public class AdvancedQueueSorterJobProperty extends
 	public static final class DescriptorImpl extends JobPropertyDescriptor {
 		@Override
 		public String getDisplayName() {
-			return "Job Priority";
+			return Messages.AdvancedQueueSorterJobProperty_displayName();
 		}
 
 		public int getDefault() {

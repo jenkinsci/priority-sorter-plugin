@@ -57,7 +57,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public String getDisplayName() {
-		return "Job Priorities";
+		return Messages.PriorityConfiguration_displayName();
 	}
 
 	public String getUrlName() {
