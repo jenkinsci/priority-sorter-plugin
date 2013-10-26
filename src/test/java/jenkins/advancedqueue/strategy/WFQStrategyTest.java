@@ -17,8 +17,8 @@ public class WFQStrategyTest {
 	@Test
 	public void testGetWeightToUse() {
 		Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE * 1 * 456456, new WFQStrategy().getWeightToUse(1, 4.56455F), 0F);
-		Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE * 2 * 228229, new WFQStrategy().getWeightToUse(2, 4.56455F), 0F);
-		Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE * 3 * 152153, new WFQStrategy().getWeightToUse(3, 4.56455F), 0F);
+		Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE * 2 * 228228, new WFQStrategy().getWeightToUse(2, 4.56455F), 0F);
+		Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE * 3 * 152152, new WFQStrategy().getWeightToUse(3, 4.56455F), 0F);
 	}
 
 	

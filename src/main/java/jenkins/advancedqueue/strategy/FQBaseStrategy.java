@@ -70,7 +70,11 @@ abstract public class FQBaseStrategy extends PrioritySorterStrategy {
 	
 	protected float getWeightToUse(int priority, float minimumWeightToAssign) {
 		float stepSize = getStepSize(priority);
-		double weight = Math.ceil(minimumWeightToAssign / stepSize) * stepSize + stepSize;
+		double weight = Math.ceil(minimumWeightToAssign / stepSize) * stepSize;
+		// Cannot be smaller but maybe rounding problems (?)
+		if(weight <= minimumWeightToAssign) {
+			weight += stepSize;
+		}
 		// Protect us from values going through the roof if we run for a very long time
 		// This below might leave some jobs in the queue with very large weight
 		// this probably improbable to happen so let's do it like this for now ...
