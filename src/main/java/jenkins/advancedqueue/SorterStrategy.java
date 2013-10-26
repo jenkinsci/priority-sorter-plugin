@@ -23,30 +23,22 @@
  */
 package jenkins.advancedqueue;
 
-public enum SorterStrategy {
+public class SorterStrategy {
 
-        /**First In First Out*/
-	FIFO,
-        /**Absolute*/
-	ABSOLUTE,
-        /**Fair Queueing*/
-	FQ,
-        /**Weighted Fair Queueing*/
-	WFQ;
+	private final String key;
+	private final String displayValue;
+
+	public SorterStrategy(String key, String displayValue) {
+		this.key = key;
+		this.displayValue = displayValue;
+	}
+
+	public String getKey() {
+		return key;
+	}
 
 	public String getDisplayValue() {
-            switch(this) {
-                case FIFO:
-                    return Messages.SorterStrategy_FIFO_displayName();
-                case ABSOLUTE:
-                    return Messages.SorterStrategy_ABSOLUTE_displayName();
-                case FQ:
-                    return Messages.SorterStrategy_FQ_displayName();
-                case WFQ:
-                    return Messages.SorterStrategy_WFQ_displayName();
-                default:
-                    throw new IllegalArgumentException("Sorter strategy "+this+" is not supported");
-            }
+		return displayValue;
 	}
 	
 }

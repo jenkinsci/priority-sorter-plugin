@@ -33,12 +33,12 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private boolean allowPriorityOnJobs;
 	private int numberOfPriorities;
 	private int defaultPriority;
-	private SorterStrategy strategy;
+	private String strategy;
 	
 	public PrioritySorterConfiguration() {
 		numberOfPriorities = 5;
 		defaultPriority = 3;
-		strategy = SorterStrategy.ABSOLUTE;
+		strategy = "ABSOLUTE"; // Yes - hardcoded to make sure this is used when converting from Legacy
 		allowPriorityOnJobs = true;
 		checkLegacy();
 		if(!getLegacyMode()) {
@@ -59,7 +59,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		//
 		defaultPriority = json.getInt("defaultPriority");
 		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
-		strategy = SorterStrategy.valueOf(json.getString("strategy"));
+		strategy = json.getString("strategy");
 		if(getLegacyMode()) {			
 			Boolean advanced = json.getBoolean("advanced");
 			if(advanced) {
@@ -89,7 +89,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	public SorterStrategy getStrategy() {
-		return strategy;
+		return PrioritySorterStrategy.getSorterStrategy(strategy);
 	}
 
 	public int getUseDefaultPriorityPriority() {
@@ -102,9 +102,9 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public ListBoxModel doFillStrategyItems() {
 		ListBoxModel strategies = new ListBoxModel();
-		SorterStrategy[] values = SorterStrategy.values();
+		List<SorterStrategy> values = PrioritySorterStrategy.getAllSorterStrategies();
 		for (SorterStrategy sorterStrategy : values) {
-			strategies.add(sorterStrategy.getDisplayValue(), sorterStrategy.name());			
+			strategies.add(sorterStrategy.getDisplayValue(), sorterStrategy.getKey());			
 		}
 		return strategies;
 	}
