@@ -53,7 +53,7 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 		} else {
 			final ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
 			if(jp == null) {
-				return Integer.toString(PriorityConfiguration.get().getPriority(job));
+				return "Pending"; // You need to run a Job
 			}
 			return Integer.toString(jp.getPriority());
 		}

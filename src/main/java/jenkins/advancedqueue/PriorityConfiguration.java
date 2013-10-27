@@ -31,7 +31,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.Job;
-import hudson.model.Queue;
+import hudson.model.Queue$Item;
 import hudson.model.Queue.Task;
 import hudson.model.View;
 import hudson.util.FormValidation;
@@ -185,9 +185,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return FormValidation.ok();
 	}
 
-	public int getPriority(Job<?,?> job) {
+	public int getPriority(Queue$Item item) {
 		// Get priority
-		int priority = getPriorityValue(job);
+		Job<?, ?> job = (Job<?, ?>) item.task;
+		int priority = getPriorityValue(item);
 		try {
 			// And cache the calculated value on the Job
 			ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
@@ -204,8 +205,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priority;
 	}
 	
-	private int getPriorityValue(Queue.Item item) {
-		iten
+	private int getPriorityValue(Queue$Item item) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
 		
 		if(PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
@@ -255,7 +255,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return PrioritySorterConfiguration.get().getDefaultPriority();
 	}
 	
-	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {
+	private int getPriorityForJobGroup(JobGroup jobGroup, Queue$Item item) {
 		if(jobGroup.isUsePriorityStrategies()) {
 			List<JobGroup.PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
 			for (JobGroup.PriorityStrategy priorityStrategy : priorityStrategies) {

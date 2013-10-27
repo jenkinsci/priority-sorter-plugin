@@ -1,4 +1,4 @@
-package jenkins.advancedqueue.strategy;
+package jenkins.advancedqueue.sorter.strategy;
 
 import jenkins.advancedqueue.sorter.strategy.FQBaseStrategy;
 import jenkins.advancedqueue.sorter.strategy.WFQStrategy;

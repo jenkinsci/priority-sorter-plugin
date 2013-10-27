@@ -45,7 +45,7 @@ public class AbsoluteStrategy extends SorterStrategy {
 	}
 	
 	public float onNewItem(WaitingItem item) {
-		return PriorityConfiguration.get().getPriority((Job<?, ?>) item.task);
+		return PriorityConfiguration.get().getPriority(item);
 	}
 
 }

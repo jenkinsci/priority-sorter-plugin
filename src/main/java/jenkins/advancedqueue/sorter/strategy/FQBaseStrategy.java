@@ -53,7 +53,7 @@ abstract public class FQBaseStrategy extends SorterStrategy {
 	}
 
 	public float onNewItem(WaitingItem item) {
-		int priority = PriorityConfiguration.get().getPriority((Job<?, ?>) item.task);
+		int priority = PriorityConfiguration.get().getPriority(item);
 		float minimumWeightToAssign = getMinimumWeightToAssign(priority);
 		float weightToUse = getWeightToUse(priority, minimumWeightToAssign);
 		prio2weight.put(priority, weightToUse);
