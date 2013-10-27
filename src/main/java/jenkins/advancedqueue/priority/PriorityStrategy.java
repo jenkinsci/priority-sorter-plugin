@@ -24,7 +24,7 @@
 package jenkins.advancedqueue.priority;
 
 import hudson.ExtensionList;
-import hudson.model.Queue$Item;
+import hudson.model.Queue.Item;
 import jenkins.model.Jenkins;
 
 import org.apache.tools.ant.ExtensionPoint;
@@ -39,7 +39,7 @@ public abstract class PriorityStrategy extends ExtensionPoint {
 	
 	abstract public String getKey();
 
-	abstract public boolean isApplicable(Queue$Item item);
+	abstract public boolean isApplicable(Item item);
 
 	
 	public static PriorityStrategy getStrategyFromKey(String key) {

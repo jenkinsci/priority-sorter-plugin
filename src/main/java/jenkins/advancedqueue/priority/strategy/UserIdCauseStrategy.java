@@ -26,7 +26,7 @@ package jenkins.advancedqueue.priority.strategy;
 import java.util.List;
 
 import hudson.Extension;
-import hudson.model.Queue$Item;
+import hudson.model.Queue.Item;
 import hudson.model.Cause;
 import hudson.model.Cause.UserIdCause;
 import jenkins.advancedqueue.priority.PriorityStrategy;
@@ -50,7 +50,7 @@ public class UserIdCauseStrategy extends PriorityStrategy {
 	}
 
 	@Override
-	public boolean isApplicable(Queue$Item item) {
+	public boolean isApplicable(Item item) {
 		List<Cause> causes = item.getCauses();
 		for (Cause cause : causes) {
 			if(cause.getClass() == UserIdCause.class) {
