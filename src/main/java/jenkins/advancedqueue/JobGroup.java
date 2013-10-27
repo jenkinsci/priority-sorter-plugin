@@ -23,8 +23,12 @@
  */
 package jenkins.advancedqueue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -34,13 +38,40 @@ import net.sf.json.JSONObject;
  * @since 2.0
  */
 public class JobGroup {
+	
+	public static class PriorityStrategy {
+		private int id = 0;	
+		private int priority = 2;
+		private String priorityStrategyKey = null;
+
+		public int getId() {
+			return id;
+		}
+		public void setId(int id) {
+			this.id = id;
+		}
+		public int getPriority() {
+			return priority;
+		}
+		public void setPriority(int priority) {
+			this.priority = priority;
+		}
+		public String getPriorityStrategyKey() {
+			return priorityStrategyKey;
+		}
+		public void setPriorityStrategyKey(String priorityStrategyKey) {
+			this.priorityStrategyKey = priorityStrategyKey;
+		}
+	}
 
 	private int id = 0;
 	private int priority = 2;
 	private String view;
 	private boolean useJobFilter = false;
 	private String jobPattern = ".*";
-
+	private boolean usePriorityStrategies;
+	private List<JobGroup.PriorityStrategy> priorityStrategies = new ArrayList<JobGroup.PriorityStrategy>();
+	
         private JobGroup() {};
         
         /**
@@ -113,7 +144,25 @@ public class JobGroup {
                 this.jobPattern = jobPattern;
         }
         
-        /**
+
+		public boolean isUsePriorityStrategies() {
+			return usePriorityStrategies;
+		}
+
+		public void setUsePriorityStrategies(boolean usePriorityStrategies) {
+			this.usePriorityStrategies = usePriorityStrategies;
+		}
+
+		public List<JobGroup.PriorityStrategy> getPriorityStrategies() {
+			return priorityStrategies;
+		}
+
+		public void setPriorityStrategies(
+				List<JobGroup.PriorityStrategy> priorityStrategies) {
+			this.priorityStrategies = priorityStrategies;
+		}
+		
+		/**
          * Creates a Job Group from JSON object.
          * @param jobGroupObject JSON object with class description
          * @param id ID of the item to be created
@@ -135,6 +184,28 @@ public class JobGroup {
                     } catch (PatternSyntaxException e) {
                             jobGroup.setUseJobFilter(false);		
                     }
+            }
+            //
+            jobGroup.setUsePriorityStrategies(jobGroupObject.has("usePriorityStrategies"));
+            if(jobGroup.isUsePriorityStrategies()) {
+        		JSONObject jsonObject = jobGroupObject.getJSONObject("usePriorityStrategies");
+        		JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("priorityStrategy"));
+        		int psid = 0;
+        		for (Object object : jsonArray) {
+        			JSONObject psObject = JSONObject.fromObject(object);
+        			System.out.println(psObject);
+        			if(psObject.isEmpty()) {
+        				break;
+        			}
+        			PriorityStrategy strategy = new JobGroup.PriorityStrategy();
+        			strategy.setId(psid++);
+        			strategy.setPriority(psObject.getInt("priority"));
+        			strategy.setPriorityStrategyKey(psObject.getString("strategy"));
+        			jobGroup.priorityStrategies.add(strategy);
+        		}
+        		if(jobGroup.priorityStrategies.isEmpty()) {
+        			jobGroup.setUsePriorityStrategies(false);
+        		}
             }
             return jobGroup;
         }

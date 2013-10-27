@@ -24,12 +24,15 @@
 package jenkins.advancedqueue;
 
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.model.Describable;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.Job;
+import hudson.model.Queue;
+import hudson.model.Queue.Task;
 import hudson.model.View;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -46,6 +49,7 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
 
+import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -69,11 +73,21 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		super(PriorityConfiguration.class);
 		jobGroups = new LinkedList<JobGroup>();
 		load();
+		//
 		Collections.sort(jobGroups, new Comparator<JobGroup>() {
 			public int compare(JobGroup o1, JobGroup o2) {
 				return o1.getId() - o2.getId();
 			}
 		});
+		//
+		for (JobGroup jobGroup : jobGroups) {
+			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategy>() {
+				public int compare(JobGroup.PriorityStrategy o1, JobGroup.PriorityStrategy o2) {
+					return o1.getId() - o2.getId();
+				}
+			});
+			
+		}
 	}
 
 	public String getIconFileName() {
@@ -94,11 +108,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return "advanced-build-queue";
 	}
 
-
 	public List<JobGroup> getJobGroups() {
 		return jobGroups;
 	}
-	
+
 	public ListBoxModel getListViewItems() {
 		ListBoxModel items = new ListBoxModel();
 		Collection<View> views = Jenkins.getInstance().getViews();
@@ -107,6 +120,16 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return items;
 	}
+	
+	public ListBoxModel getPriorityStrategyItems() {
+		ListBoxModel items = new ListBoxModel();
+		ExtensionList<PriorityStrategy> all = PriorityStrategy.all();
+		for (PriorityStrategy priorityStrategy : all) {
+			items.add(priorityStrategy.getDisplayName(), priorityStrategy.getKey());	
+		}
+		return items;
+	}
+	
 
 	public ListBoxModel getPriorities() {
 		ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
@@ -181,7 +204,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priority;
 	}
 	
-	private int getPriorityValue(Job<?,?> job) {
+	private int getPriorityValue(Queue.Item item) {
+		iten
+		Job<?, ?> job = (Job<?, ?>) item.task;
+		
 		if(PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
 			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
 			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
@@ -203,12 +229,12 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard it as a match all
 						if(!jobGroup.isUseJobFilter() || jobGroup.getJobPattern().trim().isEmpty()) {
-							priority = jobGroup.getPriority();
+							priority = getPriorityForJobGroup(jobGroup, item);
 						} else {
 							// So filtering is on - use the priority if there's a match
 							try {
 								if(job.getName().matches(jobGroup.getJobPattern())) {
-									priority = jobGroup.getPriority();								
+									priority = getPriorityForJobGroup(jobGroup, item);								
 								} else {
 									continue nextView;
 								}
@@ -227,6 +253,20 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		//
 		return PrioritySorterConfiguration.get().getDefaultPriority();
+	}
+	
+	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {
+		if(jobGroup.isUsePriorityStrategies()) {
+			List<JobGroup.PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
+			for (JobGroup.PriorityStrategy priorityStrategy : priorityStrategies) {
+				String priorityStrategyKey = priorityStrategy.getPriorityStrategyKey();
+				PriorityStrategy strategy = PriorityStrategy.getStrategyFromKey(priorityStrategyKey);
+				if(strategy.isApplicable(item)) {
+					return priorityStrategy.getPriority();
+				}
+			}
+		}
+		return jobGroup.getPriority();
 	}
 	
 	static public PriorityConfiguration get() {
