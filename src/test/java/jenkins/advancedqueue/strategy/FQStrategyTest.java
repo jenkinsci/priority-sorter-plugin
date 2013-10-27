@@ -1,5 +1,8 @@
 package jenkins.advancedqueue.strategy;
 
+import jenkins.advancedqueue.sorter.strategy.FQBaseStrategy;
+import jenkins.advancedqueue.sorter.strategy.FQStrategy;
+
 import org.junit.Assert;
 import org.junit.Test;
 

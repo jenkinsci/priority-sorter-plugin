@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.strategy;
+package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.model.Job;
 import hudson.model.Queue.LeftItem;
@@ -31,13 +31,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jenkins.advancedqueue.PriorityConfiguration;
-import jenkins.advancedqueue.PrioritySorterStrategy;
+import jenkins.advancedqueue.sorter.SorterStrategy;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-abstract public class FQBaseStrategy extends PrioritySorterStrategy {
+abstract public class FQBaseStrategy extends SorterStrategy {
 	
 	// 
 	static final protected float MIN_STEP_SIZE = 0.00001F;

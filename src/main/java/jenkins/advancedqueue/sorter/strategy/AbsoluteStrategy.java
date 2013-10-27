@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Magnus Sandberg, Oleg Nenashev
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,28 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue;
+package jenkins.advancedqueue.sorter.strategy;
+
+import hudson.Extension;
+import hudson.model.Job;
+import hudson.model.Queue.WaitingItem;
+import jenkins.advancedqueue.PriorityConfiguration;
+import jenkins.advancedqueue.sorter.SorterStrategy;
+import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.strategy.Messages;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class SorterStrategy {
+@Extension
+public class AbsoluteStrategy extends SorterStrategy {
 
-	private final String key;
-	private final String displayValue;
-
-	public SorterStrategy(String key, String displayValue) {
-		this.key = key;
-		this.displayValue = displayValue;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public String getDisplayValue() {
-		return displayValue;
+	private final SorterStrategyType strategy = new SorterStrategyType("ABSOLUTE", Messages.SorterStrategy_ABSOLUTE_displayName());
+	
+	public SorterStrategyType getSorterStrategy() {
+		return strategy;
 	}
 	
+	public float onNewItem(WaitingItem item) {
+		return PriorityConfiguration.get().getPriority((Job<?, ?>) item.task);
+	}
+
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright 2013 Magnus Sandberg, Oleg Nenashev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.strategy;
-
-import hudson.Extension;
-import jenkins.advancedqueue.SorterStrategy;
+package jenkins.advancedqueue.sorter;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
-public class WFQStrategy extends FQBaseStrategy {
+public class SorterStrategyType {
 
-	private final SorterStrategy strategy = new SorterStrategy("WFQ", Messages.SorterStrategy_WFQ_displayName());
-	
-	public SorterStrategy getSorterStrategy() {
-		return strategy;
-	}
-	
-	float getStepSize(int priority) {
-		// If WFQ a lower priority is more important than a higher priority 
-		// so we must step higher priorities faster than lower ones
-		//
-		// The step-size for the priority is dependent on its priority
-		float stepSize = MIN_STEP_SIZE * (float) priority;		
-		return stepSize;
+	private final String key;
+	private final String displayValue;
+
+	public SorterStrategyType(String key, String displayValue) {
+		this.key = key;
+		this.displayValue = displayValue;
 	}
 
+	public String getKey() {
+		return key;
+	}
+
+	public String getDisplayValue() {
+		return displayValue;
+	}
+	
 }

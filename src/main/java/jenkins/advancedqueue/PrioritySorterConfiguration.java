@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import jenkins.advancedqueue.sorter.SorterStrategy;
+import jenkins.advancedqueue.sorter.SorterStrategyType;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -115,8 +117,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return allowPriorityOnJobs;
 	}
 
-	public SorterStrategy getStrategy() {
-		return PrioritySorterStrategy.getSorterStrategy(strategy);
+	public SorterStrategyType getStrategy() {
+		return SorterStrategy.getSorterStrategy(strategy);
 	}
 
 	public int getUseDefaultPriorityPriority() {
@@ -129,8 +131,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public ListBoxModel doFillStrategyItems() {
 		ListBoxModel strategies = new ListBoxModel();
-		List<SorterStrategy> values = PrioritySorterStrategy.getAllSorterStrategies();
-		for (SorterStrategy sorterStrategy : values) {
+		List<SorterStrategyType> values = SorterStrategy.getAllSorterStrategies();
+		for (SorterStrategyType sorterStrategy : values) {
 			strategies.add(sorterStrategy.getDisplayValue(), sorterStrategy.getKey());			
 		}
 		return strategies;

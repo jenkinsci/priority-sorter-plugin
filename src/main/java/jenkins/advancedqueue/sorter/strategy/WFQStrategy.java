@@ -21,28 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.strategy;
+package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import hudson.model.Queue.WaitingItem;
-import jenkins.advancedqueue.PrioritySorterStrategy;
-import jenkins.advancedqueue.SorterStrategy;
+import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.strategy.Messages;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
 @Extension
-public class FIFOStrategy extends PrioritySorterStrategy {
+public class WFQStrategy extends FQBaseStrategy {
 
-	private final SorterStrategy strategy = new SorterStrategy("FIFO", Messages.SorterStrategy_FIFO_displayName());
+	private final SorterStrategyType strategy = new SorterStrategyType("WFQ", Messages.SorterStrategy_WFQ_displayName());
 	
-	public SorterStrategy getSorterStrategy() {
+	public SorterStrategyType getSorterStrategy() {
 		return strategy;
 	}
-
-	public float onNewItem(WaitingItem item) {
-		return item.getInQueueSince();
+	
+	float getStepSize(int priority) {
+		// If WFQ a lower priority is more important than a higher priority 
+		// so we must step higher priorities faster than lower ones
+		//
+		// The step-size for the priority is dependent on its priority
+		float stepSize = MIN_STEP_SIZE * (float) priority;		
+		return stepSize;
 	}
 
 }

@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import jenkins.advancedqueue.PrioritySorterConfiguration;
-import jenkins.advancedqueue.PrioritySorterStrategy;
 
 /**
  * @author Magnus Sandberg
@@ -72,7 +71,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 	}
 	
 	public void onEnterWaiting(WaitingItem wi) {
-		final PrioritySorterStrategy prioritySorterStrategy = PrioritySorterStrategy
+		final SorterStrategy prioritySorterStrategy = SorterStrategy
 				.getPrioritySorterStrategy(PrioritySorterConfiguration.get()
 						.getStrategy());
 		final float weight = prioritySorterStrategy.onNewItem(wi);
@@ -80,7 +79,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 	}
 
 	public void onLeft(LeftItem li) {
-		final PrioritySorterStrategy prioritySorterStrategy = PrioritySorterStrategy
+		final SorterStrategy prioritySorterStrategy = SorterStrategy
 				.getPrioritySorterStrategy(PrioritySorterConfiguration.get()
 						.getStrategy());
 		Float weight = item2weight.remove(li.id);

@@ -21,30 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.strategy;
+package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import hudson.model.Job;
-import hudson.model.Queue.WaitingItem;
-import jenkins.advancedqueue.PriorityConfiguration;
-import jenkins.advancedqueue.PrioritySorterStrategy;
-import jenkins.advancedqueue.SorterStrategy;
+import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.strategy.Messages;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
 @Extension
-public class AbsoluteStrategy extends PrioritySorterStrategy {
+public class FQStrategy extends FQBaseStrategy {
 
-	private final SorterStrategy strategy = new SorterStrategy("ABSOLUTE", Messages.SorterStrategy_ABSOLUTE_displayName());
+	private final SorterStrategyType strategy = new SorterStrategyType("FQ", Messages.SorterStrategy_FQ_displayName());
 	
-	public SorterStrategy getSorterStrategy() {
+	public SorterStrategyType getSorterStrategy() {
 		return strategy;
 	}
 	
-	public float onNewItem(WaitingItem item) {
-		return PriorityConfiguration.get().getPriority((Job<?, ?>) item.task);
+	float getStepSize(int priority) {
+		// If FQ each priority is equally important 
+		// so we basically assign priorities in
+		// with round-robin 
+		//
+		// The step-size for the priority is same for all priorities 
+		float stepSize = MIN_STEP_SIZE;
+		return stepSize;
 	}
 
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue;
+package jenkins.advancedqueue.sorter;
 
 import hudson.ExtensionList;
 import hudson.model.Queue.LeftItem;
@@ -38,9 +38,9 @@ import org.apache.tools.ant.ExtensionPoint;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class PrioritySorterStrategy extends ExtensionPoint {
+public abstract class SorterStrategy extends ExtensionPoint {
 
-	public abstract SorterStrategy getSorterStrategy();
+	public abstract SorterStrategyType getSorterStrategy();
 	
 	/**
 	 * Called when a new {@link hudson.model.Item} enters the queue.
@@ -63,18 +63,18 @@ public abstract class PrioritySorterStrategy extends ExtensionPoint {
 	 */
 	public void onCanceledItem(LeftItem item) {};
 
-	public static List<SorterStrategy> getAllSorterStrategies() {
-		ExtensionList<PrioritySorterStrategy> all = all();
-		ArrayList<SorterStrategy> strategies = new ArrayList<SorterStrategy>(all.size());
-		for (PrioritySorterStrategy prioritySorterStrategy : all) {
+	public static List<SorterStrategyType> getAllSorterStrategies() {
+		ExtensionList<SorterStrategy> all = all();
+		ArrayList<SorterStrategyType> strategies = new ArrayList<SorterStrategyType>(all.size());
+		for (SorterStrategy prioritySorterStrategy : all) {
 			strategies.add(prioritySorterStrategy.getSorterStrategy());
 		}
 		return strategies;
 	}
 	
-	public static SorterStrategy getSorterStrategy(String key) {
-		List<SorterStrategy> allSorterStrategies = getAllSorterStrategies();
-		for (SorterStrategy sorterStrategy : allSorterStrategies) {
+	public static SorterStrategyType getSorterStrategy(String key) {
+		List<SorterStrategyType> allSorterStrategies = getAllSorterStrategies();
+		for (SorterStrategyType sorterStrategy : allSorterStrategies) {
 			if(key.equals(sorterStrategy.getKey())) {
 				return sorterStrategy;
 			}
@@ -82,9 +82,9 @@ public abstract class PrioritySorterStrategy extends ExtensionPoint {
 		return null;
 	}
 
-	public static PrioritySorterStrategy getPrioritySorterStrategy(SorterStrategy sorterStrategy) {
-		ExtensionList<PrioritySorterStrategy> all = all();
-		for (PrioritySorterStrategy prioritySorterStrategy : all) {
+	public static SorterStrategy getPrioritySorterStrategy(SorterStrategyType sorterStrategy) {
+		ExtensionList<SorterStrategy> all = all();
+		for (SorterStrategy prioritySorterStrategy : all) {
 			if(prioritySorterStrategy.getSorterStrategy().getKey().equals(sorterStrategy.getKey())) {
 				return prioritySorterStrategy;
 			}
@@ -94,9 +94,9 @@ public abstract class PrioritySorterStrategy extends ExtensionPoint {
 
 	
 	/**
-     * All registered {@link PrioritySorterStrategy}s.
+     * All registered {@link SorterStrategy}s.
      */
-    public static ExtensionList<PrioritySorterStrategy> all() {
-        return Jenkins.getInstance().getExtensionList(PrioritySorterStrategy.class);
+    public static ExtensionList<SorterStrategy> all() {
+        return Jenkins.getInstance().getExtensionList(SorterStrategy.class);
     }
 }
