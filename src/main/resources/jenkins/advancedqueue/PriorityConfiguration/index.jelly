@@ -1,4 +1,4 @@
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
 	<l:layout norefresh="true">
 	 	<l:side-panel>
             <l:tasks>
@@ -48,33 +48,23 @@
 	    					</f:optionalBlock>
 							<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="Use additional rules when assigning a priority to a Job">
 								<f:entry>
-									<f:repeatable var="priorityStrategy" items="${jobGroup.priorityStrategies}" header="Priority Strategy">
+									<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="Priority Strategy">
 										<table>
-						            		<f:entry title="Strategy">
-							 					<select name="strategy">
-				            			    		<j:forEach var="strategy" items="${it.priorityStrategyItems}">
-				                						<j:if test="${strategy.value == priorityStrategy.strategyKey}">
-				                							<f:option value="${strategy.value}" selected="true">${strategy.name}</f:option>
-				                						</j:if>
-				                						<j:if test="${strategy.value != priorityStrategy.strategyKey}">
-				                    						<f:option value="${strategy.value}">${strategy.name}</f:option>
-				                    					</j:if>															
-				                					</j:forEach>
-				            					</select>
-											</f:entry>
-						            		<f:entry title="Priority">
-							 					<select name="priority">
-							                		<j:forEach var="priority" items="${it.priorities}">
-							                			<j:if test="${priority.value == priorityStrategy.priority}">
-							                				<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
-							                			</j:if>
-							                			<j:if test="${priority.value != priorityStrategy.priority}">
-							                    			<f:option value="${priority.value}">${priority.name}</f:option>
-							                    		</j:if>															
-							                		</j:forEach>
-							            		</select>
-											</f:entry>
-						            		<f:entry>
+											<j:if test="${holder == null}">
+												<f:entry title="Select Strategy">
+													<f:dropdownDescriptorSelector
+															descriptors="${it.getPriorityStrategyDescriptors()}"/>
+												</f:entry>
+											</j:if>
+											<j:if test="${holder != null}">
+												<j:set var="instance" value="${holder.priorityStrategy}" />
+												<j:set var="descriptor" value="${instance.descriptor}" />
+												<f:entry title="${descriptor.displayName}">
+  													<input type="hidden" name="stapler-class" value="${descriptor.clazz.name}"/>
+													<st:include page="${descriptor.configPage}" />
+												</f:entry>
+											</j:if>										
+											<f:entry>
 												<div align="right">	    									
 			        	    						<f:repeatableDeleteButton />
 		    	        						</div>

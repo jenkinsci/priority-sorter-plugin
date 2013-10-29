@@ -31,8 +31,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.Job;
-import hudson.model.Queue.Item;
-import hudson.model.Queue.Task;
+import hudson.model.Queue;
 import hudson.model.View;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -63,12 +62,14 @@ import org.kohsuke.stapler.StaplerResponse;
  * @since 2.0
  */
 @Extension
-public class PriorityConfiguration extends Descriptor<PriorityConfiguration> implements RootAction, Describable<PriorityConfiguration> {
-	
-	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
-			
+public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
+		implements RootAction, Describable<PriorityConfiguration> {
+
+	private final static Logger LOGGER = Logger
+			.getLogger(PriorityConfiguration.class.getName());
+
 	private List<JobGroup> jobGroups;
-	
+
 	public PriorityConfiguration() {
 		super(PriorityConfiguration.class);
 		jobGroups = new LinkedList<JobGroup>();
@@ -81,28 +82,31 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		});
 		//
 		for (JobGroup jobGroup : jobGroups) {
-			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategy>() {
-				public int compare(JobGroup.PriorityStrategy o1, JobGroup.PriorityStrategy o2) {
-					return o1.getId() - o2.getId();
-				}
-			});
-			
+			Collections.sort(jobGroup.getPriorityStrategies(),
+					new Comparator<JobGroup.PriorityStrategyHolder>() {
+						public int compare(JobGroup.PriorityStrategyHolder o1,
+								JobGroup.PriorityStrategyHolder o2) {
+							return o1.getId() - o2.getId();
+						}
+					});
+
 		}
 	}
 
 	public String getIconFileName() {
-		if(PrioritySorterConfiguration.get().getLegacyMode()) {
+		if (PrioritySorterConfiguration.get().getLegacyMode()) {
 			return null;
 		}
 		return "/plugin/PrioritySorter/advqueue.png";
 	}
 
+	@Override
 	public String getDisplayName() {
 		return Messages.PriorityConfiguration_displayName();
 	}
 
 	public String getUrlName() {
-		if(PrioritySorterConfiguration.get().getLegacyMode()) {
+		if (PrioritySorterConfiguration.get().getLegacyMode()) {
 			return null;
 		}
 		return "advanced-build-queue";
@@ -116,53 +120,51 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		ListBoxModel items = new ListBoxModel();
 		Collection<View> views = Jenkins.getInstance().getViews();
 		for (View view : views) {
-			items.add(view.getDisplayName(), view.getViewName());	
+			items.add(view.getDisplayName(), view.getViewName());
 		}
 		return items;
 	}
-	
-	public ListBoxModel getPriorityStrategyItems() {
-		ListBoxModel items = new ListBoxModel();
-		ExtensionList<PriorityStrategy> all = PriorityStrategy.all();
-		for (PriorityStrategy priorityStrategy : all) {
-			items.add(priorityStrategy.getDisplayName(), priorityStrategy.getKey());	
-		}
-		return items;
+
+	public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
+		return PriorityStrategy.all();
 	}
-	
 
 	public ListBoxModel getPriorities() {
-		ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
+		ListBoxModel items = PrioritySorterConfiguration.get()
+				.doGetPriorityItems();
 		return items;
 	}
 
-	
-	public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+	public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp)
+			throws IOException, ServletException {
 		jobGroups = new LinkedList<JobGroup>();
 		//
 		String parameter = req.getParameter("json");
 		JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
-		JSONArray jsonArray = JSONArray.fromObject(jobGroupsObject.get("jobGroup"));
+		JSONArray jsonArray = JSONArray.fromObject(jobGroupsObject
+				.get("jobGroup"));
 		int id = 0;
 		for (Object object : jsonArray) {
 			JSONObject jobGroupObject = JSONObject.fromObject(object);
-			if(jobGroupObject.isEmpty()) {
+			if (jobGroupObject.isEmpty()) {
 				break;
 			}
-			JobGroup jobGroup = JobGroup.Create(jobGroupObject, id++);
+			JobGroup jobGroup = JobGroup.Create(req, jobGroupObject, id++);
 			jobGroups.add(jobGroup);
 		}
 		save();
 		// Removed cached priority values
 		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(
+				AbstractProject.class);
 		for (AbstractProject<?, ?> project : allProjects) {
 			try {
-				// Remove the calculated priority 
+				// Remove the calculated priority
 				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
 				project.save();
 			} catch (IOException e) {
-				LOGGER.warning("Failed to update Actual Advanced Job Priority To " + project.getName());				
+				LOGGER.warning("Failed to update Actual Advanced Job Priority To "
+						+ project.getName());
 			}
 		}
 		//
@@ -172,79 +174,95 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	public Descriptor<PriorityConfiguration> getDescriptor() {
 		return this;
 	}
-	
+
 	public FormValidation doCheckJobPattern(@QueryParameter String value)
 			throws IOException, ServletException {
 		if (value.length() > 0) {
 			try {
 				Pattern.compile(value);
 			} catch (PatternSyntaxException e) {
-				return FormValidation.warning("The expression is not valid, please enter a valid expression.");				
+				return FormValidation
+						.warning("The expression is not valid, please enter a valid expression.");
 			}
 		}
 		return FormValidation.ok();
 	}
 
-	public int getPriority(Item item) {
+	public int getPriority(Queue.Item item) {
 		// Get priority
 		Job<?, ?> job = (Job<?, ?>) item.task;
 		int priority = getPriorityValue(item);
 		try {
 			// And cache the calculated value on the Job
-			ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
-			if(jp == null) {
+			ActualAdvancedQueueSorterJobProperty jp = job
+					.getProperty(ActualAdvancedQueueSorterJobProperty.class);
+			if (jp == null) {
 				jp = new ActualAdvancedQueueSorterJobProperty(priority);
-				((AbstractProject<?,?>) job).addProperty(jp);
+				((AbstractProject<?, ?>) job).addProperty(jp);
 			} else {
-				jp.setPriority(priority);			
+				jp.setPriority(priority);
 			}
 			job.save();
 		} catch (Exception e) {
-			LOGGER.warning("Failed to add Actual Advanced Job Priority To " + job.getName());
+			LOGGER.warning("Failed to add Actual Advanced Job Priority To "
+					+ job.getName());
 		}
 		return priority;
 	}
-	
-	private int getPriorityValue(Item item) {
+
+	private int getPriorityValue(Queue.Item item) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
-		
-		if(PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
-			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
-			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
+
+		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
+			AdvancedQueueSorterJobProperty priorityProperty = job
+					.getProperty(AdvancedQueueSorterJobProperty.class);
+			if (priorityProperty != null
+					&& priorityProperty.getUseJobPriority()) {
 				int priority = priorityProperty.priority;
-				if(priority == PrioritySorterConfiguration.get().getUseDefaultPriorityPriority()) {
-					priority = PrioritySorterConfiguration.get().getDefaultPriority();
+				if (priority == PrioritySorterConfiguration.get()
+						.getUseDefaultPriorityPriority()) {
+					priority = PrioritySorterConfiguration.get()
+							.getDefaultPriority();
 				}
 				return priority;
-			} 
+			}
 		}
 		//
 		for (JobGroup jobGroup : jobGroups) {
 			Collection<View> views = Jenkins.getInstance().getViews();
 			nextView: for (View view : views) {
-				if(view.getViewName().equals(jobGroup.getView())) {
+				if (view.getViewName().equals(jobGroup.getView())) {
 					TopLevelItem jobItem = view.getItem(job.getName());
-					if(jobItem != null) {
-						int priority = PrioritySorterConfiguration.get().getUseDefaultPriorityPriority();
+					if (jobItem != null) {
+						int priority = PrioritySorterConfiguration.get()
+								.getUseDefaultPriorityPriority();
 						// If filtering is not used use the priority
-						// If filtering is used but the pattern is empty regard it as a match all
-						if(!jobGroup.isUseJobFilter() || jobGroup.getJobPattern().trim().isEmpty()) {
+						// If filtering is used but the pattern is empty regard
+						// it as a match all
+						if (!jobGroup.isUseJobFilter()
+								|| jobGroup.getJobPattern().trim().isEmpty()) {
 							priority = getPriorityForJobGroup(jobGroup, item);
 						} else {
-							// So filtering is on - use the priority if there's a match
+							// So filtering is on - use the priority if there's
+							// a match
 							try {
-								if(job.getName().matches(jobGroup.getJobPattern())) {
-									priority = getPriorityForJobGroup(jobGroup, item);								
+								if (job.getName().matches(
+										jobGroup.getJobPattern())) {
+									priority = getPriorityForJobGroup(jobGroup,
+											item);
 								} else {
 									continue nextView;
 								}
 							} catch (PatternSyntaxException e) {
-								// If the pattern is broken treat this a non match
+								// If the pattern is broken treat this a non
+								// match
 								continue nextView;
 							}
 						}
-						if(priority == PrioritySorterConfiguration.get().getUseDefaultPriorityPriority()) {
-							priority = PrioritySorterConfiguration.get().getDefaultPriority();
+						if (priority == PrioritySorterConfiguration.get()
+								.getUseDefaultPriorityPriority()) {
+							priority = PrioritySorterConfiguration.get()
+									.getDefaultPriority();
 						}
 						return priority;
 					}
@@ -254,24 +272,25 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		//
 		return PrioritySorterConfiguration.get().getDefaultPriority();
 	}
-	
-	private int getPriorityForJobGroup(JobGroup jobGroup, Item item) {
-		if(jobGroup.isUsePriorityStrategies()) {
-			List<JobGroup.PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
-			for (JobGroup.PriorityStrategy priorityStrategy : priorityStrategies) {
-				String priorityStrategyKey = priorityStrategy.getPriorityStrategyKey();
-				PriorityStrategy strategy = PriorityStrategy.getStrategyFromKey(priorityStrategyKey);
-				if(strategy.isApplicable(item)) {
-					return priorityStrategy.getPriority();
+
+	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {
+		if (jobGroup.isUsePriorityStrategies()) {
+			List<JobGroup.PriorityStrategyHolder> priorityStrategies = jobGroup
+					.getPriorityStrategies();
+			for (JobGroup.PriorityStrategyHolder priorityStrategy : priorityStrategies) {
+				PriorityStrategy strategy = priorityStrategy
+						.getPriorityStrategy();
+				if (strategy.isApplicable(item)) {
+					return strategy.getPriority(item);
 				}
 			}
 		}
 		return jobGroup.getPriority();
 	}
-	
+
 	static public PriorityConfiguration get() {
-		return (PriorityConfiguration) Jenkins.getInstance().getDescriptor(PriorityConfiguration.class);
+		return (PriorityConfiguration) Jenkins.getInstance().getDescriptor(
+				PriorityConfiguration.class);
 	}
 
-	
 }

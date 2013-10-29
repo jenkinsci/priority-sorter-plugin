@@ -51,10 +51,11 @@ import org.kohsuke.stapler.StaplerRequest;
 @Extension
 public class PrioritySorterConfiguration extends GlobalConfiguration {
 
-	private final static Logger LOGGER = Logger.getLogger(PrioritySorterConfiguration.class.getName());
-	
-	static int PRIORITY_USE_DEFAULT_PRIORITY = -1; 
-	
+	private final static Logger LOGGER = Logger
+			.getLogger(PrioritySorterConfiguration.class.getName());
+
+	static int PRIORITY_USE_DEFAULT_PRIORITY = -1;
+
 	private boolean legacyMode = false;
 	private Integer legacyMaxPriority = Integer.MAX_VALUE;
 	private Integer legacyMinPriority = Integer.MIN_VALUE;
@@ -63,14 +64,15 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private int numberOfPriorities;
 	private int defaultPriority;
 	private String strategy;
-	
+
 	public PrioritySorterConfiguration() {
 		numberOfPriorities = 5;
 		defaultPriority = 3;
-		strategy = "ABSOLUTE"; // Yes - hardcoded to make sure this is used when converting from Legacy
+		strategy = "ABSOLUTE"; // Yes - hardcoded to make sure this is used when
+								// converting from Legacy
 		allowPriorityOnJobs = true;
 		checkLegacy();
-		if(!getLegacyMode()) {
+		if (!getLegacyMode()) {
 			load();
 		}
 	}
@@ -81,17 +83,19 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		int prevNumberOfPriorities = numberOfPriorities;
 		//
 		numberOfPriorities = json.getInt("numberOfPriorities");
-		FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String.valueOf(numberOfPriorities));
-		if(numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
-			throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
+		FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String
+				.valueOf(numberOfPriorities));
+		if (numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
+			throw new FormException(numberOfPrioritiesCheck.getMessage(),
+					"numberOfPriorities");
 		}
 		//
 		defaultPriority = json.getInt("defaultPriority");
 		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
 		strategy = json.getString("strategy");
-		if(getLegacyMode()) {			
+		if (getLegacyMode()) {
 			Boolean advanced = json.getBoolean("advanced");
-			if(advanced) {
+			if (advanced) {
 				convertFromLegacyToAdvanced();
 			}
 		} else {
@@ -131,9 +135,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public ListBoxModel doFillStrategyItems() {
 		ListBoxModel strategies = new ListBoxModel();
-		List<SorterStrategyType> values = SorterStrategy.getAllSorterStrategies();
+		List<SorterStrategyType> values = SorterStrategy
+				.getAllSorterStrategies();
 		for (SorterStrategyType sorterStrategy : values) {
-			strategies.add(sorterStrategy.getDisplayValue(), sorterStrategy.getKey());			
+			strategies.add(sorterStrategy.getDisplayValue(),
+					sorterStrategy.getKey());
 		}
 		return strategies;
 	}
@@ -145,24 +151,25 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 		return items;
 	}
-	
+
 	public ListBoxModel doDefaultPriority(@QueryParameter("value") String value)
 			throws IOException, ServletException {
 		return doFillDefaultPriorityItems();
 	}
 
-	public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
+	public ListBoxModel doUpdateDefaultPriorityItems(
+			@QueryParameter("value") String strValue) {
 		int value = getNumberOfPriorities();
 		try {
 			value = Integer.valueOf(strValue);
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			// Use default value
 		}
 		ListBoxModel items = internalFillDefaultPriorityItems(value);
 		return items;
 	}
 
-	protected ListBoxModel doGetPriorityItems() {
+	public ListBoxModel doGetPriorityItems() {
 		ListBoxModel items = internalFillDefaultPriorityItems(getNumberOfPriorities());
 		items.add(0, new ListBoxModel.Option("-- use default priority --",
 				String.valueOf(getUseDefaultPriorityPriority())));
@@ -171,104 +178,128 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
 		if (value.length() == 0) {
-			return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+			return FormValidation.error(Messages
+					.PrioritySorterConfiguration_enterValueRequestMessage());
 		}
 		try {
 			int intValue = Integer.parseInt(value);
 			if (intValue <= 0) {
 				return FormValidation
-						.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+						.error(Messages
+								.PrioritySorterConfiguration_enterValueRequestMessage());
 			}
 		} catch (NumberFormatException e) {
-			return FormValidation
-					.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+			return FormValidation.error(Messages
+					.PrioritySorterConfiguration_enterValueRequestMessage());
 		}
 		return FormValidation.ok();
 	}
-	
+
 	private void checkLegacy() {
 		legacyMode = false;
 		legacyMaxPriority = Integer.MAX_VALUE;
 		legacyMinPriority = Integer.MIN_VALUE;
-		
+
 		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(
+				AbstractProject.class);
 		for (AbstractProject<?, ?> project : allProjects) {
-			PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
+			PrioritySorterJobProperty priority = project
+					.getProperty(PrioritySorterJobProperty.class);
 			if (priority != null) {
 				legacyMode = true;
-				legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
-				legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
+				legacyMaxPriority = Math.max(legacyMaxPriority,
+						priority.priority);
+				legacyMinPriority = Math.min(legacyMinPriority,
+						priority.priority);
 			}
 		}
 	}
 
 	private void updatePriorities(int prevNumberOfPriorities) {
 		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(
+				AbstractProject.class);
 		for (AbstractProject<?, ?> project : allProjects) {
 			try {
-				// Remove the calculated priority 
+				// Remove the calculated priority
 				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
 				// Scale any priority on the Job
-				AdvancedQueueSorterJobProperty priorityProperty = project.getProperty(AdvancedQueueSorterJobProperty.class);
-				if(priorityProperty != null) {
-					int newPriority = scale(prevNumberOfPriorities, getNumberOfPriorities(), priorityProperty.priority); 
-						project.removeProperty(priorityProperty);
-						project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(), newPriority));
-						project.save();
+				AdvancedQueueSorterJobProperty priorityProperty = project
+						.getProperty(AdvancedQueueSorterJobProperty.class);
+				if (priorityProperty != null) {
+					int newPriority = scale(prevNumberOfPriorities,
+							getNumberOfPriorities(), priorityProperty.priority);
+					project.removeProperty(priorityProperty);
+					project.addProperty(new AdvancedQueueSorterJobProperty(
+							priorityProperty.getUseJobPriority(), newPriority));
+					project.save();
 				}
 				project.save();
 			} catch (IOException e) {
-				LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());				
+				LOGGER.warning("Failed to update Advanced Job Priority To "
+						+ project.getName());
 			}
 		}
 		//
 		List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
 		for (JobGroup jobGroup : jobGroups) {
-			jobGroup.setPriority(scale(prevNumberOfPriorities, getNumberOfPriorities(), jobGroup.getPriority()));
+			jobGroup.setPriority(scale(prevNumberOfPriorities,
+					getNumberOfPriorities(), jobGroup.getPriority()));
 		}
 		PriorityConfiguration.get().save();
 	}
-	
+
 	private void convertFromLegacyToAdvanced() {
 		// Update legacy range first
 		checkLegacy();
-		if(getLegacyMode()) {
+		if (getLegacyMode()) {
 			//
 			@SuppressWarnings("rawtypes")
-			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+			List<AbstractProject> allProjects = Jenkins.getInstance()
+					.getAllItems(AbstractProject.class);
 			for (AbstractProject<?, ?> project : allProjects) {
-				PrioritySorterJobProperty legacyPriorityProperty = project.getProperty(PrioritySorterJobProperty.class);
+				PrioritySorterJobProperty legacyPriorityProperty = project
+						.getProperty(PrioritySorterJobProperty.class);
 				if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
-					int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority, getNumberOfPriorities(), legacyPriorityProperty.priority);
-					AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(true, advancedPriority);
+					int advancedPriority = legacyPriorityToAdvancedPriority(
+							legacyMinPriority, legacyMaxPriority,
+							getNumberOfPriorities(),
+							legacyPriorityProperty.priority);
+					AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
+							true, advancedPriority);
 					try {
 						project.addProperty(advancedQueueSorterJobProperty);
 						project.save();
 					} catch (IOException e) {
-						LOGGER.warning("Failed to add Advanced Job Priority To " + project.getName());
+						LOGGER.warning("Failed to add Advanced Job Priority To "
+								+ project.getName());
 					}
 				}
 				try {
 					project.removeProperty(legacyPriorityProperty);
 					project.save();
 				} catch (IOException e) {
-					LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
+					LOGGER.warning("Failed to remove Legacy Job Priority From "
+							+ project.getName());
 				}
 			}
 		}
 	}
-	
-	static int legacyPriorityToAdvancedPriority(int legacyMinPriority, int legacyMaxPriority, int numberOfPriorities, int priority) {
+
+	static int legacyPriorityToAdvancedPriority(int legacyMinPriority,
+			int legacyMaxPriority, int numberOfPriorities, int priority) {
 		int offset = normalizedOffset(legacyMinPriority);
-		int normalized = inverseAndNormalize(legacyMinPriority, legacyMaxPriority, priority);
-		int advancedPriority = scale(legacyMaxPriority + offset, numberOfPriorities, normalized);
+		int normalized = inverseAndNormalize(legacyMinPriority,
+				legacyMaxPriority, priority);
+		int advancedPriority = scale(legacyMaxPriority + offset,
+				numberOfPriorities, normalized);
 		return advancedPriority;
 	}
 
 	/**
-	 * Calculates how much must be added to a legacy value to get into the positive numbers
+	 * Calculates how much must be added to a legacy value to get into the
+	 * positive numbers
 	 */
 	static int normalizedOffset(int min) {
 		int offset = -min + 1;
@@ -283,21 +314,21 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		value = max - value + 1;
 		return value;
 	}
-	
+
 	static int scale(int oldmax, int newmax, int value) {
-		if(value == PRIORITY_USE_DEFAULT_PRIORITY) {
+		if (value == PRIORITY_USE_DEFAULT_PRIORITY) {
 			return PRIORITY_USE_DEFAULT_PRIORITY;
 		}
 		float p = ((float) (value - 1) / (float) (oldmax - 1));
-		if(p <= 0.5) {
-			return (int) (Math.floor(p * (float) (newmax - 1))) + 1;
+		if (p <= 0.5) {
+			return (int) (Math.floor(p * (newmax - 1))) + 1;
 		}
-		return (int) (Math.ceil(p * (float) (newmax - 1))) + 1;
+		return (int) (Math.ceil(p * (newmax - 1))) + 1;
 	}
 
-
 	static public PrioritySorterConfiguration get() {
-		return (PrioritySorterConfiguration) Jenkins.getInstance().getDescriptor(PrioritySorterConfiguration.class);
+		return (PrioritySorterConfiguration) Jenkins.getInstance()
+				.getDescriptor(PrioritySorterConfiguration.class);
 	}
 
 }

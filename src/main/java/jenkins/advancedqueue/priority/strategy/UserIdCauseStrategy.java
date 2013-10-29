@@ -23,42 +23,54 @@
  */
 package jenkins.advancedqueue.priority.strategy;
 
-import java.util.List;
-
 import hudson.Extension;
-import hudson.model.Queue.Item;
 import hudson.model.Cause;
 import hudson.model.Cause.UserIdCause;
+import hudson.model.Descriptor;
+import hudson.model.Queue;
+
+import java.util.List;
+
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.model.Jenkins;
+
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
-public class UserIdCauseStrategy extends PriorityStrategy {
+public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 
+	@Extension
+	public static class UserIdCauseStrategyDescriptor extends
+			AbstractStaticPriorityStrategyDescriptor {
 
-	@Override
-	public String getDisplayName() {
-		return "UserIdCause";
+		public UserIdCauseStrategyDescriptor() {
+			super("UserIdCause");
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public Descriptor<PriorityStrategy> getDescriptor() {
+		return Jenkins.getInstance().getDescriptor(UserIdCauseStrategy.class);
+	}
+
+	@DataBoundConstructor
+	public UserIdCauseStrategy(int priority) {
+		setPriority(priority);
 	}
 
 	@Override
-	public String getKey() {
-		return "UserIdCause";
-	}
-
-	@Override
-	public boolean isApplicable(Item item) {
+	public boolean isApplicable(Queue.Item item) {
 		List<Cause> causes = item.getCauses();
 		for (Cause cause : causes) {
-			if(cause.getClass() == UserIdCause.class) {
+			if (cause.getClass() == UserIdCause.class) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 }

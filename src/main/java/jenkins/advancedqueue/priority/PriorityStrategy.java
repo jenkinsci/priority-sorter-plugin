@@ -23,39 +23,26 @@
  */
 package jenkins.advancedqueue.priority;
 
-import hudson.ExtensionList;
-import hudson.model.Queue.Item;
+import hudson.DescriptorExtensionList;
+import hudson.ExtensionPoint;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.Queue;
 import jenkins.model.Jenkins;
-
-import org.apache.tools.ant.ExtensionPoint;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class PriorityStrategy extends ExtensionPoint {
+public abstract class PriorityStrategy implements ExtensionPoint,
+		Describable<PriorityStrategy> {
 
-	abstract public String getDisplayName();
-	
-	abstract public String getKey();
+	abstract public boolean isApplicable(Queue.Item item);
 
-	abstract public boolean isApplicable(Item item);
+	abstract public int getPriority(Queue.Item item);
 
-	
-	public static PriorityStrategy getStrategyFromKey(String key) {
-		ExtensionList<PriorityStrategy> all = all();
-		for (PriorityStrategy priorityStrategy : all) {
-			if(key.equals(priorityStrategy.getKey())) {
-				return priorityStrategy;
-			}
-		}
-		return null;
+	public static DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> all() {
+		return Jenkins.getInstance().getDescriptorList(PriorityStrategy.class);
 	}
-	/**
-     * All registered {@link PriorityStrategy}s.
-     */
-    public static ExtensionList<PriorityStrategy> all() {
-        return Jenkins.getInstance().getExtensionList(PriorityStrategy.class);
-    }
 
 }

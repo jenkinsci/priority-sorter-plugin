@@ -28,40 +28,51 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
+
 /**
  * Describes job group for Advanced Queue Sorter.
+ * 
  * @author Magnus Sandberg
  * @author Oleg Nenashev
  * @since 2.0
  */
 public class JobGroup {
-	
-	public static class PriorityStrategy {
-		private int id = 0;	
-		private int priority = 2;
-		private String priorityStrategyKey = null;
+
+	public static class PriorityStrategyHolder {
+		private int id = 0;
+		private PriorityStrategy priorityStrategy;
+
+		public PriorityStrategyHolder() {
+		}
+
+		@DataBoundConstructor
+		public PriorityStrategyHolder(int id, PriorityStrategy priorityStrategy) {
+			this.id = id;
+			this.priorityStrategy = priorityStrategy;
+		}
 
 		public int getId() {
 			return id;
 		}
+
 		public void setId(int id) {
 			this.id = id;
 		}
-		public int getPriority() {
-			return priority;
+
+		public PriorityStrategy getPriorityStrategy() {
+			return priorityStrategy;
 		}
-		public void setPriority(int priority) {
-			this.priority = priority;
+
+		public void setPriorityStrategy(PriorityStrategy priorityStrategy) {
+			this.priorityStrategy = priorityStrategy;
 		}
-		public String getPriorityStrategyKey() {
-			return priorityStrategyKey;
-		}
-		public void setPriorityStrategyKey(String priorityStrategyKey) {
-			this.priorityStrategyKey = priorityStrategyKey;
-		}
+
 	}
 
 	private int id = 0;
@@ -70,143 +81,153 @@ public class JobGroup {
 	private boolean useJobFilter = false;
 	private String jobPattern = ".*";
 	private boolean usePriorityStrategies;
-	private List<JobGroup.PriorityStrategy> priorityStrategies = new ArrayList<JobGroup.PriorityStrategy>();
-	
-        private JobGroup() {};
-        
-        /**
-         * @return the id
-         */
-        public int getId() {
-                return id;
-        }
+	private List<JobGroup.PriorityStrategyHolder> priorityStrategies = new ArrayList<JobGroup.PriorityStrategyHolder>();
 
-        /**
-         * @param id the id to set
-         */
-        public void setId(int id) {
-                this.id = id;
-        }
+	private JobGroup() {
+	}
 
-        /**
-         * @return the priority
-         */
-        public int getPriority() {
-                return priority;
-        }
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
 
-        /**
-         * @param priority the priority to set
-         */
-        public void setPriority(int priority) {
-                this.priority = priority;
-        }
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
 
-        /**
-         * @return the view
-         */
-        public String getView() {
-                return view;
-        }
+	/**
+	 * @return the priority
+	 */
+	public int getPriority() {
+		return priority;
+	}
 
-        /**
-         * @param view the view to set
-         */
-        public void setView(String view) {
-                this.view = view;
-        }
+	/**
+	 * @param priority
+	 *            the priority to set
+	 */
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
 
-        /**
-         * @return the useJobFilter
-         */
-        public boolean isUseJobFilter() {
-                return useJobFilter;
-        }
+	/**
+	 * @return the view
+	 */
+	public String getView() {
+		return view;
+	}
 
-        /**
-         * @param useJobFilter the useJobFilter to set
-         */
-        public void setUseJobFilter(boolean useJobFilter) {
-                this.useJobFilter = useJobFilter;
-        }
+	/**
+	 * @param view
+	 *            the view to set
+	 */
+	public void setView(String view) {
+		this.view = view;
+	}
 
-        /**
-         * @return the jobPattern
-         */
-        public String getJobPattern() {
-                return jobPattern;
-        }
+	/**
+	 * @return the useJobFilter
+	 */
+	public boolean isUseJobFilter() {
+		return useJobFilter;
+	}
 
-        /**
-         * @param jobPattern the jobPattern to set
-         */
-        public void setJobPattern(String jobPattern) {
-                this.jobPattern = jobPattern;
-        }
-        
+	/**
+	 * @param useJobFilter
+	 *            the useJobFilter to set
+	 */
+	public void setUseJobFilter(boolean useJobFilter) {
+		this.useJobFilter = useJobFilter;
+	}
 
-		public boolean isUsePriorityStrategies() {
-			return usePriorityStrategies;
+	/**
+	 * @return the jobPattern
+	 */
+	public String getJobPattern() {
+		return jobPattern;
+	}
+
+	/**
+	 * @param jobPattern
+	 *            the jobPattern to set
+	 */
+	public void setJobPattern(String jobPattern) {
+		this.jobPattern = jobPattern;
+	}
+
+	public boolean isUsePriorityStrategies() {
+		return usePriorityStrategies;
+	}
+
+	public void setUsePriorityStrategies(boolean usePriorityStrategies) {
+		this.usePriorityStrategies = usePriorityStrategies;
+	}
+
+	public List<JobGroup.PriorityStrategyHolder> getPriorityStrategies() {
+		return priorityStrategies;
+	}
+
+	public void setPriorityStrategies(
+			List<JobGroup.PriorityStrategyHolder> priorityStrategies) {
+		this.priorityStrategies = priorityStrategies;
+	}
+
+	/**
+	 * Creates a Job Group from JSON object.
+	 * 
+	 * @param jobGroupObject
+	 *            JSON object with class description
+	 * @param id
+	 *            ID of the item to be created
+	 * @return created group
+	 */
+	// TODO: replace by DataBound Constructor
+	public static JobGroup Create(StaplerRequest req,
+			JSONObject jobGroupObject, int id) {
+		System.out.println(jobGroupObject);
+		JobGroup jobGroup = new JobGroup();
+		jobGroup.setId(id);
+		jobGroup.setPriority(jobGroupObject.getInt("priority"));
+		jobGroup.setView(jobGroupObject.getString("view"));
+		jobGroup.setUseJobFilter(jobGroupObject.has("useJobFilter"));
+		if (jobGroup.isUseJobFilter()) {
+			JSONObject jsonObject = jobGroupObject
+					.getJSONObject("useJobFilter");
+			jobGroup.setJobPattern(jsonObject.getString("jobPattern"));
+			// Disable the filter if the pattern is invalid
+			try {
+				Pattern.compile(jobGroup.getJobPattern());
+			} catch (PatternSyntaxException e) {
+				jobGroup.setUseJobFilter(false);
+			}
 		}
-
-		public void setUsePriorityStrategies(boolean usePriorityStrategies) {
-			this.usePriorityStrategies = usePriorityStrategies;
+		//
+		jobGroup.setUsePriorityStrategies(jobGroupObject
+				.has("usePriorityStrategies"));
+		if (jobGroup.isUsePriorityStrategies()) {
+			JSONObject jsonObject = jobGroupObject
+					.getJSONObject("usePriorityStrategies");
+			JSONArray jsonArray = JSONArray
+					.fromObject(jsonObject.get("holder"));
+			int psid = 0;
+			for (Object object : jsonArray) {
+				PriorityStrategyHolder holder = new JobGroup.PriorityStrategyHolder();
+				holder.setId(psid++);
+				PriorityStrategy strategy = req.bindJSON(Class.class,
+						PriorityStrategy.class, object);
+				holder.setPriorityStrategy(strategy);
+				jobGroup.priorityStrategies.add(holder);
+			}
+			if (jobGroup.priorityStrategies.isEmpty()) {
+				jobGroup.setUsePriorityStrategies(false);
+			}
 		}
-
-		public List<JobGroup.PriorityStrategy> getPriorityStrategies() {
-			return priorityStrategies;
-		}
-
-		public void setPriorityStrategies(
-				List<JobGroup.PriorityStrategy> priorityStrategies) {
-			this.priorityStrategies = priorityStrategies;
-		}
-		
-		/**
-         * Creates a Job Group from JSON object.
-         * @param jobGroupObject JSON object with class description
-         * @param id ID of the item to be created
-         * @return created group
-         */
-        //TODO: replace by DataBound Constructor
-        public static JobGroup Create(JSONObject jobGroupObject, int id) {
-            JobGroup jobGroup = new JobGroup();
-            jobGroup.setId(id);
-            jobGroup.setPriority(jobGroupObject.getInt("priority"));
-            jobGroup.setView(jobGroupObject.getString("view"));
-            jobGroup.setUseJobFilter(jobGroupObject.has("useJobFilter"));
-            if(jobGroup.isUseJobFilter()) {
-                    JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
-                    jobGroup.setJobPattern(jsonObject.getString("jobPattern"));
-                    // Disable the filter if the pattern is invalid
-                    try {
-                            Pattern.compile(jobGroup.getJobPattern());
-                    } catch (PatternSyntaxException e) {
-                            jobGroup.setUseJobFilter(false);		
-                    }
-            }
-            //
-            jobGroup.setUsePriorityStrategies(jobGroupObject.has("usePriorityStrategies"));
-            if(jobGroup.isUsePriorityStrategies()) {
-        		JSONObject jsonObject = jobGroupObject.getJSONObject("usePriorityStrategies");
-        		JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("priorityStrategy"));
-        		int psid = 0;
-        		for (Object object : jsonArray) {
-        			JSONObject psObject = JSONObject.fromObject(object);
-        			System.out.println(psObject);
-        			if(psObject.isEmpty()) {
-        				break;
-        			}
-        			PriorityStrategy strategy = new JobGroup.PriorityStrategy();
-        			strategy.setId(psid++);
-        			strategy.setPriority(psObject.getInt("priority"));
-        			strategy.setPriorityStrategyKey(psObject.getString("strategy"));
-        			jobGroup.priorityStrategies.add(strategy);
-        		}
-        		if(jobGroup.priorityStrategies.isEmpty()) {
-        			jobGroup.setUsePriorityStrategies(false);
-        		}
-            }
-            return jobGroup;
-        }
+		return jobGroup;
+	}
 }
