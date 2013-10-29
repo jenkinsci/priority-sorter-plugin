@@ -24,8 +24,8 @@
 package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
+import hudson.cli.BuildCommand.CLICause;
 import hudson.model.Cause;
-import hudson.model.Cause.UserIdCause;
 import hudson.model.Queue;
 
 import java.util.List;
@@ -36,20 +36,20 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
+public class CLICauseStrategy extends AbstractStaticPriorityStrategy {
 
 	@Extension
 	public static class UserIdCauseStrategyDescriptor extends
 			AbstractStaticPriorityStrategyDescriptor {
 
 		public UserIdCauseStrategyDescriptor() {
-			super("Job Triggered by a User");
+			super("Job Triggered from CLI");
 		}
 
 	}
 
 	@DataBoundConstructor
-	public UserIdCauseStrategy(int priority) {
+	public CLICauseStrategy(int priority) {
 		setPriority(priority);
 	}
 
@@ -57,7 +57,7 @@ public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 	public boolean isApplicable(Queue.Item item) {
 		List<Cause> causes = item.getCauses();
 		for (Cause cause : causes) {
-			if (cause.getClass() == UserIdCause.class) {
+			if (cause.getClass() == CLICause.class) {
 				return true;
 			}
 		}

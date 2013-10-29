@@ -5,6 +5,7 @@ import hudson.model.Queue;
 import hudson.util.ListBoxModel;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.model.Jenkins;
 
 abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 
@@ -29,6 +30,11 @@ abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 		}
 
 	};
+
+	@SuppressWarnings("unchecked")
+	public Descriptor<PriorityStrategy> getDescriptor() {
+		return Jenkins.getInstance().getDescriptor(this.getClass());
+	}
 
 	private int priority;
 
