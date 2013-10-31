@@ -190,7 +190,6 @@ public class JobGroup {
 	// TODO: replace by DataBound Constructor
 	public static JobGroup Create(StaplerRequest req,
 			JSONObject jobGroupObject, int id) {
-		System.out.println(jobGroupObject);
 		JobGroup jobGroup = new JobGroup();
 		jobGroup.setId(id);
 		jobGroup.setPriority(jobGroupObject.getInt("priority"));
