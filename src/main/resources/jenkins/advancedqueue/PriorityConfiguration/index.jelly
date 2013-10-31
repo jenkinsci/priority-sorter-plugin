@@ -16,7 +16,7 @@
 			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 				<f:entry>
 					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
-						<table>
+						<table width="75%">
 							<f:entry title="Apply to Jobs in View">
 			 					<select name="view">
 			                		<j:forEach var="view" items="${it.listViewItems}">
@@ -49,7 +49,7 @@
 							<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="Use additional rules when assigning a priority to a Job">
 								<f:entry>
 									<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="Priority Strategy">
-										<table>
+										<table width="75%">
 											<j:if test="${holder == null}">
 												<f:entry title="Select Strategy">
 													<f:dropdownDescriptorSelector
