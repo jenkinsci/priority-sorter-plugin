@@ -50,12 +50,10 @@ public class PrioritySorterConfigurationTest {
 
 	@Test
 	public void testScaleUseDefaultPriority() {
-		Assert.assertEquals(
-				PrioritySorterConfiguration.PRIORITY_USE_DEFAULT_PRIORITY,
-				PrioritySorterConfiguration
-						.scale(5,
-								10,
-								PrioritySorterConfiguration.PRIORITY_USE_DEFAULT_PRIORITY));
+		Assert.assertEquals(PriorityCalculationsUtil
+				.getUseDefaultPriorityPriority(), PrioritySorterConfiguration
+				.scale(5, 10, PriorityCalculationsUtil
+						.getUseDefaultPriorityPriority()));
 	}
 
 }
