@@ -48,12 +48,4 @@ public class PrioritySorterConfigurationTest {
 				.legacyPriorityToAdvancedPriority(-10, 10, 10, -10));
 	}
 
-	@Test
-	public void testScaleUseDefaultPriority() {
-		Assert.assertEquals(PriorityCalculationsUtil
-				.getUseDefaultPriorityPriority(), PrioritySorterConfiguration
-				.scale(5, 10, PriorityCalculationsUtil
-						.getUseDefaultPriorityPriority()));
-	}
-
 }

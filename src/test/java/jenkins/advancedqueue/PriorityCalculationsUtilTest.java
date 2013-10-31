@@ -19,4 +19,12 @@ public class PriorityCalculationsUtilTest {
 		Assert.assertEquals(10, PriorityCalculationsUtil.scale(5, 10, 5));
 	}
 
+	@Test
+	public void testScaleUseDefaultPriority() {
+		Assert.assertEquals(PriorityCalculationsUtil
+				.getUseDefaultPriorityPriority(), PriorityCalculationsUtil
+				.scale(5, 10, PriorityCalculationsUtil
+						.getUseDefaultPriorityPriority()));
+	}
+
 }
