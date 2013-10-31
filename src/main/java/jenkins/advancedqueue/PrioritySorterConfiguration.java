@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyType;
 import jenkins.model.GlobalConfiguration;
@@ -53,8 +54,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	private final static Logger LOGGER = Logger
 			.getLogger(PrioritySorterConfiguration.class.getName());
-
-	static int PRIORITY_USE_DEFAULT_PRIORITY = -1;
 
 	private boolean legacyMode = false;
 	private Integer legacyMaxPriority = Integer.MAX_VALUE;
@@ -125,10 +124,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return SorterStrategy.getSorterStrategy(strategy);
 	}
 
-	public int getUseDefaultPriorityPriority() {
-		return PRIORITY_USE_DEFAULT_PRIORITY;
-	}
-
 	public ListBoxModel doFillDefaultPriorityItems() {
 		return internalFillDefaultPriorityItems(getNumberOfPriorities());
 	}
@@ -171,8 +166,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public ListBoxModel doGetPriorityItems() {
 		ListBoxModel items = internalFillDefaultPriorityItems(getNumberOfPriorities());
-		items.add(0, new ListBoxModel.Option("-- use default priority --",
-				String.valueOf(getUseDefaultPriorityPriority())));
+		items.add(
+				0,
+				new ListBoxModel.Option("-- use default priority --", String
+						.valueOf(PriorityCalculationsUtil
+								.getUseDefaultPriorityPriority())));
 		return items;
 	}
 
@@ -228,8 +226,9 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				AdvancedQueueSorterJobProperty priorityProperty = project
 						.getProperty(AdvancedQueueSorterJobProperty.class);
 				if (priorityProperty != null) {
-					int newPriority = scale(prevNumberOfPriorities,
-							getNumberOfPriorities(), priorityProperty.priority);
+					int newPriority = PriorityCalculationsUtil.scale(
+							prevNumberOfPriorities, getNumberOfPriorities(),
+							priorityProperty.priority);
 					project.removeProperty(priorityProperty);
 					project.addProperty(new AdvancedQueueSorterJobProperty(
 							priorityProperty.getUseJobPriority(), newPriority));
@@ -244,8 +243,16 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		//
 		List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
 		for (JobGroup jobGroup : jobGroups) {
-			jobGroup.setPriority(scale(prevNumberOfPriorities,
-					getNumberOfPriorities(), jobGroup.getPriority()));
+			jobGroup.setPriority(PriorityCalculationsUtil.scale(
+					prevNumberOfPriorities, getNumberOfPriorities(),
+					jobGroup.getPriority()));
+			List<PriorityStrategyHolder> priorityStrategies = jobGroup
+					.getPriorityStrategies();
+			for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+				priorityStrategyHolder.getPriorityStrategy()
+						.numberPrioritiesUpdates(prevNumberOfPriorities,
+								getNumberOfPriorities());
+			}
 		}
 		PriorityConfiguration.get().save();
 	}
@@ -292,8 +299,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		int offset = normalizedOffset(legacyMinPriority);
 		int normalized = inverseAndNormalize(legacyMinPriority,
 				legacyMaxPriority, priority);
-		int advancedPriority = scale(legacyMaxPriority + offset,
-				numberOfPriorities, normalized);
+		int advancedPriority = PriorityCalculationsUtil.scale(legacyMaxPriority
+				+ offset, numberOfPriorities, normalized);
 		return advancedPriority;
 	}
 
@@ -313,17 +320,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		// Inverse
 		value = max - value + 1;
 		return value;
-	}
-
-	static int scale(int oldmax, int newmax, int value) {
-		if (value == PRIORITY_USE_DEFAULT_PRIORITY) {
-			return PRIORITY_USE_DEFAULT_PRIORITY;
-		}
-		float p = ((float) (value - 1) / (float) (oldmax - 1));
-		if (p <= 0.5) {
-			return (int) (Math.floor(p * (newmax - 1))) + 1;
-		}
-		return (int) (Math.ceil(p * (newmax - 1))) + 1;
 	}
 
 	static public PrioritySorterConfiguration get() {

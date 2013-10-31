@@ -24,15 +24,11 @@
 package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
-import hudson.model.Descriptor;
 import hudson.model.ParametersAction;
 import hudson.model.Queue;
 import hudson.model.StringParameterValue;
 
 import java.util.List;
-
-import jenkins.advancedqueue.priority.PriorityStrategy;
-import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -40,26 +36,16 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class BuildParameterStrategy extends PriorityStrategy {
+public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension
 	static public class BuildParameterStrategyDescriptor extends
-			Descriptor<PriorityStrategy> {
+			AbstractDynamicPriorityStrategyDescriptor {
 
 		public BuildParameterStrategyDescriptor() {
+			super("Use Priority from Build Parameter");
 		}
-
-		@Override
-		public String getDisplayName() {
-			return "Use Priority from Build Parameter";
-		}
-
 	};
-
-	@SuppressWarnings("unchecked")
-	public Descriptor<PriorityStrategy> getDescriptor() {
-		return Jenkins.getInstance().getDescriptor(this.getClass());
-	}
 
 	private final String parameterName;
 

@@ -219,7 +219,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 			if (priorityProperty != null
 					&& priorityProperty.getUseJobPriority()) {
 				int priority = priorityProperty.priority;
-				if (priority == PrioritySorterConfiguration.get()
+				if (priority == PriorityCalculationsUtil
 						.getUseDefaultPriorityPriority()) {
 					priority = PrioritySorterConfiguration.get()
 							.getDefaultPriority();
@@ -234,7 +234,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 				if (view.getViewName().equals(jobGroup.getView())) {
 					TopLevelItem jobItem = view.getItem(job.getName());
 					if (jobItem != null) {
-						int priority = PrioritySorterConfiguration.get()
+						int priority = PriorityCalculationsUtil
 								.getUseDefaultPriorityPriority();
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard
@@ -259,7 +259,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 								continue nextView;
 							}
 						}
-						if (priority == PrioritySorterConfiguration.get()
+						if (priority == PriorityCalculationsUtil
 								.getUseDefaultPriorityPriority()) {
 							priority = PrioritySorterConfiguration.get()
 									.getDefaultPriority();
@@ -281,7 +281,12 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 				PriorityStrategy strategy = priorityStrategy
 						.getPriorityStrategy();
 				if (strategy.isApplicable(item)) {
-					return strategy.getPriority(item);
+					int priority = strategy.getPriority(item);
+					if (priority > 0
+							|| priority <= PrioritySorterConfiguration.get()
+									.getNumberOfPriorities()) {
+						return priority;
+					}
 				}
 			}
 		}
