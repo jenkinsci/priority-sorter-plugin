@@ -24,8 +24,7 @@
 package jenkins.advancedqueue.sorter;
 
 import hudson.Extension;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
+import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.LeftItem;
 import hudson.model.Queue.WaitingItem;
@@ -45,31 +44,26 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
  * @since 2.0
  */
 @Extension
-public class AdvancedQueueSorter extends QueueSorter implements
-		Describable<AdvancedQueueSorter> {
+public class AdvancedQueueSorter extends QueueSorter {
 
-	static class AdvancedQueueSorterDescriptor extends
-			Descriptor<AdvancedQueueSorter> {
-
-		// Keeps track of what weighted-prio each buildableItems item has
-		Map<Integer, Float> item2weight = new HashMap<Integer, Float>();
-
-		@Override
-		public String getDisplayName() {
-			return "AdvancedQueueSorterDescriptor";
-		}
-
-	}
-
-	private final AdvancedQueueSorterDescriptor descriptor = new AdvancedQueueSorterDescriptor();
-
-	public Descriptor<AdvancedQueueSorter> getDescriptor() {
-		return descriptor;
-	}
+	// Keeps track of what weighted-prio each buildableItems item has
+	Map<Integer, Float> item2weight = new HashMap<Integer, Float>();
 
 	public AdvancedQueueSorter() {
 		super();
-		descriptor.load();
+		List<BuildableItem> items = Queue.getInstance().getBuildableItems();
+		Collections.sort(items, new Comparator<BuildableItem>() {
+			public int compare(BuildableItem o1, BuildableItem o2) {
+				return Integer.compare(o1.id, o2.id);
+			}
+		});
+		for (BuildableItem item : items) {
+			final SorterStrategy prioritySorterStrategy = SorterStrategy
+					.getPrioritySorterStrategy(PrioritySorterConfiguration
+							.get().getStrategy());
+			final float weight = prioritySorterStrategy.onNewItem(item);
+			item2weight.put(item.id, weight);
+		}
 	}
 
 	@Override
@@ -81,8 +75,8 @@ public class AdvancedQueueSorter extends QueueSorter implements
 		// Sort
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-				float o1weight = descriptor.item2weight.get(o1.id);
-				float o2weight = descriptor.item2weight.get(o2.id);
+				float o1weight = item2weight.get(o1.id);
+				float o2weight = item2weight.get(o2.id);
 				if (o1weight > o2weight) {
 					return 1;
 				}
@@ -99,16 +93,14 @@ public class AdvancedQueueSorter extends QueueSorter implements
 				.getPrioritySorterStrategy(PrioritySorterConfiguration.get()
 						.getStrategy());
 		final float weight = prioritySorterStrategy.onNewItem(wi);
-		descriptor.item2weight.put(wi.id, weight);
-		descriptor.save();
+		item2weight.put(wi.id, weight);
 	}
 
 	public void onLeft(LeftItem li) {
 		final SorterStrategy prioritySorterStrategy = SorterStrategy
 				.getPrioritySorterStrategy(PrioritySorterConfiguration.get()
 						.getStrategy());
-		Float weight = descriptor.item2weight.remove(li.id);
-		descriptor.save();
+		Float weight = item2weight.remove(li.id);
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);
 		} else {

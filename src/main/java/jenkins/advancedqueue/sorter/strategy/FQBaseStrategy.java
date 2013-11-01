@@ -23,9 +23,8 @@
  */
 package jenkins.advancedqueue.sorter.strategy;
 
-import hudson.model.Job;
+import hudson.model.Queue;
 import hudson.model.Queue.LeftItem;
-import hudson.model.Queue.WaitingItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,21 +37,22 @@ import jenkins.advancedqueue.sorter.SorterStrategy;
  * @since 2.0
  */
 abstract public class FQBaseStrategy extends SorterStrategy {
-	
-	// 
+
+	//
 	static final protected float MIN_STEP_SIZE = 0.00001F;
-	
+
 	// Keeps track on the last assigned weight for a given priority
 	static Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
 
 	// Keeps track on the max weight of started jobs
 	private float maxStartedWeight = 1F;
-	
+
+	@Override
 	public void onStartedItem(LeftItem item, float weight) {
 		maxStartedWeight = Math.max(maxStartedWeight, weight);
 	}
 
-	public float onNewItem(WaitingItem item) {
+	public float onNewItem(Queue.Item item) {
 		int priority = PriorityConfiguration.get().getPriority(item);
 		float minimumWeightToAssign = getMinimumWeightToAssign(priority);
 		float weightToUse = getWeightToUse(priority, minimumWeightToAssign);
@@ -62,23 +62,25 @@ abstract public class FQBaseStrategy extends SorterStrategy {
 
 	protected float getMinimumWeightToAssign(int priority) {
 		Float minWeight = prio2weight.get(priority);
-		if(minWeight == null) {
+		if (minWeight == null) {
 			return maxStartedWeight;
 		}
 		return Math.max(maxStartedWeight, minWeight);
 	}
-	
+
 	protected float getWeightToUse(int priority, float minimumWeightToAssign) {
 		float stepSize = getStepSize(priority);
 		double weight = Math.ceil(minimumWeightToAssign / stepSize) * stepSize;
 		// Cannot be smaller but maybe rounding problems (?)
-		if(weight <= minimumWeightToAssign) {
+		if (weight <= minimumWeightToAssign) {
 			weight += stepSize;
 		}
-		// Protect us from values going through the roof if we run for a very long time
+		// Protect us from values going through the roof if we run for a very
+		// long time
 		// This below might leave some jobs in the queue with very large weight
-		// this probably improbable to happen so let's do it like this for now ...
-		if(Double.POSITIVE_INFINITY == weight) {
+		// this probably improbable to happen so let's do it like this for now
+		// ...
+		if (Double.POSITIVE_INFINITY == weight) {
 			maxStartedWeight = 1F;
 			prio2weight.clear();
 			return getWeightToUse(priority, minimumWeightToAssign);
@@ -87,5 +89,5 @@ abstract public class FQBaseStrategy extends SorterStrategy {
 	}
 
 	abstract float getStepSize(int priority);
-	
+
 }

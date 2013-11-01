@@ -24,7 +24,7 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import hudson.model.Queue.WaitingItem;
+import hudson.model.Queue;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyType;
 import jenkins.advancedqueue.strategy.Messages;
@@ -36,13 +36,15 @@ import jenkins.advancedqueue.strategy.Messages;
 @Extension
 public class FIFOStrategy extends SorterStrategy {
 
-	private final SorterStrategyType strategy = new SorterStrategyType("FIFO", Messages.SorterStrategy_FIFO_displayName());
-	
+	private final SorterStrategyType strategy = new SorterStrategyType("FIFO",
+			Messages.SorterStrategy_FIFO_displayName());
+
+	@Override
 	public SorterStrategyType getSorterStrategy() {
 		return strategy;
 	}
 
-	public float onNewItem(WaitingItem item) {
+	public float onNewItem(Queue.Item item) {
 		return item.getInQueueSince();
 	}
 

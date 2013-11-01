@@ -24,8 +24,7 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import hudson.model.Job;
-import hudson.model.Queue.WaitingItem;
+import hudson.model.Queue;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyType;
@@ -38,13 +37,15 @@ import jenkins.advancedqueue.strategy.Messages;
 @Extension
 public class AbsoluteStrategy extends SorterStrategy {
 
-	private final SorterStrategyType strategy = new SorterStrategyType("ABSOLUTE", Messages.SorterStrategy_ABSOLUTE_displayName());
-	
+	private final SorterStrategyType strategy = new SorterStrategyType(
+			"ABSOLUTE", Messages.SorterStrategy_ABSOLUTE_displayName());
+
+	@Override
 	public SorterStrategyType getSorterStrategy() {
 		return strategy;
 	}
-	
-	public float onNewItem(WaitingItem item) {
+
+	public float onNewItem(Queue.Item item) {
 		return PriorityConfiguration.get().getPriority(item);
 	}
 
