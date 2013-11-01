@@ -54,7 +54,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		List<BuildableItem> items = Queue.getInstance().getBuildableItems();
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-				return Integer.compare(o1.id, o2.id);
+				return o1.id - o2.id;
 			}
 		});
 		for (BuildableItem item : items) {
