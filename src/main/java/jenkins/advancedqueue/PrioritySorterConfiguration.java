@@ -294,6 +294,9 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 							+ project.getName());
 				}
 			}
+                        
+                        //Finally, switch Legacy Mode
+                        legacyMode = false;
 		}
 	}
 
