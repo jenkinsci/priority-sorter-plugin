@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright (c) 2013, Magnus Sandberg and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,12 +33,7 @@ import jenkins.advancedqueue.strategy.Messages;
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class FIFOStrategy extends SorterStrategy {
-
-	private final SorterStrategyType strategy = new SorterStrategyType("FIFO",
-			Messages.SorterStrategy_FIFO_displayName());
-
         @Override
 	public float onNewItem(Queue.Item item) {
 		return item.getInQueueSince();

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright (c) 2013, Magnus Sandberg and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,6 @@ import jenkins.advancedqueue.strategy.Messages;
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class AbsoluteStrategy extends SorterStrategy {
 	
         @Override

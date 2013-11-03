@@ -31,7 +31,6 @@ import jenkins.advancedqueue.strategy.Messages;
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class FQStrategy extends FQBaseStrategy {
 
         @Override
