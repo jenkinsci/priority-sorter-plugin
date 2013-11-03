@@ -1,7 +1,7 @@
-/*
+<!--
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg and contributors
+ * Copyright 2013 Synopsys Inc., Oleg Nenashev <nenashev@synopsys.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,44 +20,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
-package jenkins.advancedqueue.sorter.strategy;
-
-import hudson.Extension;
-import hudson.model.Queue;
-import jenkins.advancedqueue.sorter.SorterStrategy;
-import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
-import jenkins.advancedqueue.strategy.Messages;
-import org.kohsuke.stapler.DataBoundConstructor;
-
-/**
- * @author Magnus Sandberg
- * @since 2.0
- */
-public class FIFOStrategy extends SorterStrategy {
-        
-    @DataBoundConstructor
-    public FIFOStrategy() {
-    }
-    
-        @Override
-	public float onNewItem(Queue.Item item) {
-		return item.getInQueueSince();
-	}
-        
-        @Extension
-        public static class DescriptorImpl extends SorterStrategyDescriptor {
-
-            @Override
-            public String getDisplayName() {
-                return Messages.SorterStrategy_FIFO_displayName();
-            }
-
-            @Override
-            public String getShortName() {
-                return Messages.SorterStrategy_FIFO_shortName();
-            }
-        }
-
-
-}
+ -->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
+    <!--No Items by default-->
+</j:jelly>

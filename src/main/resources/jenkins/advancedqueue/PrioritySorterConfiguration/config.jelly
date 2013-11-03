@@ -9,9 +9,7 @@
 	        		<li>the legacy priority property on Jobs is no longer used.</li>
 	        		<li>the Configuration Slicing Plugin cannot be used to configure priorities.</li></h3>
 	        	</f:description>
-	        	<f:entry title="Strategy" field="strategy">
-   					<f:select id="ps_strategy" onchange="prioritySorterGlobalConfUpdate()"/>
- 				</f:entry>
+                        <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
 	 		 	<f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
 	         		<f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
 	        	</f:entry>

@@ -29,13 +29,20 @@ import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
 public class AbsoluteStrategy extends SorterStrategy {
+
+    @DataBoundConstructor
+    public AbsoluteStrategy() {
+    }
 	
+        
+    
         @Override
         public float onNewItem(Queue.Item item) {
 		return PriorityConfiguration.get().getPriority(item);

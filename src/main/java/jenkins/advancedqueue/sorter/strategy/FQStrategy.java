@@ -26,6 +26,7 @@ package jenkins.advancedqueue.sorter.strategy;
 import hudson.Extension;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
@@ -33,6 +34,12 @@ import jenkins.advancedqueue.strategy.Messages;
  */
 public class FQStrategy extends FQBaseStrategy {
 
+    @DataBoundConstructor
+    public FQStrategy() {
+    }
+    
+    
+    
         @Override
         float getStepSize(int priority) {
 		// If FQ each priority is equally important 

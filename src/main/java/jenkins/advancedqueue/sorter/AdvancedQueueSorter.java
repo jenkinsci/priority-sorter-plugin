@@ -58,9 +58,8 @@ public class AdvancedQueueSorter extends QueueSorter {
 			}
 		});
 		for (BuildableItem item : items) {
-			final SorterStrategy prioritySorterStrategy = SorterStrategy
-					.getPrioritySorterStrategy(PrioritySorterConfiguration
-							.get().getStrategy());
+			final SorterStrategy prioritySorterStrategy = 
+                                PrioritySorterConfiguration.get().getStrategy();
 			final float weight = prioritySorterStrategy.onNewItem(item);
 			item2weight.put(item.id, weight);
 		}
@@ -89,17 +88,15 @@ public class AdvancedQueueSorter extends QueueSorter {
 	}
 
 	public void onEnterWaiting(WaitingItem wi) {
-		final SorterStrategy prioritySorterStrategy = SorterStrategy
-				.getPrioritySorterStrategy(PrioritySorterConfiguration.get()
-						.getStrategy());
+		final SorterStrategy prioritySorterStrategy = 
+                        PrioritySorterConfiguration.get().getStrategy();
 		final float weight = prioritySorterStrategy.onNewItem(wi);
 		item2weight.put(wi.id, weight);
 	}
 
 	public void onLeft(LeftItem li) {
-		final SorterStrategy prioritySorterStrategy = SorterStrategy
-				.getPrioritySorterStrategy(PrioritySorterConfiguration.get()
-						.getStrategy());
+		final SorterStrategy prioritySorterStrategy = 
+                        PrioritySorterConfiguration.get().getStrategy();
 		Float weight = item2weight.remove(li.id);
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);

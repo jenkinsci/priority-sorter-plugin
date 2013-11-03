@@ -26,12 +26,19 @@ package jenkins.advancedqueue.sorter.strategy;
 import hudson.Extension;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
 public class WFQStrategy extends FQBaseStrategy {
+
+    @DataBoundConstructor
+    public WFQStrategy() {
+    }
+    
+    
         @Override
 	float getStepSize(int priority) {
 		// If WFQ a lower priority is more important than a higher priority 

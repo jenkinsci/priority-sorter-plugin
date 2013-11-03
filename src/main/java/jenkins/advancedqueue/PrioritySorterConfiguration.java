@@ -38,6 +38,7 @@ import javax.servlet.ServletException;
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
+import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -54,7 +55,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	private final static Logger LOGGER = Logger
 			.getLogger(PrioritySorterConfiguration.class.getName());
-
+        private final static SorterStrategy DEFAULT_STRATEGY = new AbsoluteStrategy();
+        
 	private boolean legacyMode = false;
 	private Integer legacyMaxPriority = Integer.MAX_VALUE;
 	private Integer legacyMinPriority = Integer.MIN_VALUE;
@@ -62,12 +64,13 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private boolean allowPriorityOnJobs;
 	private int numberOfPriorities;
 	private int defaultPriority;
-	private String strategy;
+	private SorterStrategy strategy;
 
 	public PrioritySorterConfiguration() {
 		numberOfPriorities = 5;
 		defaultPriority = 3;
-		strategy = "ABSOLUTE"; // Yes - hardcoded to make sure this is used when
+                //TODO: replace by class reference
+		strategy = DEFAULT_STRATEGY; // Yes - hardcoded to make sure this is used when
 								// converting from Legacy
 		allowPriorityOnJobs = true;
 		checkLegacy();
@@ -91,7 +94,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		//
 		defaultPriority = json.getInt("defaultPriority");
 		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
-		strategy = json.getString("strategy");
+		strategy = req.bindJSON(SorterStrategy.class, json.getJSONObject("strategy"));
 		if (getLegacyMode()) {
 			Boolean advanced = json.getBoolean("advanced");
 			if (advanced) {
@@ -120,14 +123,14 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return allowPriorityOnJobs;
 	}
 
-	public SorterStrategyDescriptor getStrategy() {
-		return SorterStrategy.getSorterStrategy(strategy);
-	}
-
 	public ListBoxModel doFillDefaultPriorityItems() {
 		return internalFillDefaultPriorityItems(getNumberOfPriorities());
 	}
 
+        public SorterStrategy getStrategy() {
+            return strategy;
+        }
+        
 	public ListBoxModel doFillStrategyItems() {
 		ListBoxModel strategies = new ListBoxModel();
 		List<SorterStrategyDescriptor> values = SorterStrategy
@@ -327,4 +330,5 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				.getDescriptor(PrioritySorterConfiguration.class);
 	}
 
+        
 }
