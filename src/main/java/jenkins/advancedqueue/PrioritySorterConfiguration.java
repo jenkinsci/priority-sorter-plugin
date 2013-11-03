@@ -37,7 +37,7 @@ import javax.servlet.ServletException;
 
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.sorter.SorterStrategy;
-import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -120,7 +120,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return allowPriorityOnJobs;
 	}
 
-	public SorterStrategyType getStrategy() {
+	public SorterStrategyDescriptor getStrategy() {
 		return SorterStrategy.getSorterStrategy(strategy);
 	}
 
@@ -130,10 +130,10 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public ListBoxModel doFillStrategyItems() {
 		ListBoxModel strategies = new ListBoxModel();
-		List<SorterStrategyType> values = SorterStrategy
+		List<SorterStrategyDescriptor> values = SorterStrategy
 				.getAllSorterStrategies();
-		for (SorterStrategyType sorterStrategy : values) {
-			strategies.add(sorterStrategy.getDisplayValue(),
+		for (SorterStrategyDescriptor sorterStrategy : values) {
+			strategies.add(sorterStrategy.getDisplayName(),
 					sorterStrategy.getKey());
 		}
 		return strategies;
@@ -194,7 +194,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	private void checkLegacy() {
-		legacyMode = false;
+		legacyMode = true;
 		legacyMaxPriority = Integer.MAX_VALUE;
 		legacyMinPriority = Integer.MIN_VALUE;
 

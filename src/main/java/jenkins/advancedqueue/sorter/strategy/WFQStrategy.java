@@ -24,22 +24,15 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class WFQStrategy extends FQBaseStrategy {
-
-	private final SorterStrategyType strategy = new SorterStrategyType("WFQ", Messages.SorterStrategy_WFQ_displayName());
-	
-	public SorterStrategyType getSorterStrategy() {
-		return strategy;
-	}
-	
+        @Override
 	float getStepSize(int priority) {
 		// If WFQ a lower priority is more important than a higher priority 
 		// so we must step higher priorities faster than lower ones
@@ -48,5 +41,19 @@ public class WFQStrategy extends FQBaseStrategy {
 		float stepSize = MIN_STEP_SIZE * (float) priority;		
 		return stepSize;
 	}
+        
+        @Extension
+        public static class DescriptorImpl extends SorterStrategyDescriptor {
+
+            @Override
+            public String getDisplayName() {
+                return Messages.SorterStrategy_WFQ_displayName();
+            }
+
+            @Override
+            public String getShortName() {
+                return Messages.SorterStrategy_WFQ_shortName();
+            }
+        }
 
 }

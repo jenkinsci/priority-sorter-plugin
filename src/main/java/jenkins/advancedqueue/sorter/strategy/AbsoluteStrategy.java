@@ -27,7 +27,7 @@ import hudson.Extension;
 import hudson.model.Queue;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.sorter.SorterStrategy;
-import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
 
 /**
@@ -36,17 +36,23 @@ import jenkins.advancedqueue.strategy.Messages;
  */
 @Extension
 public class AbsoluteStrategy extends SorterStrategy {
-
-	private final SorterStrategyType strategy = new SorterStrategyType(
-			"ABSOLUTE", Messages.SorterStrategy_ABSOLUTE_displayName());
-
-	@Override
-	public SorterStrategyType getSorterStrategy() {
-		return strategy;
-	}
-
-	public float onNewItem(Queue.Item item) {
+	
+        @Override
+        public float onNewItem(Queue.Item item) {
 		return PriorityConfiguration.get().getPriority(item);
 	}
+        
+        @Extension
+        public static class DescriptorImpl extends SorterStrategyDescriptor {
 
+            @Override
+            public String getDisplayName() {
+                return Messages.SorterStrategy_ABSOLUTE_displayName();
+            }
+
+            @Override
+            public String getShortName() {
+                return Messages.SorterStrategy_ABSOLUTE_shortName();
+            }
+        }
 }
