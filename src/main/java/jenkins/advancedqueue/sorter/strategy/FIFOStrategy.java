@@ -39,7 +39,17 @@ public class FIFOStrategy extends SorterStrategy {
     @DataBoundConstructor
     public FIFOStrategy() {
     }
-    
+
+    @Override
+    public final int getDefaultPriority() {
+        return 1;
+    }
+
+    @Override
+    public final int getNumberOfPriorities() {
+        return 1;
+    }
+     
         @Override
 	public float onNewItem(Queue.Item item) {
 		return item.getInQueueSince();

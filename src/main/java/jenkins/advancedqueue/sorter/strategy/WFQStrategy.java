@@ -34,11 +34,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class WFQStrategy extends FQBaseStrategy {
 
-    @DataBoundConstructor
     public WFQStrategy() {
     }
-    
-    
+
+    @DataBoundConstructor
+    public WFQStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
+    }
+      
         @Override
 	float getStepSize(int priority) {
 		// If WFQ a lower priority is more important than a higher priority 
@@ -50,7 +53,7 @@ public class WFQStrategy extends FQBaseStrategy {
 	}
         
         @Extension
-        public static class DescriptorImpl extends SorterStrategyDescriptor {
+        public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
 
             @Override
             public String getDisplayName() {

@@ -34,11 +34,13 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class FQStrategy extends FQBaseStrategy {
 
-    @DataBoundConstructor
-    public FQStrategy() {
+    FQStrategy() {
     }
     
-    
+    @DataBoundConstructor
+    public FQStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
+    }
     
         @Override
         float getStepSize(int priority) {
@@ -52,7 +54,7 @@ public class FQStrategy extends FQBaseStrategy {
 	}
         
         @Extension
-        public static class DescriptorImpl extends SorterStrategyDescriptor {
+        public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
 
             @Override
             public String getDisplayName() {

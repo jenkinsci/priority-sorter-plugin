@@ -77,7 +77,20 @@ public abstract class SorterStrategy
 	 */
 	public void onCanceledItem(LeftItem item) {
 	};
+        
+        /**
+         * Gets number of priority buckets to be used.
+         * @return 
+         */
+        public abstract int getNumberOfPriorities();
 
+        /**
+         * Gets a default priority bucket to be used.
+         * @return 
+         */
+        public abstract int getDefaultPriority();
+
+        
 	public static List<SorterStrategyDescriptor> getAllSorterStrategies() {
 		ExtensionList<SorterStrategy> all = all();
 		ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(
@@ -115,5 +128,5 @@ public abstract class SorterStrategy
 	 */
 	public static ExtensionList<SorterStrategy> all() {
 		return Jenkins.getInstance().getExtensionList(SorterStrategy.class);
-	}
+	}  
 }

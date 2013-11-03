@@ -36,7 +36,16 @@ import jenkins.advancedqueue.sorter.SorterStrategy;
  * @author Magnus Sandberg
  * @since 2.0
  */
-abstract public class FQBaseStrategy extends SorterStrategy {
+abstract public class FQBaseStrategy extends MultiBucketStrategy {
+
+    public FQBaseStrategy() {
+    }
+
+    public FQBaseStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
+    }
+    
+    
 
 	//
 	static final protected float MIN_STEP_SIZE = 0.00001F;

@@ -35,21 +35,20 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class AbsoluteStrategy extends SorterStrategy {
+public class AbsoluteStrategy extends MultiBucketStrategy {
 
     @DataBoundConstructor
-    public AbsoluteStrategy() {
+    public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
     }
-	
-        
-    
+
         @Override
         public float onNewItem(Queue.Item item) {
 		return PriorityConfiguration.get().getPriority(item);
 	}
         
         @Extension
-        public static class DescriptorImpl extends SorterStrategyDescriptor {
+        public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
 
             @Override
             public String getDisplayName() {

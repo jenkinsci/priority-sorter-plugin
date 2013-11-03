@@ -29,12 +29,7 @@
             <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
                 <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
             </f:entry>
-            <f:entry title="Number of Priorities" description="The Update will do a linear mapping from your current priorities to the selected range." field="numberOfPriorities">
-                <f:textbox id="ps_numberOfPriorities" onchange="updateListBox('ps_defaultPriority','descriptorByName/jenkins.advancedqueue.PrioritySorterConfiguration/updateDefaultPriorityItems?value='+encode(this.value))"/>
-            </f:entry>
-            <f:entry title="Default Priority" field="defaultPriority">
-                <f:select id="ps_defaultPriority"/>
-            </f:entry> 
+            
         </j:if>
                    
     </f:section>
