@@ -26,8 +26,6 @@ package jenkins.advancedqueue.sorter.strategy;
 import hudson.Extension;
 import hudson.model.Queue;
 import jenkins.advancedqueue.PriorityConfiguration;
-import jenkins.advancedqueue.sorter.SorterStrategy;
-import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -37,6 +35,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class AbsoluteStrategy extends MultiBucketStrategy {
 
+    public AbsoluteStrategy() {  
+    }
+    
     @DataBoundConstructor
     public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
         super(numberOfPriorities, defaultPriority);

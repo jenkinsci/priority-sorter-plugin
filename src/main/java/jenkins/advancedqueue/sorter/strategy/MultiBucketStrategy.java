@@ -74,8 +74,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
             ListBoxModel items = internalFillDefaultPriorityItems(value);
             return items;
         }
-
-        
+      
         private ListBoxModel internalFillDefaultPriorityItems(int value) {
             ListBoxModel items = new ListBoxModel();
             for (int i = 1; i <= value; i++) {
@@ -92,6 +91,14 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
         public ListBoxModel doFillDefaultPriorityItems() {
             //TODO: replace by dynamic retrieval
             return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
+        }
+        
+        public int getDefaultPrioritiesNumber() {
+            return DEFAULT_PRIORITIES_NUMBER;
+        }
+        
+        public int getDefaultPriority() {
+            return DEFAULT_PRIORITY;
         }
     }
 }
