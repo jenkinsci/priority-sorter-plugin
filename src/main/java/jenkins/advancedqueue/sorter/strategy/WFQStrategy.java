@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg and contributors
+ * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -41,29 +40,28 @@ public class WFQStrategy extends FQBaseStrategy {
     public WFQStrategy(int numberOfPriorities, int defaultPriority) {
         super(numberOfPriorities, defaultPriority);
     }
-      
+
+    @Override
+    float getStepSize(int priority) {
+        // If WFQ a lower priority is more important than a higher priority 
+        // so we must step higher priorities faster than lower ones
+        //
+        // The step-size for the priority is dependent on its priority
+        float stepSize = MIN_STEP_SIZE * (float) priority;
+        return stepSize;
+    }
+
+    @Extension
+    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+
         @Override
-	float getStepSize(int priority) {
-		// If WFQ a lower priority is more important than a higher priority 
-		// so we must step higher priorities faster than lower ones
-		//
-		// The step-size for the priority is dependent on its priority
-		float stepSize = MIN_STEP_SIZE * (float) priority;		
-		return stepSize;
-	}
-        
-        @Extension
-        public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
-
-            @Override
-            public String getDisplayName() {
-                return Messages.SorterStrategy_WFQ_displayName();
-            }
-
-            @Override
-            public String getShortName() {
-                return Messages.SorterStrategy_WFQ_shortName();
-            }
+        public String getDisplayName() {
+            return Messages.SorterStrategy_WFQ_displayName();
         }
 
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_WFQ_shortName();
+        }
+    }
 }

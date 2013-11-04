@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg and contributors
+ * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,30 +35,30 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class AbsoluteStrategy extends MultiBucketStrategy {
 
-    public AbsoluteStrategy() {  
+    public AbsoluteStrategy() {
     }
-    
+
     @DataBoundConstructor
     public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
         super(numberOfPriorities, defaultPriority);
     }
 
+    @Override
+    public float onNewItem(Queue.Item item) {
+        return PriorityConfiguration.get().getPriority(item);
+    }
+
+    @Extension
+    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+
         @Override
-        public float onNewItem(Queue.Item item) {
-		return PriorityConfiguration.get().getPriority(item);
-	}
-        
-        @Extension
-        public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
-
-            @Override
-            public String getDisplayName() {
-                return Messages.SorterStrategy_ABSOLUTE_displayName();
-            }
-
-            @Override
-            public String getShortName() {
-                return Messages.SorterStrategy_ABSOLUTE_shortName();
-            }
+        public String getDisplayName() {
+            return Messages.SorterStrategy_ABSOLUTE_displayName();
         }
+
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_ABSOLUTE_shortName();
+        }
+    }
 }

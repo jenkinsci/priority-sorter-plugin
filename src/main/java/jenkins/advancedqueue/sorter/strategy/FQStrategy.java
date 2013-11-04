@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
-import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.strategy.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -36,36 +35,34 @@ public class FQStrategy extends FQBaseStrategy {
 
     FQStrategy() {
     }
-    
+
     @DataBoundConstructor
     public FQStrategy(int numberOfPriorities, int defaultPriority) {
         super(numberOfPriorities, defaultPriority);
     }
-    
+
+    @Override
+    float getStepSize(int priority) {
+        // If FQ each priority is equally important 
+        // so we basically assign priorities in
+        // with round-robin 
+        //
+        // The step-size for the priority is same for all priorities 
+        float stepSize = MIN_STEP_SIZE;
+        return stepSize;
+    }
+
+    @Extension
+    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+
         @Override
-        float getStepSize(int priority) {
-		// If FQ each priority is equally important 
-		// so we basically assign priorities in
-		// with round-robin 
-		//
-		// The step-size for the priority is same for all priorities 
-		float stepSize = MIN_STEP_SIZE;
-		return stepSize;
-	}
-        
-        @Extension
-        public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
-
-            @Override
-            public String getDisplayName() {
-                return Messages.SorterStrategy_FQ_displayName();
-            }
-
-            @Override
-            public String getShortName() {
-                return Messages.SorterStrategy_FQ_shortName();
-            }
+        public String getDisplayName() {
+            return Messages.SorterStrategy_FQ_displayName();
         }
 
-
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_FQ_shortName();
+        }
+    }
 }

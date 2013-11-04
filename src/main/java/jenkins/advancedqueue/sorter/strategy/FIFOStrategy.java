@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg and contributors
+ * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 2.0
  */
 public class FIFOStrategy extends SorterStrategy {
-        
+
     @DataBoundConstructor
     public FIFOStrategy() {
     }
@@ -49,25 +49,23 @@ public class FIFOStrategy extends SorterStrategy {
     public final int getNumberOfPriorities() {
         return 1;
     }
-     
+
+    @Override
+    public float onNewItem(Queue.Item item) {
+        return item.getInQueueSince();
+    }
+
+    @Extension
+    public static class DescriptorImpl extends SorterStrategyDescriptor {
+
         @Override
-	public float onNewItem(Queue.Item item) {
-		return item.getInQueueSince();
-	}
-        
-        @Extension
-        public static class DescriptorImpl extends SorterStrategyDescriptor {
-
-            @Override
-            public String getDisplayName() {
-                return Messages.SorterStrategy_FIFO_displayName();
-            }
-
-            @Override
-            public String getShortName() {
-                return Messages.SorterStrategy_FIFO_shortName();
-            }
+        public String getDisplayName() {
+            return Messages.SorterStrategy_FIFO_displayName();
         }
 
-
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_FIFO_shortName();
+        }
+    }
 }
