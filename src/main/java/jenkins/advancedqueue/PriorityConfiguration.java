@@ -149,7 +149,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 			if (jobGroupObject.isEmpty()) {
 				break;
 			}
-			JobGroup jobGroup = JobGroup.Create(req, jobGroupObject, id++);
+			JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
 			jobGroups.add(jobGroup);
 		}
 		save();
