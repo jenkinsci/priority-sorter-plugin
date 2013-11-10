@@ -90,7 +90,7 @@ public class AdvancedQueueSorterJobProperty extends
 		}
 
 		public int getDefault() {
-			return PrioritySorterConfiguration.get().getDefaultPriority();
+			return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 		}
 
 		public ListBoxModel getPriorities() {

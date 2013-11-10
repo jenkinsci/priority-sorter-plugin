@@ -149,7 +149,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 			if (jobGroupObject.isEmpty()) {
 				break;
 			}
-			JobGroup jobGroup = JobGroup.Create(req, jobGroupObject, id++);
+			JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
 			jobGroups.add(jobGroup);
 		}
 		save();
@@ -222,7 +222,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 				if (priority == PriorityCalculationsUtil
 						.getUseDefaultPriorityPriority()) {
 					priority = PrioritySorterConfiguration.get()
-							.getDefaultPriority();
+							.getStrategy().getDefaultPriority();
 				}
 				return priority;
 			}
@@ -262,7 +262,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 						if (priority == PriorityCalculationsUtil
 								.getUseDefaultPriorityPriority()) {
 							priority = PrioritySorterConfiguration.get()
-									.getDefaultPriority();
+									.getStrategy().getDefaultPriority();
 						}
 						return priority;
 					}
@@ -270,7 +270,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 			}
 		}
 		//
-		return PrioritySorterConfiguration.get().getDefaultPriority();
+		return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 	}
 
 	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {
@@ -284,7 +284,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
 					int priority = strategy.getPriority(item);
 					if (priority > 0
 							|| priority <= PrioritySorterConfiguration.get()
-									.getNumberOfPriorities()) {
+									.getStrategy().getNumberOfPriorities()) {
 						return priority;
 					}
 				}

@@ -37,7 +37,9 @@ import javax.servlet.ServletException;
 
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.sorter.SorterStrategy;
-import jenkins.advancedqueue.sorter.SorterStrategyType;
+import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
+import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
+import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -54,20 +56,23 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	private final static Logger LOGGER = Logger
 			.getLogger(PrioritySorterConfiguration.class.getName());
-
+        private final static SorterStrategy DEFAULT_STRATEGY = 
+                new AbsoluteStrategy(
+                    MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER,
+                    MultiBucketStrategy.DEFAULT_PRIORITY);
+        
 	private boolean legacyMode = false;
 	private Integer legacyMaxPriority = Integer.MAX_VALUE;
 	private Integer legacyMinPriority = Integer.MIN_VALUE;
 
 	private boolean allowPriorityOnJobs;
-	private int numberOfPriorities;
-	private int defaultPriority;
-	private String strategy;
+	
+	private SorterStrategy strategy;
 
 	public PrioritySorterConfiguration() {
-		numberOfPriorities = 5;
-		defaultPriority = 3;
-		strategy = "ABSOLUTE"; // Yes - hardcoded to make sure this is used when
+		
+                //TODO: replace by class reference
+		strategy = DEFAULT_STRATEGY; // Yes - hardcoded to make sure this is used when
 								// converting from Legacy
 		allowPriorityOnJobs = true;
 		checkLegacy();
@@ -79,19 +84,19 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	@Override
 	public boolean configure(StaplerRequest req, JSONObject json)
 			throws FormException {
-		int prevNumberOfPriorities = numberOfPriorities;
-		//
-		numberOfPriorities = json.getInt("numberOfPriorities");
+		
+                int prevNumberOfPriorities = strategy.getNumberOfPriorities();
+                strategy = req.bindJSON(SorterStrategy.class, json.getJSONObject("strategy"));	
+                int newNumberOfPriorities = strategy.getNumberOfPriorities();
+
 		FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String
-				.valueOf(numberOfPriorities));
+				.valueOf(newNumberOfPriorities));
 		if (numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
 			throw new FormException(numberOfPrioritiesCheck.getMessage(),
 					"numberOfPriorities");
 		}
 		//
-		defaultPriority = json.getInt("defaultPriority");
 		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
-		strategy = json.getString("strategy");
 		if (getLegacyMode()) {
 			Boolean advanced = json.getBoolean("advanced");
 			if (advanced) {
@@ -108,64 +113,29 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return legacyMode;
 	}
 
-	public int getNumberOfPriorities() {
-		return numberOfPriorities;
-	}
-
-	public int getDefaultPriority() {
-		return defaultPriority;
-	}
-
 	public boolean getAllowPriorityOnJobs() {
 		return allowPriorityOnJobs;
 	}
 
-	public SorterStrategyType getStrategy() {
-		return SorterStrategy.getSorterStrategy(strategy);
-	}
+	
 
-	public ListBoxModel doFillDefaultPriorityItems() {
-		return internalFillDefaultPriorityItems(getNumberOfPriorities());
-	}
-
+        public SorterStrategy getStrategy() {
+            return strategy;
+        }
+        
 	public ListBoxModel doFillStrategyItems() {
 		ListBoxModel strategies = new ListBoxModel();
-		List<SorterStrategyType> values = SorterStrategy
+		List<SorterStrategyDescriptor> values = SorterStrategy
 				.getAllSorterStrategies();
-		for (SorterStrategyType sorterStrategy : values) {
-			strategies.add(sorterStrategy.getDisplayValue(),
+		for (SorterStrategyDescriptor sorterStrategy : values) {
+			strategies.add(sorterStrategy.getDisplayName(),
 					sorterStrategy.getKey());
 		}
 		return strategies;
 	}
 
-	private ListBoxModel internalFillDefaultPriorityItems(int value) {
-		ListBoxModel items = new ListBoxModel();
-		for (int i = 1; i <= value; i++) {
-			items.add(String.valueOf(i));
-		}
-		return items;
-	}
-
-	public ListBoxModel doDefaultPriority(@QueryParameter("value") String value)
-			throws IOException, ServletException {
-		return doFillDefaultPriorityItems();
-	}
-
-	public ListBoxModel doUpdateDefaultPriorityItems(
-			@QueryParameter("value") String strValue) {
-		int value = getNumberOfPriorities();
-		try {
-			value = Integer.valueOf(strValue);
-		} catch (NumberFormatException e) {
-			// Use default value
-		}
-		ListBoxModel items = internalFillDefaultPriorityItems(value);
-		return items;
-	}
-
 	public ListBoxModel doGetPriorityItems() {
-		ListBoxModel items = internalFillDefaultPriorityItems(getNumberOfPriorities());
+		ListBoxModel items = internalFillDefaultPriorityItems(strategy.getNumberOfPriorities());
 		items.add(
 				0,
 				new ListBoxModel.Option("-- use default priority --", String
@@ -173,6 +143,15 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 								.getUseDefaultPriorityPriority())));
 		return items;
 	}
+        
+        //TODO: move to helper class
+        private ListBoxModel internalFillDefaultPriorityItems(int value) {
+            ListBoxModel items = new ListBoxModel();
+            for (int i = 1; i <= value; i++) {
+                items.add(String.valueOf(i));
+            }
+            return items;
+        }
 
 	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
 		if (value.length() == 0) {
@@ -194,7 +173,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	private void checkLegacy() {
-		legacyMode = false;
+		legacyMode = true;
 		legacyMaxPriority = Integer.MAX_VALUE;
 		legacyMinPriority = Integer.MIN_VALUE;
 
@@ -227,7 +206,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 						.getProperty(AdvancedQueueSorterJobProperty.class);
 				if (priorityProperty != null) {
 					int newPriority = PriorityCalculationsUtil.scale(
-							prevNumberOfPriorities, getNumberOfPriorities(),
+							prevNumberOfPriorities, strategy.getNumberOfPriorities(),
 							priorityProperty.priority);
 					project.removeProperty(priorityProperty);
 					project.addProperty(new AdvancedQueueSorterJobProperty(
@@ -244,14 +223,14 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
 		for (JobGroup jobGroup : jobGroups) {
 			jobGroup.setPriority(PriorityCalculationsUtil.scale(
-					prevNumberOfPriorities, getNumberOfPriorities(),
+					prevNumberOfPriorities, strategy.getNumberOfPriorities(),
 					jobGroup.getPriority()));
 			List<PriorityStrategyHolder> priorityStrategies = jobGroup
 					.getPriorityStrategies();
 			for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
 				priorityStrategyHolder.getPriorityStrategy()
 						.numberPrioritiesUpdates(prevNumberOfPriorities,
-								getNumberOfPriorities());
+								strategy.getNumberOfPriorities());
 			}
 		}
 		PriorityConfiguration.get().save();
@@ -271,7 +250,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
 					int advancedPriority = legacyPriorityToAdvancedPriority(
 							legacyMinPriority, legacyMaxPriority,
-							getNumberOfPriorities(),
+							strategy.getNumberOfPriorities(),
 							legacyPriorityProperty.priority);
 					AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
 							true, advancedPriority);
@@ -291,6 +270,9 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 							+ project.getName());
 				}
 			}
+                        
+                        //Finally, switch Legacy Mode
+                        legacyMode = false;
 		}
 	}
 
@@ -327,4 +309,5 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				.getDescriptor(PrioritySorterConfiguration.class);
 	}
 
+        
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,27 +26,39 @@ package jenkins.advancedqueue.sorter.strategy;
 import hudson.Extension;
 import hudson.model.Queue;
 import jenkins.advancedqueue.PriorityConfiguration;
-import jenkins.advancedqueue.sorter.SorterStrategy;
-import jenkins.advancedqueue.sorter.SorterStrategyType;
 import jenkins.advancedqueue.strategy.Messages;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
-public class AbsoluteStrategy extends SorterStrategy {
+public class AbsoluteStrategy extends MultiBucketStrategy {
 
-	private final SorterStrategyType strategy = new SorterStrategyType(
-			"ABSOLUTE", Messages.SorterStrategy_ABSOLUTE_displayName());
+    public AbsoluteStrategy() {
+    }
 
-	@Override
-	public SorterStrategyType getSorterStrategy() {
-		return strategy;
-	}
+    @DataBoundConstructor
+    public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
+    }
 
-	public float onNewItem(Queue.Item item) {
-		return PriorityConfiguration.get().getPriority(item);
-	}
+    @Override
+    public float onNewItem(Queue.Item item) {
+        return PriorityConfiguration.get().getPriority(item);
+    }
 
+    @Extension
+    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+
+        @Override
+        public String getDisplayName() {
+            return Messages.SorterStrategy_ABSOLUTE_displayName();
+        }
+
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_ABSOLUTE_shortName();
+        }
+    }
 }

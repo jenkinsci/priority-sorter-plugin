@@ -188,7 +188,7 @@ public class JobGroup {
 	 * @return created group
 	 */
 	// TODO: replace by DataBound Constructor
-	public static JobGroup Create(StaplerRequest req,
+	public static JobGroup newInstance(StaplerRequest req,
 			JSONObject jobGroupObject, int id) {
 		JobGroup jobGroup = new JobGroup();
 		jobGroup.setId(id);

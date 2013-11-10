@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Magnus Sandberg, Oleg Nenashev
+ * Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,26 +23,21 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import hudson.model.Descriptor;
+
 /**
- * @author Magnus Sandberg
- * @since 2.0
+ * Implements descriptor for {@link SorterStrategy}.
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * @since TODO
  */
-public class SorterStrategyType {
-
-	private final String key;
-	private final String displayValue;
-
-	public SorterStrategyType(String key, String displayValue) {
-		this.key = key;
-		this.displayValue = displayValue;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public String getDisplayValue() {
-		return displayValue;
-	}
-	
+public abstract class SorterStrategyDescriptor extends Descriptor<SorterStrategy> {
+    /**
+     * Returns a short name of strategy, which can be used as a unique id.
+     * @return Short name of the sorter strategy.
+     */
+    public abstract String getShortName();
+    
+    public String getKey() {
+        return getShortName();
+    }
 }

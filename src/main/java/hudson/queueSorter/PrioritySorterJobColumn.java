@@ -26,7 +26,6 @@ import hudson.model.Job;
 import hudson.views.ListViewColumnDescriptor;
 import hudson.views.ListViewColumn;
 import jenkins.advancedqueue.ActualAdvancedQueueSorterJobProperty;
-import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 
 import org.kohsuke.stapler.DataBoundConstructor;
