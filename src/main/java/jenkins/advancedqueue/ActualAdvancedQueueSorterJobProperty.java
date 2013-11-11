@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
@@ -31,13 +30,17 @@ import hudson.model.AbstractProject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class PrioritySorterJobProperty extends
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
+public class ActualAdvancedQueueSorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
-	public final int priority;
+	private int priority;
 
 	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
+	public ActualAdvancedQueueSorterJobProperty(int priority) {
 		this.priority = priority;
 	}
 
@@ -45,6 +48,10 @@ public class PrioritySorterJobProperty extends
 		return priority;
 	}
 
+        public void setPriority(int priority) {
+            this.priority = priority;
+        }
+        
 	@Override
 	public DescriptorImpl getDescriptor() {
 		return (DescriptorImpl) super.getDescriptor();
@@ -52,17 +59,11 @@ public class PrioritySorterJobProperty extends
 
 	@Extension
 	public static final class DescriptorImpl extends JobPropertyDescriptor {
+
 		@Override
 		public String getDisplayName() {
-			return "Job Priority";
+			return Messages.ActualAdvancedQueueSorterJobProperty_displayName();
 		}
 
-		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
-		}
-		
-		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
-		}
 	}
 }

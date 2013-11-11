@@ -23,7 +23,6 @@
  */
 package hudson.queueSorter;
 
-import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.queue.QueueSorter;
@@ -32,7 +31,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@Extension
 public class PrioritySorterQueueSorter extends QueueSorter {
 
 	private static final class BuildableComparitor implements

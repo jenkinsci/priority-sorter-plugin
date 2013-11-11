@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue.sorter.strategy;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
-
+import hudson.model.Queue;
+import jenkins.advancedqueue.sorter.SorterStrategy;
+import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
+import jenkins.advancedqueue.strategy.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class PrioritySorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
+public class FIFOStrategy extends SorterStrategy {
 
-	public final int priority;
+    @DataBoundConstructor
+    public FIFOStrategy() {
+    }
 
-	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
-		this.priority = priority;
-	}
+    @Override
+    public final int getDefaultPriority() {
+        return 1;
+    }
 
-	public int getPriority() {
-		return priority;
-	}
+    @Override
+    public final int getNumberOfPriorities() {
+        return 1;
+    }
 
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
+    @Override
+    public float onNewItem(Queue.Item item) {
+        return item.getInQueueSince();
+    }
 
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-		@Override
-		public String getDisplayName() {
-			return "Job Priority";
-		}
+    @Extension
+    public static class DescriptorImpl extends SorterStrategyDescriptor {
 
-		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
-		}
-		
-		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
-		}
-	}
+        @Override
+        public String getDisplayName() {
+            return Messages.SorterStrategy_FIFO_displayName();
+        }
+
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_FIFO_shortName();
+        }
+    }
 }

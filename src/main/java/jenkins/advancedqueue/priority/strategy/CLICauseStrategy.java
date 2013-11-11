@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue.priority.strategy;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
+import hudson.cli.BuildCommand.CLICause;
+import hudson.model.Cause;
+import hudson.model.Queue;
+
+import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class PrioritySorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
+public class CLICauseStrategy extends AbstractStaticPriorityStrategy {
 
-	public final int priority;
+	@Extension
+	public static class UserIdCauseStrategyDescriptor extends
+			AbstractStaticPriorityStrategyDescriptor {
 
-	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
-		this.priority = priority;
+		public UserIdCauseStrategyDescriptor() {
+			super("Job Triggered from CLI");
+		}
+
 	}
 
-	public int getPriority() {
-		return priority;
+	@DataBoundConstructor
+	public CLICauseStrategy(int priority) {
+		setPriority(priority);
 	}
 
 	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
+	public boolean isApplicable(Queue.Item item) {
+		List<Cause> causes = item.getCauses();
+		for (Cause cause : causes) {
+			if (cause.getClass() == CLICause.class) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-		@Override
-		public String getDisplayName() {
-			return "Job Priority";
-		}
-
-		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
-		}
-		
-		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
-		}
-	}
 }

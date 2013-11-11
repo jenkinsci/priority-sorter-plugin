@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue.priority;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
-import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
+import hudson.DescriptorExtensionList;
+import hudson.ExtensionPoint;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.Queue;
+import jenkins.model.Jenkins;
 
-import org.kohsuke.stapler.DataBoundConstructor;
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
+public abstract class PriorityStrategy implements ExtensionPoint,
+		Describable<PriorityStrategy> {
 
-public class PrioritySorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
+	abstract public boolean isApplicable(Queue.Item item);
 
-	public final int priority;
+	abstract public int getPriority(Queue.Item item);
 
-	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
-		this.priority = priority;
+	abstract public void numberPrioritiesUpdates(int oldNumberOfPriorities,
+			int newNumberOfPriorities);
+
+	public static DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> all() {
+		return Jenkins.getInstance().getDescriptorList(PriorityStrategy.class);
 	}
 
-	public int getPriority() {
-		return priority;
-	}
-
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
-
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-		@Override
-		public String getDisplayName() {
-			return "Job Priority";
-		}
-
-		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
-		}
-		
-		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
-		}
-	}
 }

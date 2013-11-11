@@ -23,9 +23,11 @@ package hudson.queueSorter;
 
 import hudson.Extension;
 import hudson.model.Job;
-import hudson.views.ListViewColumn;
-
 import hudson.views.ListViewColumnDescriptor;
+import hudson.views.ListViewColumn;
+import jenkins.advancedqueue.ActualAdvancedQueueSorterJobProperty;
+import jenkins.advancedqueue.PrioritySorterConfiguration;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -33,18 +35,26 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * for the job and is an easy way to compare the priorities of many jobs.
  */
 public class PrioritySorterJobColumn extends ListViewColumn {
+	
 	@DataBoundConstructor
 	public PrioritySorterJobColumn() {
 	}
 
 	public String getPriority(final Job<?, ?> job) {
-		final PrioritySorterJobProperty jp =
-				job.getProperty(PrioritySorterJobProperty.class);
-		if (jp != null) {
-			return Integer.toString(jp.priority);
+		if(PrioritySorterConfiguration.get().getLegacyMode()) {
+			final PrioritySorterJobProperty jp = job.getProperty(PrioritySorterJobProperty.class);
+			if (jp != null) {
+				return Integer.toString(jp.priority);
+			} else {
+				// No priority has been set for this job - use the default
+				return Integer.toString(PrioritySorterDefaults.getDefault());
+			}
 		} else {
-			// No priority has been set for this job - use the default
-			return Integer.toString(PrioritySorterDefaults.getDefault());
+			final ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
+			if(jp == null) {
+				return "Pending"; // You need to run a Job
+			}
+			return Integer.toString(jp.getPriority());
 		}
 	}
 

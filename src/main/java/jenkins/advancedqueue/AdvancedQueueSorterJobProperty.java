@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,28 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.model.AbstractProject;
+import hudson.model.Descriptor.FormException;
+import hudson.util.ListBoxModel;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
-public class PrioritySorterJobProperty extends
+/**
+ * @author Magnus Sandberg
+ * @since 2.0
+ */
+public class AdvancedQueueSorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
+	private final static Logger LOGGER = Logger
+			.getLogger(AdvancedQueueSorterJobProperty.class.getName());
+
+	public final boolean useJobPriority;
 	public final int priority;
 
+	@Override
+	public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form)
+			throws FormException {
+		try {
+			owner.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
+		} catch (IOException e) {
+			LOGGER.warning("Failed to remove Actual Advanced Job Priority on "
+					+ owner.getName() + ". " + e.getMessage());
+		}
+		return super.reconfigure(req, form);
+	}
+
 	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
+	public AdvancedQueueSorterJobProperty(boolean useJobPriority, int priority) {
+		this.useJobPriority = useJobPriority;
 		this.priority = priority;
 	}
 
 	public int getPriority() {
 		return priority;
+	}
+
+	public boolean getUseJobPriority() {
+		return useJobPriority;
 	}
 
 	@Override
@@ -54,15 +86,24 @@ public class PrioritySorterJobProperty extends
 	public static final class DescriptorImpl extends JobPropertyDescriptor {
 		@Override
 		public String getDisplayName() {
-			return "Job Priority";
+			return Messages.AdvancedQueueSorterJobProperty_displayName();
 		}
 
 		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
+			return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 		}
-		
+
+		public ListBoxModel getPriorities() {
+			ListBoxModel items = PrioritySorterConfiguration.get()
+					.doGetPriorityItems();
+			return items;
+		}
+
 		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
+			PrioritySorterConfiguration configuration = PrioritySorterConfiguration
+					.get();
+			return !configuration.getLegacyMode()
+					&& configuration.getAllowPriorityOnJobs();
 		}
 	}
 }

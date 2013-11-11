@@ -1,0 +1,92 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+	<l:layout norefresh="true">
+	 	<l:side-panel>
+            <l:tasks>
+                <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}"/>
+            </l:tasks>
+        </l:side-panel>
+		<l:main-panel>
+			<div>
+				<h2>Job Priorities</h2>
+				Assign Priorities by creating JobGroups. Priorities are assigned top down by first match.
+				If a Job has a Priority assigned directly on the Job that Priority will be used and the below will not be used.
+				<br/>
+				<br/> 
+			</div>
+			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
+				<f:entry>
+					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
+						<table width="75%">
+							<f:entry title="Apply to Jobs in View">
+			 					<select name="view">
+			                		<j:forEach var="view" items="${it.listViewItems}">
+			                			<j:if test="${view.value == jobGroup.view}">
+			                				<f:option value="${view.value}" selected="true">${view.name}</f:option>
+			                			</j:if>
+			                			<j:if test="${view.value != jobGroup.view}">
+			                    			<f:option value="${view.value}">${view.name}</f:option>
+			                    		</j:if>															
+			                		</j:forEach>
+			            		</select>
+		            		</f:entry>
+		            		<f:entry title="Priority">
+			 					<select name="priority">
+			                		<j:forEach var="priority" items="${it.priorities}">
+			                			<j:if test="${priority.value == jobGroup.priority}">
+			                				<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
+			                			</j:if>
+			                			<j:if test="${priority.value != jobGroup.priority}">
+			                    			<f:option value="${priority.value}">${priority.name}</f:option>
+			                    		</j:if>															
+			                		</j:forEach>
+			            		</select>
+							</f:entry>
+							<f:optionalBlock name="useJobFilter" checked="${jobGroup.useJobFilter}" title="Use a regular expression to only include a subset of the jobs in the view">
+		            			<f:entry title="Regular Expression">                   
+		            				<f:textbox name="jobPattern" value="${jobGroup.jobPattern}" checkUrl="'${rootURL}/descriptorByName/jenkins.advancedqueue.PriorityConfiguration/checkJobPattern?value='+encode(this.value)"/>
+		            			</f:entry>           					
+	    					</f:optionalBlock>
+							<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="Use additional rules when assigning a priority to a Job">
+								<f:entry>
+									<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="Priority Strategy">
+										<table width="75%">
+											<j:if test="${holder == null}">
+												<f:entry title="Select Strategy">
+													<f:dropdownDescriptorSelector
+															descriptors="${it.getPriorityStrategyDescriptors()}"/>
+												</f:entry>
+											</j:if>
+											<j:if test="${holder != null}">
+												<j:set var="instance" value="${holder.priorityStrategy}" />
+												<j:set var="descriptor" value="${instance.descriptor}" />
+												<f:entry title="${descriptor.displayName}">
+  													<input type="hidden" name="stapler-class" value="${descriptor.clazz.name}"/>
+													<st:include page="${descriptor.configPage}" />
+												</f:entry>
+											</j:if>										
+											<f:entry>
+												<div align="right">	    									
+			        	    						<f:repeatableDeleteButton />
+		    	        						</div>
+		    	        					</f:entry>	
+		            					</table>						
+									</f:repeatable>
+								</f:entry>
+	    					</f:optionalBlock>
+							<f:entry>	
+								<div align="right">	    									
+	            					<f:repeatableDeleteButton />
+	            				</div>
+	            			</f:entry>
+	            		</table>
+					</f:repeatable>
+					<br/>
+					<br/>
+					<f:entry>
+						<f:submit value="Save" />
+					</f:entry>
+				</f:entry>
+			</f:form>
+		</l:main-panel>
+	</l:layout>
+</j:jelly>

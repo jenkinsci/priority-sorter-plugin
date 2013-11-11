@@ -27,7 +27,7 @@ public class PrioritySorterDefaults {
 
 	final static int defaultPriority = 100;
 
-	static int getDefault() {
+	static public int getDefault() {
 		return defaultPriority;
 	}
 }

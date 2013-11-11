@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue.sorter;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
-import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
+import hudson.model.Descriptor;
 
-import org.kohsuke.stapler.DataBoundConstructor;
-
-public class PrioritySorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
-
-	public final int priority;
-
-	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
-		this.priority = priority;
-	}
-
-	public int getPriority() {
-		return priority;
-	}
-
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
-
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-		@Override
-		public String getDisplayName() {
-			return "Job Priority";
-		}
-
-		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
-		}
-		
-		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
-		}
-	}
+/**
+ * Implements descriptor for {@link SorterStrategy}.
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * @since TODO
+ */
+public abstract class SorterStrategyDescriptor extends Descriptor<SorterStrategy> {
+    /**
+     * Returns a short name of strategy, which can be used as a unique id.
+     * @return Short name of the sorter strategy.
+     */
+    public abstract String getShortName();
+    
+    public String getKey() {
+        return getShortName();
+    }
 }
