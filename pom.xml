@@ -10,7 +10,7 @@
 	<version>2.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Priority Sorter Plugin</name>
-	<description>This plugin allows for the build queue to be sorted based on pre-assigned priorities for each job.</description>
+	<description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
 	<url>https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin</url>
 
 	<licenses>
@@ -58,7 +58,6 @@
 		</plugins>
 	</build>
 
-
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
@@ -73,10 +72,10 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-	<distributionManagement>
-		<repository>
-			<id>maven.jenkins-ci.org</id>
-			<url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
-		</repository>
-	</distributionManagement>
+	<scm>               
+		<connection>scm:git:git://github.com:jenkinsci/priority-sorter-plugin.git</connection>
+		<developerConnection>scm:git:ssh://github.com:jenkinsci/priority-sorter-plugin.git</developerConnection>
+		<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
+	</scm>
+
 </project>
