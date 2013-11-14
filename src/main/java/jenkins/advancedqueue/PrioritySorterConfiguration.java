@@ -33,8 +33,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
-
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
@@ -173,7 +171,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	private void checkLegacy() {
-		legacyMode = true;
+		legacyMode = false;
 		legacyMaxPriority = Integer.MAX_VALUE;
 		legacyMinPriority = Integer.MIN_VALUE;
 
