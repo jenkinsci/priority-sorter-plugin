@@ -1,7 +1,7 @@
 <!--
  * The MIT License
  *
- * Copyright 2013 Synopsys Inc., Oleg Nenashev <nenashev@synopsys.com>
+ * Copyright 2013 Magnus Sandberg <emsa@switchbeat.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,6 @@
  -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-    <f:entry title="Number of Priorities" description="The Update will do a linear mapping from your current priorities to the selected range." field="numberOfPriorities">
-        <f:textbox id="ps_numberOfPriorities" 
-                   onchange="updateListBox('ps_defaultPriority','descriptorByName/${instance.class.name}/updateDefaultPriorityItems?value='+encode(this.value))"
-                   default="${descriptor.defaultPrioritiesNumber}"/>
-    </f:entry>
-    <f:entry title="Default Priority" field="defaultPriority">
-        <f:select id="ps_defaultPriority" default="${descriptor.defaultPriority}"/>
-    </f:entry> 
+	<f:description><b>Weighted Fair Queueing</b> As <i>Fair Queueing</i> but <i>lower</i> priority value gets more resources than <i>higher</i> value.</f:description>
+	<st:include page="config.jelly" class="jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy" />
 </j:jelly>
