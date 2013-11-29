@@ -74,8 +74,22 @@ public class AdvancedQueueSorter extends QueueSorter {
 		// Sort
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-				float o1weight = item2weight.get(o1.id);
-				float o2weight = item2weight.get(o2.id);
+			    	// Is <null> on rare occasions like crash/restart
+			    	// So we need to protect the sorting when that happens
+			    	float o1weight;
+			    	float o2weight;
+			    	try {
+			    	    o1weight = item2weight.get(o1.id);
+			    	} catch(NullPointerException e) {
+					o1weight = PrioritySorterConfiguration.get().getStrategy().onNewItem(o1);
+					item2weight.put(o1.id, o1weight);			    	    
+			    	}
+			    	try {
+			    	    o2weight = item2weight.get(o2.id);
+			    	} catch(NullPointerException e) {
+					o2weight = PrioritySorterConfiguration.get().getStrategy().onNewItem(o2);
+					item2weight.put(o2.id, o2weight);			    	    			    	    
+			    	}
 				if (o1weight > o2weight) {
 					return 1;
 				}
