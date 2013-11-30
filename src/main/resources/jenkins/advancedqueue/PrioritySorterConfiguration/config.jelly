@@ -15,6 +15,12 @@
                 <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
                     <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
                 </f:entry>               
+                <f:entry title="Use 'Run First' Priority" description="Jobs with 'Run First' Priority will always skip the queue" field="useRunFirstPriority">
+                    <f:checkbox id="ps_useRunFirstPriority" name="useRunFirstPriority" checked="${useRunFirstPriority}"/>
+                </f:entry>               
+                <f:entry title="Use 'Run Last' Priority" description="Jobs with 'Run Last' Priority will only run if no other Jobs are queued" field="useRunLastPriority">
+                    <f:checkbox id="ps_useRunLastPriority" name="useRunLastPriority" checked="${useRunLastPriority}"/>
+                </f:entry>               
             </f:optionalBlock>
         </j:if>
         <!-- TODO: remove code duplication -->
@@ -23,6 +29,12 @@
             <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
                 <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
             </f:entry>          
+            <f:entry title="Use 'Run First' Priority" description="Jobs with 'Run First' Priority will always skip the queue" field="useRunFirstPriority">
+                <f:checkbox id="ps_useRunFirstPriority" name="useRunFirstPriority" checked="${useRunFirstPriority}"/>
+            </f:entry>               
+            <f:entry title="Use 'Run Last' Priority" description="Jobs with 'Run Last' Priority will only run if no other Jobs are queued" field="useRunLastPriority">
+                <f:checkbox id="ps_useRunLastPriority" name="useRunLastPriority" checked="${useRunLastPriority}"/>
+            </f:entry>               
         </j:if>
                    
     </f:section>
