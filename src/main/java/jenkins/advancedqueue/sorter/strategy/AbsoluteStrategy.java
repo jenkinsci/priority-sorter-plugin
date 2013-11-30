@@ -44,8 +44,8 @@ public class AbsoluteStrategy extends MultiBucketStrategy {
     }
 
     @Override
-    public float onNewItem(Queue.Item item) {
-        return PriorityConfiguration.get().getPriority(item);
+    public float onNewItem(Queue.Item item, int priority) {
+        return priority;
     }
 
     @Extension

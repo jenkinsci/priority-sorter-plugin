@@ -27,6 +27,7 @@ import hudson.ExtensionList;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Queue;
+import hudson.model.Queue.Item;
 import hudson.model.Queue.LeftItem;
 
 import java.util.ArrayList;
@@ -40,24 +41,24 @@ import org.apache.tools.ant.ExtensionPoint;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class SorterStrategy 
-    extends ExtensionPoint implements Describable<SorterStrategy> {
-        @Override
-        public SorterStrategyDescriptor getDescriptor() {
-            return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
-        }
+public abstract class SorterStrategy extends ExtensionPoint implements Describable<SorterStrategy> {
+	@Override
+	public SorterStrategyDescriptor getDescriptor() {
+		return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+	}
 
-        
 	/**
 	 * Called when a new {@link hudson.model.Item} enters the queue.
 	 * 
 	 * @param item
 	 *            the {@link hudson.model.WaitingItem} or
 	 *            {@link hudson.model.BuildableItem} that enters the queue
+	 * @param priority
+	 *            the priority assigned to the Build
 	 * @return the weight of the item in the queue, lower value will give sooner
 	 *         start
 	 */
-	public abstract float onNewItem(Queue.Item item);
+	public abstract float onNewItem(Queue.Item item, int priority);
 
 	/**
 	 * Called when a {@link hudson.model.Item} leaves the queue and it is
@@ -77,24 +78,24 @@ public abstract class SorterStrategy
 	 */
 	public void onCanceledItem(LeftItem item) {
 	};
-        
-        /**
-         * Gets number of priority buckets to be used.
-         * @return 
-         */
-        public abstract int getNumberOfPriorities();
 
-        /**
-         * Gets a default priority bucket to be used.
-         * @return 
-         */
-        public abstract int getDefaultPriority();
+	/**
+	 * Gets number of priority buckets to be used.
+	 * 
+	 * @return
+	 */
+	public abstract int getNumberOfPriorities();
 
-        
+	/**
+	 * Gets a default priority bucket to be used.
+	 * 
+	 * @return
+	 */
+	public abstract int getDefaultPriority();
+
 	public static List<SorterStrategyDescriptor> getAllSorterStrategies() {
 		ExtensionList<SorterStrategy> all = all();
-		ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(
-				all.size());
+		ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(all.size());
 		for (SorterStrategy prioritySorterStrategy : all) {
 			strategies.add(prioritySorterStrategy.getDescriptor());
 		}
@@ -111,12 +112,10 @@ public abstract class SorterStrategy
 		return null;
 	}
 
-	public static SorterStrategy getPrioritySorterStrategy(
-			SorterStrategyDescriptor sorterStrategy) {
+	public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
 		ExtensionList<SorterStrategy> all = all();
 		for (SorterStrategy prioritySorterStrategy : all) {
-			if (prioritySorterStrategy.getDescriptor().getKey()
-					.equals(sorterStrategy.getKey())) {
+			if (prioritySorterStrategy.getDescriptor().getKey().equals(sorterStrategy.getKey())) {
 				return prioritySorterStrategy;
 			}
 		}
@@ -128,5 +127,5 @@ public abstract class SorterStrategy
 	 */
 	public static ExtensionList<SorterStrategy> all() {
 		return Jenkins.getInstance().getExtensionList(SorterStrategy.class);
-	}  
+	}
 }

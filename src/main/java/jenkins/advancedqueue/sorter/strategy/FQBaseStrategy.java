@@ -55,8 +55,7 @@ abstract public class FQBaseStrategy extends MultiBucketStrategy {
 		maxStartedWeight = Math.max(maxStartedWeight, weight);
 	}
 
-	public float onNewItem(Queue.Item item) {
-		int priority = PriorityConfiguration.get().getPriority(item);
+	public float onNewItem(Queue.Item item, int priority) {
 		float minimumWeightToAssign = getMinimumWeightToAssign(priority);
 		float weightToUse = getWeightToUse(priority, minimumWeightToAssign);
 		prio2weight.put(priority, weightToUse);
