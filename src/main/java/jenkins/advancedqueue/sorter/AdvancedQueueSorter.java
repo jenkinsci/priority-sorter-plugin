@@ -26,8 +26,8 @@ package jenkins.advancedqueue.sorter;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
+import hudson.model.Queue.Item;
 import hudson.model.Queue.LeftItem;
-import hudson.model.Queue.WaitingItem;
 import hudson.model.queue.QueueSorter;
 import hudson.queueSorter.PrioritySorterQueueSorter;
 
@@ -52,15 +52,15 @@ public class AdvancedQueueSorter extends QueueSorter {
 	public AdvancedQueueSorter() {
 		super();
 		List<BuildableItem> items = Queue.getInstance().getBuildableItems();
+		// Sort the queue in the order the items entered the queue
+		// so that onNewItem() happens in the correct order below
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-				return o1.id - o2.id;
+				return (int) (o1.getInQueueSince() - o2.getInQueueSince());
 			}
 		});
 		for (BuildableItem item : items) {
-			final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-			final float weight = prioritySorterStrategy.onNewItem(item);
-			item2weight.put(item.id, weight);
+			onNewItem(item);
 		}
 	}
 
@@ -73,22 +73,8 @@ public class AdvancedQueueSorter extends QueueSorter {
 		// Sort
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-				// Is <null> on rare occasions like crash/restart
-				// So we need to protect the sorting when that happens
-				float o1weight;
-				float o2weight;
-				try {
-					o1weight = item2weight.get(o1.id);
-				} catch (NullPointerException e) {
-					o1weight = PrioritySorterConfiguration.get().getStrategy().onNewItem(o1);
-					item2weight.put(o1.id, o1weight);
-				}
-				try {
-					o2weight = item2weight.get(o2.id);
-				} catch (NullPointerException e) {
-					o2weight = PrioritySorterConfiguration.get().getStrategy().onNewItem(o2);
-					item2weight.put(o2.id, o2weight);
-				}
+				float o1weight = getCalculatedWeight(o1);
+				float o2weight = getCalculatedWeight(o2);
 				if (o1weight > o2weight) {
 					return 1;
 				}
@@ -100,10 +86,27 @@ public class AdvancedQueueSorter extends QueueSorter {
 		});
 	}
 
-	public void onEnterWaiting(WaitingItem wi) {
+	/**
+	 * Returned the calculated, cached, weight or calculates the weight if missing. Should only be
+	 * called when the value should already be there, if the item is new {@link #onNewItem(Item)} is
+	 * the method to call.
+	 * 
+	 * @param item the item to get the weight for
+	 * @return the calculated weight
+	 */
+	private float getCalculatedWeight(BuildableItem item) {
+		try {
+			return item2weight.get(item.id);
+		} catch (NullPointerException e) {
+			onNewItem(item);
+			return item2weight.get(item.id);
+		}
+	}
+
+	public void onNewItem(Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		final float weight = prioritySorterStrategy.onNewItem(wi);
-		item2weight.put(wi.id, weight);
+		final float weight = prioritySorterStrategy.onNewItem(item);
+		item2weight.put(item.id, weight);
 	}
 
 	public void onLeft(LeftItem li) {

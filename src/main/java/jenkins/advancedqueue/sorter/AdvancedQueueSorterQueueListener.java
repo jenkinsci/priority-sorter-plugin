@@ -37,7 +37,7 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
 
 	@Override
 	public void onEnterWaiting(WaitingItem wi) {
-		AdvancedQueueSorter.get().onEnterWaiting(wi);
+		AdvancedQueueSorter.get().onNewItem(wi);
 	}
 
 	@Override
