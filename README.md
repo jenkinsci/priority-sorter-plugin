@@ -1,48 +1,38 @@
+<!--
+The MIT License
 
-# Priority Sorter
+Copyright (c) 2013, Cisco Systems, Inc., a California corporation
 
-This plugin adds the ability to assign different priorities to Jobs, the lower priority the job has
-the soon the Job will run. 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-This can be very helpful when one wants to add low priority jobs but wants to have higher-priority jobs run first when hardware is limited or when there are different groups of Jobs that should share resources (equally).
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-## Queue Strategies
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
 
-There are four included Queue Strategies, the different Queue Strategies will sort the Queue
-differently.
+# Jenkins Priority Sorter Plugin
 
-### First In First Out
+This plugin adds the ability to assign different priorities to Jobs, the lower priority the job has the sooner the Job will run.
 
-This the normal way Jenkins sorts the Queue, the Queue is sorted based on when the Jobs is added to the Queue, Jobs will be run in the same order as they enter the Queue.
+This can be very helpful when one wants to add low priority jobs but wants to have higher-priority jobs run first when hardware is limited or when there are 
+different groups of Jobs that should share resources (equally).
 
-### Absolute
+The plugin both contains ways to select a Sorter Strategy and one or more Priority Strategies.
 
-Each Jobs will be assigned a Priority, the lower the Priority the sooner the Jobs will be run.
+The Sorter Strategies will allow you to select how you want the queue to be sorted. This allows you not only to run higher priority Jobs before lower priority Jobs, but also to use algorithms such as Fair Weighed Queueing.
 
-### Fair Queuing
+The Priority Strategies will allow you to have different priorities based on how the Job is started. This enables you to give Jobs started directly by a user higher priority than Jobs started by cron or by a commit.
 
-Each Jobs will be assigned a Priority, the Queue will try to share the resources equally over the different prioritos in a round-robin fashion.
-
-### Weighted Fair Queuing
-
-The same as Fair Queuing but Jobs with lower Priority will be run more frequently than Jobs with higher Priority.
-
-## Assigning Priorities
-
-Priorities can either be assigned directly on Jobs or, preferably, by assigning them by View.
-
-## Priority Strategies
-
-It is possibly to assign the Priority based on different Priority Strategies
-
- * Default Priority
- * Jobs Started By User
- * Jobs Started By CLI
- * By using Job Parameter
-
- * * * 
-
-Maintainer
-
-Magnus Sandberg <emsa@switchbeat.com>
-
+See Jenkins Wiki @ [Priority Sorter Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin) for more information.
