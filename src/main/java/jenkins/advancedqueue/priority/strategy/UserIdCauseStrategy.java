@@ -39,8 +39,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 
 	@Extension
-	public static class UserIdCauseStrategyDescriptor extends
-			AbstractStaticPriorityStrategyDescriptor {
+	public static class UserIdCauseStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
 
 		public UserIdCauseStrategyDescriptor() {
 			super("Job Triggered by a User");

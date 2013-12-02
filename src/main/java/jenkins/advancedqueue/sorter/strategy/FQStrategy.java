@@ -33,36 +33,36 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class FQStrategy extends FQBaseStrategy {
 
-    FQStrategy() {
-    }
+	FQStrategy() {
+	}
 
-    @DataBoundConstructor
-    public FQStrategy(int numberOfPriorities, int defaultPriority) {
-        super(numberOfPriorities, defaultPriority);
-    }
+	@DataBoundConstructor
+	public FQStrategy(int numberOfPriorities, int defaultPriority) {
+		super(numberOfPriorities, defaultPriority);
+	}
 
-    @Override
-    float getStepSize(int priority) {
-        // If FQ each priority is equally important 
-        // so we basically assign priorities in
-        // with round-robin 
-        //
-        // The step-size for the priority is same for all priorities 
-        float stepSize = MIN_STEP_SIZE;
-        return stepSize;
-    }
+	@Override
+	float getStepSize(int priority) {
+		// If FQ each priority is equally important
+		// so we basically assign priorities in
+		// with round-robin
+		//
+		// The step-size for the priority is same for all priorities
+		float stepSize = MIN_STEP_SIZE;
+		return stepSize;
+	}
 
-    @Extension
-    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+	@Extension
+	public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
 
-        @Override
-        public String getDisplayName() {
-            return Messages.SorterStrategy_FQ_displayName();
-        }
+		@Override
+		public String getDisplayName() {
+			return Messages.SorterStrategy_FQ_displayName();
+		}
 
-        @Override
-        public String getShortName() {
-            return Messages.SorterStrategy_FQ_shortName();
-        }
-    }
+		@Override
+		public String getShortName() {
+			return Messages.SorterStrategy_FQ_shortName();
+		}
+	}
 }

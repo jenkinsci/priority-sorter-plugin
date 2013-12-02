@@ -32,73 +32,73 @@ import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Implements a strategy with multiple buckets.
+ * 
  * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
  * @since 2.0
  */
 public abstract class MultiBucketStrategy extends SorterStrategy {
-    public static final int DEFAULT_PRIORITIES_NUMBER = 5;
-    public static final int DEFAULT_PRIORITY = 3;
-    
-    private final int numberOfPriorities;
-    private final int defaultPriority;
+	public static final int DEFAULT_PRIORITIES_NUMBER = 5;
+	public static final int DEFAULT_PRIORITY = 3;
 
-    public MultiBucketStrategy() {
-        this(DEFAULT_PRIORITIES_NUMBER, DEFAULT_PRIORITY);
-    }
-    
-    public MultiBucketStrategy(int numberOfPriorities, int defaultPriority) {
-        this.numberOfPriorities = numberOfPriorities;
-        this.defaultPriority = defaultPriority;
-    }
+	private final int numberOfPriorities;
+	private final int defaultPriority;
 
-    @Override
-    public final int getNumberOfPriorities() {
-        return numberOfPriorities;
-    }
+	public MultiBucketStrategy() {
+		this(DEFAULT_PRIORITIES_NUMBER, DEFAULT_PRIORITY);
+	}
 
-    @Override
-    public final int getDefaultPriority() {
-        return defaultPriority;
-    }
-    
-    public abstract static class MultiBucketStrategyDescriptor extends SorterStrategyDescriptor {   
-        
-        public ListBoxModel doUpdateDefaultPriorityItems(
-                @QueryParameter("value") String strValue) {
-            int value = DEFAULT_PRIORITY;
-            try {
-                value = Integer.valueOf(strValue);
-            } catch (NumberFormatException e) {
-                // Use default value
-            }
-            ListBoxModel items = internalFillDefaultPriorityItems(value);
-            return items;
-        }
-      
-        private ListBoxModel internalFillDefaultPriorityItems(int value) {
-            ListBoxModel items = new ListBoxModel();
-            for (int i = 1; i <= value; i++) {
-                items.add(String.valueOf(i));
-            }
-            return items;
-        }
+	public MultiBucketStrategy(int numberOfPriorities, int defaultPriority) {
+		this.numberOfPriorities = numberOfPriorities;
+		this.defaultPriority = defaultPriority;
+	}
 
-        public ListBoxModel doDefaultPriority(@QueryParameter("value") String value)
-                throws IOException, ServletException {
-            return doFillDefaultPriorityItems();
-        }
+	@Override
+	public final int getNumberOfPriorities() {
+		return numberOfPriorities;
+	}
 
-        public ListBoxModel doFillDefaultPriorityItems() {
-            //TODO: replace by dynamic retrieval
-            return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
-        }
-        
-        public int getDefaultPrioritiesNumber() {
-            return DEFAULT_PRIORITIES_NUMBER;
-        }
-        
-        public int getDefaultPriority() {
-            return DEFAULT_PRIORITY;
-        }
-    }
+	@Override
+	public final int getDefaultPriority() {
+		return defaultPriority;
+	}
+
+	public abstract static class MultiBucketStrategyDescriptor extends SorterStrategyDescriptor {
+
+		public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
+			int value = DEFAULT_PRIORITY;
+			try {
+				value = Integer.valueOf(strValue);
+			} catch (NumberFormatException e) {
+				// Use default value
+			}
+			ListBoxModel items = internalFillDefaultPriorityItems(value);
+			return items;
+		}
+
+		private ListBoxModel internalFillDefaultPriorityItems(int value) {
+			ListBoxModel items = new ListBoxModel();
+			for (int i = 1; i <= value; i++) {
+				items.add(String.valueOf(i));
+			}
+			return items;
+		}
+
+		public ListBoxModel doDefaultPriority(@QueryParameter("value") String value) throws IOException,
+				ServletException {
+			return doFillDefaultPriorityItems();
+		}
+
+		public ListBoxModel doFillDefaultPriorityItems() {
+			// TODO: replace by dynamic retrieval
+			return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
+		}
+
+		public int getDefaultPrioritiesNumber() {
+			return DEFAULT_PRIORITIES_NUMBER;
+		}
+
+		public int getDefaultPriority() {
+			return DEFAULT_PRIORITY;
+		}
+	}
 }

@@ -40,14 +40,12 @@ import org.apache.tools.ant.ExtensionPoint;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class SorterStrategy 
-    extends ExtensionPoint implements Describable<SorterStrategy> {
-        
-        public SorterStrategyDescriptor getDescriptor() {
-            return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
-        }
+public abstract class SorterStrategy extends ExtensionPoint implements Describable<SorterStrategy> {
 
-        
+	public SorterStrategyDescriptor getDescriptor() {
+		return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+	}
+
 	/**
 	 * Called when a new {@link hudson.model.Item} enters the queue.
 	 * 
@@ -77,24 +75,24 @@ public abstract class SorterStrategy
 	 */
 	public void onCanceledItem(LeftItem item) {
 	};
-        
-        /**
-         * Gets number of priority buckets to be used.
-         * @return 
-         */
-        public abstract int getNumberOfPriorities();
 
-        /**
-         * Gets a default priority bucket to be used.
-         * @return 
-         */
-        public abstract int getDefaultPriority();
+	/**
+	 * Gets number of priority buckets to be used.
+	 * 
+	 * @return
+	 */
+	public abstract int getNumberOfPriorities();
 
-        
+	/**
+	 * Gets a default priority bucket to be used.
+	 * 
+	 * @return
+	 */
+	public abstract int getDefaultPriority();
+
 	public static List<SorterStrategyDescriptor> getAllSorterStrategies() {
 		ExtensionList<SorterStrategy> all = all();
-		ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(
-				all.size());
+		ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(all.size());
 		for (SorterStrategy prioritySorterStrategy : all) {
 			strategies.add(prioritySorterStrategy.getDescriptor());
 		}
@@ -111,12 +109,10 @@ public abstract class SorterStrategy
 		return null;
 	}
 
-	public static SorterStrategy getPrioritySorterStrategy(
-			SorterStrategyDescriptor sorterStrategy) {
+	public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
 		ExtensionList<SorterStrategy> all = all();
 		for (SorterStrategy prioritySorterStrategy : all) {
-			if (prioritySorterStrategy.getDescriptor().getKey()
-					.equals(sorterStrategy.getKey())) {
+			if (prioritySorterStrategy.getDescriptor().getKey().equals(sorterStrategy.getKey())) {
 				return prioritySorterStrategy;
 			}
 		}
@@ -128,5 +124,5 @@ public abstract class SorterStrategy
 	 */
 	public static ExtensionList<SorterStrategy> all() {
 		return Jenkins.getInstance().getExtensionList(SorterStrategy.class);
-	}  
+	}
 }

@@ -35,30 +35,30 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class AbsoluteStrategy extends MultiBucketStrategy {
 
-    public AbsoluteStrategy() {
-    }
+	public AbsoluteStrategy() {
+	}
 
-    @DataBoundConstructor
-    public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
-        super(numberOfPriorities, defaultPriority);
-    }
+	@DataBoundConstructor
+	public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
+		super(numberOfPriorities, defaultPriority);
+	}
 
-    @Override
-    public float onNewItem(Queue.Item item) {
-        return PriorityConfiguration.get().getPriority(item);
-    }
+	@Override
+	public float onNewItem(Queue.Item item) {
+		return PriorityConfiguration.get().getPriority(item);
+	}
 
-    @Extension
-    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+	@Extension
+	public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
 
-        @Override
-        public String getDisplayName() {
-            return Messages.SorterStrategy_ABSOLUTE_displayName();
-        }
+		@Override
+		public String getDisplayName() {
+			return Messages.SorterStrategy_ABSOLUTE_displayName();
+		}
 
-        @Override
-        public String getShortName() {
-            return Messages.SorterStrategy_ABSOLUTE_shortName();
-        }
-    }
+		@Override
+		public String getShortName() {
+			return Messages.SorterStrategy_ABSOLUTE_shortName();
+		}
+	}
 }

@@ -34,15 +34,13 @@ import jenkins.model.Jenkins;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class PriorityStrategy implements ExtensionPoint,
-		Describable<PriorityStrategy> {
+public abstract class PriorityStrategy implements ExtensionPoint, Describable<PriorityStrategy> {
 
 	abstract public boolean isApplicable(Queue.Item item);
 
 	abstract public int getPriority(Queue.Item item);
 
-	abstract public void numberPrioritiesUpdates(int oldNumberOfPriorities,
-			int newNumberOfPriorities);
+	abstract public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities);
 
 	public static DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> all() {
 		return Jenkins.getInstance().getDescriptorList(PriorityStrategy.class);

@@ -58,8 +58,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 			}
 		});
 		for (BuildableItem item : items) {
-			final SorterStrategy prioritySorterStrategy = 
-                                PrioritySorterConfiguration.get().getStrategy();
+			final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
 			final float weight = prioritySorterStrategy.onNewItem(item);
 			item2weight.put(item.id, weight);
 		}
@@ -74,22 +73,22 @@ public class AdvancedQueueSorter extends QueueSorter {
 		// Sort
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-			    	// Is <null> on rare occasions like crash/restart
-			    	// So we need to protect the sorting when that happens
-			    	float o1weight;
-			    	float o2weight;
-			    	try {
-			    	    o1weight = item2weight.get(o1.id);
-			    	} catch(NullPointerException e) {
+				// Is <null> on rare occasions like crash/restart
+				// So we need to protect the sorting when that happens
+				float o1weight;
+				float o2weight;
+				try {
+					o1weight = item2weight.get(o1.id);
+				} catch (NullPointerException e) {
 					o1weight = PrioritySorterConfiguration.get().getStrategy().onNewItem(o1);
-					item2weight.put(o1.id, o1weight);			    	    
-			    	}
-			    	try {
-			    	    o2weight = item2weight.get(o2.id);
-			    	} catch(NullPointerException e) {
+					item2weight.put(o1.id, o1weight);
+				}
+				try {
+					o2weight = item2weight.get(o2.id);
+				} catch (NullPointerException e) {
 					o2weight = PrioritySorterConfiguration.get().getStrategy().onNewItem(o2);
-					item2weight.put(o2.id, o2weight);			    	    			    	    
-			    	}
+					item2weight.put(o2.id, o2weight);
+				}
 				if (o1weight > o2weight) {
 					return 1;
 				}
@@ -102,15 +101,13 @@ public class AdvancedQueueSorter extends QueueSorter {
 	}
 
 	public void onEnterWaiting(WaitingItem wi) {
-		final SorterStrategy prioritySorterStrategy = 
-                        PrioritySorterConfiguration.get().getStrategy();
+		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
 		final float weight = prioritySorterStrategy.onNewItem(wi);
 		item2weight.put(wi.id, weight);
 	}
 
 	public void onLeft(LeftItem li) {
-		final SorterStrategy prioritySorterStrategy = 
-                        PrioritySorterConfiguration.get().getStrategy();
+		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
 		Float weight = item2weight.remove(li.id);
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);

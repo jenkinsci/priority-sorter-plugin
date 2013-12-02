@@ -6,8 +6,7 @@ import jenkins.model.Jenkins;
 
 abstract public class AbstractDynamicPriorityStrategy extends PriorityStrategy {
 
-	static public class AbstractDynamicPriorityStrategyDescriptor extends
-			Descriptor<PriorityStrategy> {
+	static public class AbstractDynamicPriorityStrategyDescriptor extends Descriptor<PriorityStrategy> {
 
 		private final String displayName;
 
@@ -28,8 +27,7 @@ abstract public class AbstractDynamicPriorityStrategy extends PriorityStrategy {
 	}
 
 	@Override
-	public void numberPrioritiesUpdates(int oldNumberOfPriorities,
-			int newNumberOfPriorities) {
+	public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities) {
 		// ignore as we do not store/control the priority
 	}
 

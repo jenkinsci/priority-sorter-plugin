@@ -10,8 +10,7 @@ import jenkins.model.Jenkins;
 
 abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 
-	static public class AbstractStaticPriorityStrategyDescriptor extends
-			Descriptor<PriorityStrategy> {
+	static public class AbstractStaticPriorityStrategyDescriptor extends Descriptor<PriorityStrategy> {
 
 		private final String displayName;
 
@@ -20,8 +19,7 @@ abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 		}
 
 		public ListBoxModel getPriorities() {
-			ListBoxModel items = PrioritySorterConfiguration.get()
-					.doGetPriorityItems();
+			ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
 			return items;
 		}
 
@@ -40,10 +38,8 @@ abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 	private int priority;
 
 	@Override
-	public void numberPrioritiesUpdates(int oldNumberOfPriorities,
-			int newNumberOfPriorities) {
-		priority = PriorityCalculationsUtil.scale(oldNumberOfPriorities,
-				newNumberOfPriorities, priority);
+	public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities) {
+		priority = PriorityCalculationsUtil.scale(oldNumberOfPriorities, newNumberOfPriorities, priority);
 
 	}
 

@@ -39,8 +39,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension
-	static public class BuildParameterStrategyDescriptor extends
-			AbstractDynamicPriorityStrategyDescriptor {
+	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
 		public BuildParameterStrategyDescriptor() {
 			super("Use Priority from Build Parameter");
@@ -59,11 +58,9 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 	}
 
 	private Integer getPriorityInternal(Queue.Item item) {
-		List<ParametersAction> actions = item
-				.getActions(ParametersAction.class);
+		List<ParametersAction> actions = item.getActions(ParametersAction.class);
 		for (ParametersAction action : actions) {
-			StringParameterValue parameterValue = (StringParameterValue) action
-					.getParameter(parameterName);
+			StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
 			if (parameterValue != null) {
 				String value = parameterValue.value;
 				try {

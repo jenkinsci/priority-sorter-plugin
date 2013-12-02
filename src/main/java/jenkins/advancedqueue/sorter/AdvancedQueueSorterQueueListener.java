@@ -36,13 +36,13 @@ import hudson.model.queue.QueueListener;
 public class AdvancedQueueSorterQueueListener extends QueueListener {
 
 	@Override
-    public void onEnterWaiting(WaitingItem wi) {
- 		AdvancedQueueSorter.get().onEnterWaiting(wi);
+	public void onEnterWaiting(WaitingItem wi) {
+		AdvancedQueueSorter.get().onEnterWaiting(wi);
 	}
 
 	@Override
 	public void onLeft(LeftItem li) {
-		AdvancedQueueSorter.get().onLeft(li);		
+		AdvancedQueueSorter.get().onLeft(li);
 	}
 
 }

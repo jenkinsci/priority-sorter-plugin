@@ -173,8 +173,7 @@ public class JobGroup {
 		return priorityStrategies;
 	}
 
-	public void setPriorityStrategies(
-			List<JobGroup.PriorityStrategyHolder> priorityStrategies) {
+	public void setPriorityStrategies(List<JobGroup.PriorityStrategyHolder> priorityStrategies) {
 		this.priorityStrategies = priorityStrategies;
 	}
 
@@ -188,16 +187,14 @@ public class JobGroup {
 	 * @return created group
 	 */
 	// TODO: replace by DataBound Constructor
-	public static JobGroup newInstance(StaplerRequest req,
-			JSONObject jobGroupObject, int id) {
+	public static JobGroup newInstance(StaplerRequest req, JSONObject jobGroupObject, int id) {
 		JobGroup jobGroup = new JobGroup();
 		jobGroup.setId(id);
 		jobGroup.setPriority(jobGroupObject.getInt("priority"));
 		jobGroup.setView(jobGroupObject.getString("view"));
 		jobGroup.setUseJobFilter(jobGroupObject.has("useJobFilter"));
 		if (jobGroup.isUseJobFilter()) {
-			JSONObject jsonObject = jobGroupObject
-					.getJSONObject("useJobFilter");
+			JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
 			jobGroup.setJobPattern(jsonObject.getString("jobPattern"));
 			// Disable the filter if the pattern is invalid
 			try {
@@ -207,19 +204,15 @@ public class JobGroup {
 			}
 		}
 		//
-		jobGroup.setUsePriorityStrategies(jobGroupObject
-				.has("usePriorityStrategies"));
+		jobGroup.setUsePriorityStrategies(jobGroupObject.has("usePriorityStrategies"));
 		if (jobGroup.isUsePriorityStrategies()) {
-			JSONObject jsonObject = jobGroupObject
-					.getJSONObject("usePriorityStrategies");
-			JSONArray jsonArray = JSONArray
-					.fromObject(jsonObject.get("holder"));
+			JSONObject jsonObject = jobGroupObject.getJSONObject("usePriorityStrategies");
+			JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("holder"));
 			int psid = 0;
 			for (Object object : jsonArray) {
 				PriorityStrategyHolder holder = new JobGroup.PriorityStrategyHolder();
 				holder.setId(psid++);
-				PriorityStrategy strategy = req.bindJSON(Class.class,
-						PriorityStrategy.class, object);
+				PriorityStrategy strategy = req.bindJSON(Class.class, PriorityStrategy.class, object);
 				holder.setPriorityStrategy(strategy);
 				jobGroup.priorityStrategies.add(holder);
 			}

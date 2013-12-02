@@ -42,23 +42,20 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class AdvancedQueueSorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
+public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<?, ?>> {
 
-	private final static Logger LOGGER = Logger
-			.getLogger(AdvancedQueueSorterJobProperty.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(AdvancedQueueSorterJobProperty.class.getName());
 
 	public final boolean useJobPriority;
 	public final int priority;
 
 	@Override
-	public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form)
-			throws FormException {
+	public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
 		try {
 			owner.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
 		} catch (IOException e) {
-			LOGGER.warning("Failed to remove Actual Advanced Job Priority on "
-					+ owner.getName() + ". " + e.getMessage());
+			LOGGER.warning("Failed to remove Actual Advanced Job Priority on " + owner.getName() + ". "
+					+ e.getMessage());
 		}
 		return super.reconfigure(req, form);
 	}
@@ -94,16 +91,13 @@ public class AdvancedQueueSorterJobProperty extends
 		}
 
 		public ListBoxModel getPriorities() {
-			ListBoxModel items = PrioritySorterConfiguration.get()
-					.doGetPriorityItems();
+			ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
 			return items;
 		}
 
 		public boolean isUsed() {
-			PrioritySorterConfiguration configuration = PrioritySorterConfiguration
-					.get();
-			return !configuration.getLegacyMode()
-					&& configuration.getAllowPriorityOnJobs();
+			PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
+			return !configuration.getLegacyMode() && configuration.getAllowPriorityOnJobs();
 		}
 	}
 }
