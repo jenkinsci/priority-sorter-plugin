@@ -42,7 +42,7 @@ import org.apache.tools.ant.ExtensionPoint;
  */
 public abstract class SorterStrategy 
     extends ExtensionPoint implements Describable<SorterStrategy> {
-        @Override
+        
         public SorterStrategyDescriptor getDescriptor() {
             return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
         }
