@@ -229,8 +229,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			Collection<View> views = Jenkins.getInstance().getViews();
 			nextView: for (View view : views) {
 				if (view.getViewName().equals(jobGroup.getView())) {
+					// getItem() always returns the item
 					TopLevelItem jobItem = view.getItem(job.getName());
-					if (jobItem != null) {
+					// Now check if the item is actually in the view
+					if (view.contains(jobItem)) {
 						int priority = PriorityCalculationsUtil.getUseDefaultPriorityPriority();
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard
@@ -272,7 +274,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				if (strategy.isApplicable(item)) {
 					int priority = strategy.getPriority(item);
 					if (priority > 0
-							|| priority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
+							&& priority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
 						return priority;
 					}
 				}
