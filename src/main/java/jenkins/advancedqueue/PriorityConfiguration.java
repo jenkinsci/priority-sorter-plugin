@@ -261,7 +261,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				if (strategy.isApplicable(item)) {
 					int priority = strategy.getPriority(item);
 					if (priority > 0
-							|| priority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
+							&& priority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
 						return priority;
 					}
 				}
