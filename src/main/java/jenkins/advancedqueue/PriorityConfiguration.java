@@ -25,6 +25,7 @@ package jenkins.advancedqueue;
 
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.Describable;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
@@ -200,6 +201,18 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	private int getPriorityValue(Queue.Item item) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
+
+		// [JENKINS-8597]
+		// Handle Matrix Jobs, for MatrixConfiguration use the latest assigned Priority for the main
+		// Matrix
+		if (job.getClass().isAssignableFrom(MatrixConfiguration.class)) {
+			ActualAdvancedQueueSorterJobProperty property = ((Job<?, ?>) job.getParent())
+					.getProperty(ActualAdvancedQueueSorterJobProperty.class);
+			if (property == null) {
+				return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+			}
+			return property.getPriority();
+		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
 			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
