@@ -25,6 +25,7 @@ package jenkins.advancedqueue;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
+import hudson.model.TopLevelItem;
 import hudson.queueSorter.PrioritySorterJobProperty;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -162,13 +163,18 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		legacyMinPriority = Integer.MIN_VALUE;
 
 		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-		for (AbstractProject<?, ?> project : allProjects) {
-			PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
-			if (priority != null) {
-				legacyMode = true;
-				legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
-				legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
+		// getAllItems() doesn't return MatrixProject even if actually is a Project
+		// since it also is a group of items (ItemGroup) in the tree being traversed
+		List<TopLevelItem> allItems = Jenkins.getInstance().getItems();
+		for (TopLevelItem item : allItems) {
+			if (item instanceof AbstractProject) {
+				AbstractProject<?, ?> project = (AbstractProject<?, ?>) item;
+				PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
+				if (priority != null) {
+					legacyMode = true;
+					legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
+					legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
+				}
 			}
 		}
 	}
@@ -254,8 +260,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	/**
-	 * Calculates how much must be added to a legacy value to get into the
-	 * positive numbers
+	 * Calculates how much must be added to a legacy value to get into the positive numbers
 	 */
 	static int normalizedOffset(int min) {
 		int offset = -min + 1;
