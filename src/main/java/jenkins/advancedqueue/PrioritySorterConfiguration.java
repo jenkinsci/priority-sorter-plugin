@@ -23,9 +23,13 @@
  */
 package jenkins.advancedqueue;
 
+import static hudson.init.InitMilestone.JOB_LOADED;
 import hudson.Extension;
+import hudson.init.Initializer;
 import hudson.model.AbstractProject;
+import hudson.model.TopLevelItem;
 import hudson.queueSorter.PrioritySorterJobProperty;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -42,6 +46,8 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -65,15 +71,18 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private SorterStrategy strategy;
 
 	public PrioritySorterConfiguration() {
+	}
 
-		// TODO: replace by class reference
-		strategy = DEFAULT_STRATEGY; // Yes - hardcoded to make sure this is
-										// used when
-		// converting from Legacy
-		allowPriorityOnJobs = true;
-		checkLegacy();
-		if (!getLegacyMode()) {
-			load();
+	@Initializer(after = JOB_LOADED)
+	public static void init() {
+		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
+		// Make sure default is good for updating from legacy
+		prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
+		prioritySorterConfiguration.allowPriorityOnJobs = true;
+		// Check for legacy
+		prioritySorterConfiguration.checkLegacy();
+		if (!prioritySorterConfiguration.getLegacyMode()) {
+			prioritySorterConfiguration.load();
 		}
 	}
 
@@ -157,90 +166,116 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	private void checkLegacy() {
-		legacyMode = false;
-		legacyMaxPriority = Integer.MAX_VALUE;
-		legacyMinPriority = Integer.MIN_VALUE;
+		// Shouldn't really by a permission problem when getting here but
+		// to be on the safe side
+		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
+		try {
+			legacyMode = false;
+			legacyMaxPriority = Integer.MAX_VALUE;
+			legacyMinPriority = Integer.MIN_VALUE;
 
-		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-		for (AbstractProject<?, ?> project : allProjects) {
-			PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
-			if (priority != null) {
-				legacyMode = true;
-				legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
-				legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
+			// getAllItems() doesn't return MatrixProject even if actually is a Project
+			// since it also is a group of items (ItemGroup) in the tree being traversed
+			List<TopLevelItem> allItems = Jenkins.getInstance().getItems();
+			for (TopLevelItem item : allItems) {
+				if (item instanceof AbstractProject) {
+					AbstractProject<?, ?> project = (AbstractProject<?, ?>) item;
+					PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
+					if (priority != null) {
+						legacyMode = true;
+						legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
+						legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
+					}
+				}
 			}
+		} finally {
+			SecurityContextHolder.setContext(saveCtx);
 		}
 	}
 
 	private void updatePriorities(int prevNumberOfPriorities) {
-		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-		for (AbstractProject<?, ?> project : allProjects) {
-			try {
-				// Remove the calculated priority
-				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
-				// Scale any priority on the Job
-				AdvancedQueueSorterJobProperty priorityProperty = project
-						.getProperty(AdvancedQueueSorterJobProperty.class);
-				if (priorityProperty != null) {
-					int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
-							strategy.getNumberOfPriorities(), priorityProperty.priority);
-					project.removeProperty(priorityProperty);
-					project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(),
-							newPriority));
+		// Shouldn't really by a permission problem when getting here but
+		// to be on the safe side
+		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
+		try {
+			@SuppressWarnings("rawtypes")
+			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+			for (AbstractProject<?, ?> project : allProjects) {
+				try {
+					// Remove the calculated priority
+					project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
+					// Scale any priority on the Job
+					AdvancedQueueSorterJobProperty priorityProperty = project
+							.getProperty(AdvancedQueueSorterJobProperty.class);
+					if (priorityProperty != null) {
+						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
+								strategy.getNumberOfPriorities(), priorityProperty.priority);
+						project.removeProperty(priorityProperty);
+						project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(),
+								newPriority));
+						project.save();
+					}
 					project.save();
+				} catch (IOException e) {
+					LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());
 				}
-				project.save();
-			} catch (IOException e) {
-				LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());
 			}
-		}
-		//
-		List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
-		for (JobGroup jobGroup : jobGroups) {
-			jobGroup.setPriority(PriorityCalculationsUtil.scale(prevNumberOfPriorities,
-					strategy.getNumberOfPriorities(), jobGroup.getPriority()));
-			List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
-			for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
-				priorityStrategyHolder.getPriorityStrategy().numberPrioritiesUpdates(prevNumberOfPriorities,
-						strategy.getNumberOfPriorities());
+			//
+			List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
+			for (JobGroup jobGroup : jobGroups) {
+				jobGroup.setPriority(PriorityCalculationsUtil.scale(prevNumberOfPriorities,
+						strategy.getNumberOfPriorities(), jobGroup.getPriority()));
+				List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+				for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+					priorityStrategyHolder.getPriorityStrategy().numberPrioritiesUpdates(prevNumberOfPriorities,
+							strategy.getNumberOfPriorities());
+				}
 			}
+			PriorityConfiguration.get().save();
+		} finally {
+			SecurityContextHolder.setContext(saveCtx);
 		}
-		PriorityConfiguration.get().save();
 	}
 
 	private void convertFromLegacyToAdvanced() {
 		// Update legacy range first
 		checkLegacy();
-		if (getLegacyMode()) {
-			//
-			@SuppressWarnings("rawtypes")
-			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-			for (AbstractProject<?, ?> project : allProjects) {
-				PrioritySorterJobProperty legacyPriorityProperty = project.getProperty(PrioritySorterJobProperty.class);
-				if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
-					int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority,
-							strategy.getNumberOfPriorities(), legacyPriorityProperty.priority);
-					AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
-							true, advancedPriority);
+		// Shouldn't really by a permission problem when getting here but
+		// to be on the safe side
+		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
+		try {
+			if (getLegacyMode()) {
+				//
+				@SuppressWarnings("rawtypes")
+				List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+				for (AbstractProject<?, ?> project : allProjects) {
+					PrioritySorterJobProperty legacyPriorityProperty = project
+							.getProperty(PrioritySorterJobProperty.class);
+					if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
+						int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority,
+								strategy.getNumberOfPriorities(), legacyPriorityProperty.priority);
+						AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
+								true, advancedPriority);
+						try {
+							project.addProperty(advancedQueueSorterJobProperty);
+							project.save();
+						} catch (IOException e) {
+							LOGGER.warning("Failed to add Advanced Job Priority To " + project.getName());
+						}
+					}
 					try {
-						project.addProperty(advancedQueueSorterJobProperty);
+						project.removeProperty(legacyPriorityProperty);
 						project.save();
 					} catch (IOException e) {
-						LOGGER.warning("Failed to add Advanced Job Priority To " + project.getName());
+						LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
 					}
 				}
-				try {
-					project.removeProperty(legacyPriorityProperty);
-					project.save();
-				} catch (IOException e) {
-					LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
-				}
-			}
 
-			// Finally, switch Legacy Mode
-			legacyMode = false;
+				// Finally, switch Legacy Mode
+				legacyMode = false;
+			}
+		} finally {
+			SecurityContextHolder.setContext(saveCtx);
 		}
 	}
 
@@ -254,8 +289,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	/**
-	 * Calculates how much must be added to a legacy value to get into the
-	 * positive numbers
+	 * Calculates how much must be added to a legacy value to get into the positive numbers
 	 */
 	static int normalizedOffset(int min) {
 		int offset = -min + 1;
