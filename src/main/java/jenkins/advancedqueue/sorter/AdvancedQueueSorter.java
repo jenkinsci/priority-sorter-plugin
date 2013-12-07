@@ -46,7 +46,9 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
 public class AdvancedQueueSorter extends QueueSorter {
 
 	public AdvancedQueueSorter() {
-		super();
+	}
+
+	static public void init() {
 		List<BuildableItem> items = Queue.getInstance().getBuildableItems();
 		// Sort the queue in the order the items entered the queue
 		// so that onNewItem() happens in the correct order below
@@ -55,8 +57,9 @@ public class AdvancedQueueSorter extends QueueSorter {
 				return (int) (o1.getInQueueSince() - o2.getInQueueSince());
 			}
 		});
+		AdvancedQueueSorter advancedQueueSorter = AdvancedQueueSorter.get();
 		for (BuildableItem item : items) {
-			onNewItem(item);
+			advancedQueueSorter.onNewItem(item);
 		}
 	}
 

@@ -23,9 +23,7 @@
  */
 package jenkins.advancedqueue;
 
-import static hudson.init.InitMilestone.JOB_LOADED;
 import hudson.Extension;
-import hudson.init.Initializer;
 import hudson.model.AbstractProject;
 import hudson.model.TopLevelItem;
 import hudson.queueSorter.PrioritySorterJobProperty;
@@ -73,7 +71,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	public PrioritySorterConfiguration() {
 	}
 
-	@Initializer(after = JOB_LOADED)
 	public static void init() {
 		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
 		// Make sure default is good for updating from legacy
