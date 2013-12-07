@@ -33,10 +33,9 @@ import hudson.queueSorter.PrioritySorterQueueSorter;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 
 /**
@@ -45,9 +44,6 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
  */
 @Extension
 public class AdvancedQueueSorter extends QueueSorter {
-
-	// Keeps track of what weighted-prio each buildableItems item has
-	Map<Integer, Float> item2weight = new HashMap<Integer, Float>();
 
 	public AdvancedQueueSorter() {
 		super();
@@ -96,28 +92,28 @@ public class AdvancedQueueSorter extends QueueSorter {
 	 */
 	private float getCalculatedWeight(BuildableItem item) {
 		try {
-			return item2weight.get(item.id);
+			return QueueItemCache.get().getItem(item.id).getWeight();
 		} catch (NullPointerException e) {
 			onNewItem(item);
-			return item2weight.get(item.id);
+			return QueueItemCache.get().getItem(item.id).getWeight();
 		}
 	}
 
 	public void onNewItem(Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		final float weight = prioritySorterStrategy.onNewItem(item);
-		item2weight.put(item.id, weight);
+		int priority = PriorityConfiguration.get().getPriority(item);
+		final float weight = prioritySorterStrategy.onNewItem(item, priority);
+		QueueItemCache.get().addItem(new ItemInfo(item, weight, priority));
 	}
 
 	public void onLeft(LeftItem li) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		Float weight = item2weight.remove(li.id);
+		Float weight = QueueItemCache.get().removeItem(li.id).getWeight();
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);
 		} else {
 			prioritySorterStrategy.onStartedItem(li, weight);
 		}
-
 	}
 
 	static public AdvancedQueueSorter get() {

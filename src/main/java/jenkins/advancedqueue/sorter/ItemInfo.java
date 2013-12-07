@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,44 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.sorter.strategy;
+package jenkins.advancedqueue.sorter;
 
-import hudson.Extension;
-import hudson.model.Queue;
-import jenkins.advancedqueue.strategy.Messages;
+import hudson.model.Queue.Item;
 
-import org.kohsuke.stapler.DataBoundConstructor;
-
-/**
+/* Used to store info about a Queue.Item 
+ *  
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 2.3
  */
-public class AbsoluteStrategy extends MultiBucketStrategy {
 
-	public AbsoluteStrategy() {
+public class ItemInfo {
+
+	private int itemId;
+
+	private String jobName;
+
+	private float weight;
+
+	private int priority;
+
+	ItemInfo(Item item, float weight, int priority) {
+		this.itemId = item.id;
+		this.jobName = item.task.getName();
+		this.weight = weight;
+		this.priority = priority;
 	}
 
-	@DataBoundConstructor
-	public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
-		super(numberOfPriorities, defaultPriority);
+	public int getItemId() {
+		return itemId;
 	}
 
-	@Override
-	public float onNewItem(Queue.Item item, int priority) {
+	public String getJobName() {
+		return jobName;
+	}
+
+	public float getWeight() {
+		return weight;
+	}
+
+	public int getPriority() {
 		return priority;
 	}
 
-	@Extension
-	public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
-
-		@Override
-		public String getDisplayName() {
-			return Messages.SorterStrategy_ABSOLUTE_displayName();
-		}
-
-		@Override
-		public String getShortName() {
-			return Messages.SorterStrategy_ABSOLUTE_shortName();
-		}
-	}
 }
