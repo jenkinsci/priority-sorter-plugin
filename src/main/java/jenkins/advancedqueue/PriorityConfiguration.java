@@ -51,6 +51,8 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.advancedqueue.sorter.ItemInfo;
+import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -207,12 +209,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		// For MatrixConfiguration use the latest assigned Priority from the MatrixProject
 		if (job instanceof MatrixConfiguration) {
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
-			ActualAdvancedQueueSorterJobProperty property = matrixProject
-					.getProperty(ActualAdvancedQueueSorterJobProperty.class);
-			if (property == null) {
-				return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-			}
-			return property.getPriority();
+			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
+			return itemInfo.getPriority();
 		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {

@@ -49,6 +49,7 @@ public class QueueItemCache {
 
 	private Map<Integer, ItemInfo> item2info = new HashMap<Integer, ItemInfo>();
 	private Map<Integer, ItemInfo> weakItem2info = new WeakHashMap<Integer, ItemInfo>();
+	private Map<String, ItemInfo> weakJobName2info = new WeakHashMap<String, ItemInfo>();
 
 	private QueueItemCache() {
 	}
@@ -57,10 +58,15 @@ public class QueueItemCache {
 		return weakItem2info.get(itemId);
 	}
 
+	public ItemInfo getItem(String jobName) {
+		return weakJobName2info.get(jobName);
+	}
+
 	public ItemInfo addItem(ItemInfo itemInfo) {
 		Integer itemId = new Integer(itemInfo.getItemId());
 		item2info.put(itemId, itemInfo);
 		weakItem2info.put(itemId, itemInfo);
+		weakJobName2info.put(itemInfo.getJobName(), itemInfo);
 		return itemInfo;
 	}
 
