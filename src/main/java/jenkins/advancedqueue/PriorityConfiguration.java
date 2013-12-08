@@ -151,19 +151,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			jobGroups.add(jobGroup);
 		}
 		save();
-		// Removed cached priority values
-		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-		for (AbstractProject<?, ?> project : allProjects) {
-			try {
-				// Remove the calculated priority
-				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
-				project.save();
-			} catch (IOException e) {
-				LOGGER.warning("Failed to update Actual Advanced Job Priority To " + project.getName());
-			}
-		}
-		//
 		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
 	}
 
@@ -183,26 +170,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public int getPriority(Queue.Item item) {
-		// Get priority
-		Job<?, ?> job = (Job<?, ?>) item.task;
-		int priority = getPriorityValue(item);
-		try {
-			// And cache the calculated value on the Job
-			ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
-			if (jp == null) {
-				jp = new ActualAdvancedQueueSorterJobProperty(priority);
-				((AbstractProject<?, ?>) job).addProperty(jp);
-			} else {
-				jp.setPriority(priority);
-			}
-			job.save();
-		} catch (Exception e) {
-			LOGGER.warning("Failed to add Actual Advanced Job Priority To " + job.getName());
-		}
-		return priority;
-	}
-
-	private int getPriorityValue(Queue.Item  item) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
 
 		// [JENKINS-8597]

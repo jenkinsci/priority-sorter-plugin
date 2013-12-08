@@ -23,10 +23,11 @@ package hudson.queueSorter;
 
 import hudson.Extension;
 import hudson.model.Job;
-import hudson.views.ListViewColumnDescriptor;
 import hudson.views.ListViewColumn;
-import jenkins.advancedqueue.ActualAdvancedQueueSorterJobProperty;
+import hudson.views.ListViewColumnDescriptor;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
+import jenkins.advancedqueue.sorter.ItemInfo;
+import jenkins.advancedqueue.sorter.QueueItemCache;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -50,11 +51,11 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 				return Integer.toString(PrioritySorterDefaults.getDefault());
 			}
 		} else {
-			final ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
-			if(jp == null) {
+			ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
+			if(itemInfo == null) {
 				return "Pending"; // You need to run a Job
 			}
-			return Integer.toString(jp.getPriority());
+			return Integer.toString(itemInfo.getPriority());
 		}
 	}
 

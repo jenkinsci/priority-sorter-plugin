@@ -199,8 +199,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
 			for (AbstractProject<?, ?> project : allProjects) {
 				try {
-					// Remove the calculated priority
-					project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
 					// Scale any priority on the Job
 					AdvancedQueueSorterJobProperty priorityProperty = project
 							.getProperty(AdvancedQueueSorterJobProperty.class);

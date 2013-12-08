@@ -94,8 +94,7 @@ public class JobGroup {
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
+	 * @param id the id to set
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -109,8 +108,7 @@ public class JobGroup {
 	}
 
 	/**
-	 * @param priority
-	 *            the priority to set
+	 * @param priority the priority to set
 	 */
 	public void setPriority(int priority) {
 		this.priority = priority;
@@ -124,8 +122,7 @@ public class JobGroup {
 	}
 
 	/**
-	 * @param view
-	 *            the view to set
+	 * @param view the view to set
 	 */
 	public void setView(String view) {
 		this.view = view;
@@ -139,8 +136,7 @@ public class JobGroup {
 	}
 
 	/**
-	 * @param useJobFilter
-	 *            the useJobFilter to set
+	 * @param useJobFilter the useJobFilter to set
 	 */
 	public void setUseJobFilter(boolean useJobFilter) {
 		this.useJobFilter = useJobFilter;
@@ -154,8 +150,7 @@ public class JobGroup {
 	}
 
 	/**
-	 * @param jobPattern
-	 *            the jobPattern to set
+	 * @param jobPattern the jobPattern to set
 	 */
 	public void setJobPattern(String jobPattern) {
 		this.jobPattern = jobPattern;
@@ -180,10 +175,8 @@ public class JobGroup {
 	/**
 	 * Creates a Job Group from JSON object.
 	 * 
-	 * @param jobGroupObject
-	 *            JSON object with class description
-	 * @param id
-	 *            ID of the item to be created
+	 * @param jobGroupObject JSON object with class description
+	 * @param id ID of the item to be created
 	 * @return created group
 	 */
 	// TODO: replace by DataBound Constructor
