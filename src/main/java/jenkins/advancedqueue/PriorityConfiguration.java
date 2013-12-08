@@ -202,7 +202,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priority;
 	}
 
-	private int getPriorityValue(Queue.Item item) {
+	private int getPriorityValue(Queue.Item  item) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
 
 		// [JENKINS-8597]
@@ -210,7 +210,11 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		if (job instanceof MatrixConfiguration) {
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
-			return itemInfo.getPriority();
+			// Can be null (for example) at startup when the MatrixBuild got lost (was running at restart)
+			if(itemInfo != null) {
+				return itemInfo.getPriority();
+			}
+			return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
