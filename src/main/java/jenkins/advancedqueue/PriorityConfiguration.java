@@ -169,7 +169,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return FormValidation.ok();
 	}
 
-	public int getPriority(Queue.Item item) {
+	public PriorityConfigurationCallback getPriority(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
 
 		// [JENKINS-8597]
@@ -179,9 +179,9 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
 			// Can be null (for example) at startup when the MatrixBuild got lost (was running at restart)
 			if(itemInfo != null) {
-				return itemInfo.getPriority();
+				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId());
 			}
-			return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
@@ -191,7 +191,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
 					priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 				}
-				return priority;
+				return priorityCallback.setPrioritySelection(priority);
 			}
 		}
 		//
@@ -227,13 +227,13 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 						if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
 							priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 						}
-						return priority;
+						return priorityCallback.setPrioritySelection(priority, jobGroup.getId());
 					}
 				}
 			}
 		}
 		//
-		return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
 	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {

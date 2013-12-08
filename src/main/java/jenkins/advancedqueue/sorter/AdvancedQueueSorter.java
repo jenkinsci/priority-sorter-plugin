@@ -104,9 +104,10 @@ public class AdvancedQueueSorter extends QueueSorter {
 
 	public void onNewItem(Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		int priority = PriorityConfiguration.get().getPriority(item);
-		final float weight = prioritySorterStrategy.onNewItem(item, priority);
-		QueueItemCache.get().addItem(new ItemInfo(item, weight, priority));
+		ItemInfo itemInfo = new ItemInfo(item);
+		PriorityConfiguration.get().getPriority(item, itemInfo);
+		prioritySorterStrategy.onNewItem(item, itemInfo);
+		QueueItemCache.get().addItem(itemInfo);
 	}
 
 	public void onLeft(LeftItem li) {

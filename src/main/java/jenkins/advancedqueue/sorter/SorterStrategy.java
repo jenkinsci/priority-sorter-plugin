@@ -50,10 +50,11 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 	 * 
 	 * @param item the {@link hudson.model.WaitingItem} or {@link hudson.model.BuildableItem} that
 	 *            enters the queue
-	 * @param the priority for this item
-	 * @return the weight of the item in the queue, lower value will give sooner start
+	 * @param weightCallback the callback holds the priority to use anded the called method must set
+	 *            the weight before returning
+	 * @return the {@link SorterStrategyCallback} provided to the call must be returned
 	 */
-	public abstract float onNewItem(Queue.Item item, int priority);
+	public abstract SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback);
 
 	/**
 	 * Called when a {@link hudson.model.Item} leaves the queue and it is started.

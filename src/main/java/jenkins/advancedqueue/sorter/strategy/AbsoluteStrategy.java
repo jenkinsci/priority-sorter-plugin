@@ -25,6 +25,7 @@ package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.Extension;
 import hudson.model.Queue;
+import jenkins.advancedqueue.sorter.SorterStrategyCallback;
 import jenkins.advancedqueue.strategy.Messages;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -44,8 +45,8 @@ public class AbsoluteStrategy extends MultiBucketStrategy {
 	}
 
 	@Override
-	public float onNewItem(Queue.Item item, int priority) {
-		return priority;
+	public SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback) {
+		return weightCallback.setWeightSelection(weightCallback.getPriority());
 	}
 
 	@Extension
