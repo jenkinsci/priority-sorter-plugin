@@ -27,7 +27,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
-import hudson.model.AbstractProject;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
@@ -42,8 +41,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -71,6 +72,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
 
+	transient private Map<Integer, JobGroup> id2jobGroup;
 	private List<JobGroup> jobGroups;
 
 	public PriorityConfiguration() {
@@ -84,13 +86,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			}
 		});
 		//
+		id2jobGroup = new HashMap<Integer, JobGroup>();
 		for (JobGroup jobGroup : jobGroups) {
+			id2jobGroup.put(jobGroup.getId(), jobGroup);
 			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategyHolder>() {
 				public int compare(JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) {
 					return o1.getId() - o2.getId();
 				}
 			});
-
 		}
 	}
 
@@ -125,6 +128,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return items;
 	}
+	
+	public JobGroup getJobGroup(int id) {
+		return id2jobGroup.get(id);
+	}
 
 	public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
 		return PriorityStrategy.all();
@@ -137,6 +144,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
 		jobGroups = new LinkedList<JobGroup>();
+		id2jobGroup = new HashMap<Integer, JobGroup>();
 		//
 		String parameter = req.getParameter("json");
 		JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
@@ -149,6 +157,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			}
 			JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
 			jobGroups.add(jobGroup);
+			id2jobGroup.put(jobGroup.getId(), jobGroup);
 		}
 		save();
 		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
@@ -177,8 +186,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		if (job instanceof MatrixConfiguration) {
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
+			System.out.println(matrixProject.getName() + " - " + itemInfo);
 			// Can be null (for example) at startup when the MatrixBuild got lost (was running at restart)
 			if(itemInfo != null) {
+				System.out.println(itemInfo.getPriority() + "/" + itemInfo.getJobGroupId());
 				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId());
 			}
 			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());

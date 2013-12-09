@@ -78,6 +78,7 @@ public class JobGroup {
 	private int id = 0;
 	private int priority = 2;
 	private String view;
+	private boolean runExclusive = false;
 	private boolean useJobFilter = false;
 	private String jobPattern = ".*";
 	private boolean usePriorityStrategies;
@@ -126,6 +127,14 @@ public class JobGroup {
 	 */
 	public void setView(String view) {
 		this.view = view;
+	}
+
+	public boolean isRunExclusive() {
+		return runExclusive;
+	}
+
+	public void setRunExclusive(boolean runExclusive) {
+		this.runExclusive = runExclusive;
 	}
 
 	/**
@@ -185,6 +194,7 @@ public class JobGroup {
 		jobGroup.setId(id);
 		jobGroup.setPriority(jobGroupObject.getInt("priority"));
 		jobGroup.setView(jobGroupObject.getString("view"));
+		jobGroup.setRunExclusive(Boolean.parseBoolean(jobGroupObject.getString("runExclusive")));
 		jobGroup.setUseJobFilter(jobGroupObject.has("useJobFilter"));
 		if (jobGroup.isUseJobFilter()) {
 			JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
