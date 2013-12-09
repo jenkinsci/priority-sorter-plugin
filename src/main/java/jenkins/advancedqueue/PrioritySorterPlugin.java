@@ -49,7 +49,7 @@ public class PrioritySorterPlugin extends Plugin {
 		LOGGER.info("Configuring the Priority Sorter ...");
 		PrioritySorterConfiguration.init();
 		// If Legacy Mode - init the Queue and sort the loaded Queue items
-		if (PrioritySorterConfiguration.get().getLegacyMode()) {
+		if (!PrioritySorterConfiguration.get().getLegacyMode()) {
 			LOGGER.info("Sorting existing Queue ...");
 			AdvancedQueueSorter.init();
 		}
