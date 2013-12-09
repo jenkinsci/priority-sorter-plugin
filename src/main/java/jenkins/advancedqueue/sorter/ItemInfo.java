@@ -26,12 +26,12 @@ package jenkins.advancedqueue.sorter;
 import hudson.model.Queue.Item;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
 
-/* Used to store info about a Queue.Item and related information calculated by the Plugin
+/**
+ *  Used to store info about a Queue.Item and related information calculated by the Plugin
  *  
  * @author Magnus Sandberg
  * @since 2.3
  */
-
 public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCallback {
 
 	private int itemId;
@@ -43,10 +43,13 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 	private float weight;
 
 	private int priority;
+	
+	private ItemStatus itemStatus;
 
 	ItemInfo(Item item) {
 		this.itemId = item.id;
 		this.jobName = item.task.getName();
+		this.itemStatus = ItemStatus.WAITING;
 	}
 
 	public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId) {
@@ -56,8 +59,7 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 	}
 
 	public PriorityConfigurationCallback setPrioritySelection(int priority) {
-		this.priority = priority;
-		this.jobGroupId = -1;
+		setPrioritySelection(priority, -1);
 		return this;
 	}
 
@@ -85,5 +87,15 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 	public int getPriority() {
 		return priority;
 	}
+
+	public ItemStatus getItemStatus() {
+		return itemStatus;
+	}
+
+	public void setItemStatus(ItemStatus itemStatus) {
+		this.itemStatus = itemStatus;
+	}
+	
+	
 
 }

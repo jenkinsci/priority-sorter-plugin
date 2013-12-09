@@ -23,38 +23,15 @@
  */
 package jenkins.advancedqueue.sorter;
 
-import hudson.Extension;
-import hudson.model.Queue.BlockedItem;
-import hudson.model.Queue.BuildableItem;
-import hudson.model.Queue.LeftItem;
-import hudson.model.Queue.WaitingItem;
-import hudson.model.queue.QueueListener;
-
-/**
+/** 
+ * Statuses for Build in the the queue, used to track status in ItemInfo
+ *  
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 2.3
  */
-@Extension
-public class AdvancedQueueSorterQueueListener extends QueueListener {
+public enum ItemStatus {
 
-	@Override
-	public void onEnterWaiting(WaitingItem wi) {
-		AdvancedQueueSorter.get().onNewItem(wi);
-	}
-
-	@Override
-	public void onLeft(LeftItem li) {
-		AdvancedQueueSorter.get().onLeft(li);
-	}
-
-	@Override
-	public void onEnterBuildable(BuildableItem bi) {
-		QueueItemCache.get().getItem(bi.id).setItemStatus(ItemStatus.BUILDABLE);
-	}
-
-	@Override
-	public void onEnterBlocked(BlockedItem bi) {
-		QueueItemCache.get().getItem(bi.id).setItemStatus(ItemStatus.BLOCKED);
-	}
-
+	WAITING,
+	BUILDABLE,
+	BLOCKED
 }
