@@ -186,10 +186,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		if (job instanceof MatrixConfiguration) {
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
-			System.out.println(matrixProject.getName() + " - " + itemInfo);
 			// Can be null (for example) at startup when the MatrixBuild got lost (was running at restart)
 			if(itemInfo != null) {
-				System.out.println(itemInfo.getPriority() + "/" + itemInfo.getJobGroupId());
 				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId());
 			}
 			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
