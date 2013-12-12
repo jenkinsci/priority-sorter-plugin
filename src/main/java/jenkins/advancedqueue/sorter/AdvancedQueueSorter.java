@@ -60,6 +60,8 @@ public class AdvancedQueueSorter extends QueueSorter {
 		AdvancedQueueSorter advancedQueueSorter = AdvancedQueueSorter.get();
 		for (BuildableItem item : items) {
 			advancedQueueSorter.onNewItem(item);
+			// Listener called before we get here so make sure we mark buildable
+			QueueItemCache.get().getItem(item.id).setItemStatus(ItemStatus.BUILDABLE);
 		}
 	}
 
