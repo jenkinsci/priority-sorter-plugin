@@ -19,20 +19,22 @@ public class ApplicationTest {
 
 	@Test
 	public void simple_with_no_configuration() throws Exception {
-		FreeStyleProject project = j.createFreeStyleProject();
+		FreeStyleProject project = j.createFreeStyleProject("Job A");
 		QueueTaskFuture<FreeStyleBuild> buildFuture = project.scheduleBuild2(1);
 		ItemInfo item = QueueItemCache.get().getItem(buildFuture.get().getParent().getName());
 		Assert.assertEquals(3, item.getPriority());
 		buildFuture.get();
+		TestRunListener.assertJobStartOrder("Job A");
 	}
 
 	@Test
 	@LocalData
 	public void simple_with_basic_configuration() throws Exception {
-		FreeStyleProject project = j.createFreeStyleProject();
+		FreeStyleProject project = j.createFreeStyleProject("Job A");
 		QueueTaskFuture<FreeStyleBuild> buildFuture = project.scheduleBuild2(1);
 		ItemInfo item = QueueItemCache.get().getItem(buildFuture.get().getParent().getName());
 		Assert.assertEquals(9, item.getPriority());
 		buildFuture.get();
+		TestRunListener.assertJobStartOrder("Job A");
 	}
 }
