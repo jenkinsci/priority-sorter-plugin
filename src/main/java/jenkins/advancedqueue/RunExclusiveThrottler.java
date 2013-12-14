@@ -27,7 +27,8 @@ public class RunExclusiveThrottler {
 		@Override
 		public void onStarted(Run r, TaskListener listener) {
 			ItemInfo item = QueueItemCache.get().getItem(r.getParent().getName());
-			if (PriorityConfiguration.get().getJobGroup(item.getJobGroupId()).isRunExclusive()) {
+			JobGroup jobGroup = PriorityConfiguration.get().getJobGroup(item.getJobGroupId());
+			if (jobGroup != null && jobGroup.isRunExclusive()) {
 				exclusiveJobGroupId = item.getJobGroupId();
 				exclusiveJobName = item.getJobName();
 				exclusiveJobs.add(item.getJobName());
