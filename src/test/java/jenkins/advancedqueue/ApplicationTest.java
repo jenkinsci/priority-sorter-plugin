@@ -35,7 +35,8 @@ public class ApplicationTest {
 	private void scheduleProjects(Cause... causes) throws Exception {
 		List<FreeStyleProject> projects = createProjects(causes.length);
 		for (int i = 0; i < causes.length; i++) {
-			projects.get(i).scheduleBuild(1, causes[i]);
+			projects.get(i).scheduleBuild(2, causes[i]);
+			Thread.sleep(100);
 		}
 	}
 
@@ -48,8 +49,9 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void simple_two_jobs_with_no_configuration() throws Exception {
-		TestRunListener.init(new ExpectedItem("Job 0", 3), new ExpectedItem("Job 1", 3));
+	@LocalData
+	public void simple_two_jobs_with_basic_configuration() throws Exception {
+		TestRunListener.init(new ExpectedItem("Job 0", 9), new ExpectedItem("Job 1", 9));
 		scheduleProjects(new UserIdCause(), new UserIdCause());
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();		
