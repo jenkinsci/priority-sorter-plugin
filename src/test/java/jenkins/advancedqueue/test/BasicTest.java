@@ -1,4 +1,4 @@
-package jenkins.advancedqueue;
+package jenkins.advancedqueue.test;
 
 import hudson.model.Cause;
 import hudson.model.Cause.UserIdCause;
@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-public class ApplicationTest {
+public class BasicTest {
 
-	private final static Logger LOGGER = Logger.getLogger(ApplicationTest.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(BasicTest.class.getName());
 	
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
