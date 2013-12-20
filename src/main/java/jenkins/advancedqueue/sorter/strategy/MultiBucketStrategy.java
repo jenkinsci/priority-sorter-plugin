@@ -24,10 +24,15 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import hudson.util.ListBoxModel;
+
 import java.io.IOException;
+
 import javax.servlet.ServletException;
+
+import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
+
 import org.kohsuke.stapler.QueryParameter;
 
 /**
@@ -62,6 +67,11 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 		return defaultPriority;
 	}
 
+	public ListBoxModel doFillDefaultPriorityItems() {
+		// TODO: replace by dynamic retrieval
+		throw new RuntimeException();
+	}
+
 	public abstract static class MultiBucketStrategyDescriptor extends SorterStrategyDescriptor {
 
 		public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
@@ -75,6 +85,11 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 			return items;
 		}
 
+		public ListBoxModel doDefaultPriority(@QueryParameter("value") String value) throws IOException,
+				ServletException {
+			return doUpdateDefaultPriorityItems(value);
+		}
+
 		private ListBoxModel internalFillDefaultPriorityItems(int value) {
 			ListBoxModel items = new ListBoxModel();
 			for (int i = 1; i <= value; i++) {
@@ -83,22 +98,36 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 			return items;
 		}
 
-		public ListBoxModel doDefaultPriority(@QueryParameter("value") String value) throws IOException,
-				ServletException {
-			return doFillDefaultPriorityItems();
+		private MultiBucketStrategy getStrategy() {
+			SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
+			if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {
+				return null;
+			}
+			return (MultiBucketStrategy) strategy;
 		}
 
 		public ListBoxModel doFillDefaultPriorityItems() {
-			// TODO: replace by dynamic retrieval
-			return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
+			MultiBucketStrategy strategy = getStrategy();
+			if (strategy == null) {
+				return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
+			}
+			return internalFillDefaultPriorityItems(strategy.getNumberOfPriorities());
 		}
 
 		public int getDefaultPrioritiesNumber() {
-			return DEFAULT_PRIORITIES_NUMBER;
+			MultiBucketStrategy strategy = getStrategy();
+			if (strategy == null) {
+				return DEFAULT_PRIORITIES_NUMBER;
+			}
+			return strategy.getNumberOfPriorities();
 		}
 
 		public int getDefaultPriority() {
-			return DEFAULT_PRIORITY;
+			MultiBucketStrategy strategy = getStrategy();
+			if (strategy == null) {
+				return DEFAULT_PRIORITY;
+			}
+			return strategy.getDefaultPriority();
 		}
 	}
 }

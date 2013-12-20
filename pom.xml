@@ -34,6 +34,7 @@
 			</roles>
 			<timezone>CET</timezone>
 		</developer>
+		<!-- Removed not to show on Wiki 
 		<developer>
 			<id>bklarson</id>
 			<name>Brad Larson</name>
@@ -44,6 +45,7 @@
 			</roles>
 			<timezone>-6</timezone>
 		</developer>
+		 -->
 	</developers>
 
 	<build>

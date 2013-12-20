@@ -1,5 +1,4 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <script src="${rootURL}/plugin/PrioritySorter/scripts.js"/>
     <f:section title="Priority Sorter">
         <j:if test="${instance.legacyMode}">
             <f:optionalBlock title="${%Switch to Advanced Priority Sorter Mode}" 

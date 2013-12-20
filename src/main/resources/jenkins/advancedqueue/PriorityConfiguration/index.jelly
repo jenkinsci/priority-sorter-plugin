@@ -41,12 +41,15 @@
 			                		</j:forEach>
 			            		</select>
 							</f:entry>
+							<f:entry title="Run Exclusive (experimental)">
+	    						<f:checkbox name="runExclusive" value="${jobGroup.runExclusive}" checked="${jobGroup.runExclusive}"/>
+	    					</f:entry>
 							<f:optionalBlock name="useJobFilter" checked="${jobGroup.useJobFilter}" title="Use a regular expression to only include a subset of the jobs in the view">
 		            			<f:entry title="Regular Expression">                   
 		            				<f:textbox name="jobPattern" value="${jobGroup.jobPattern}" checkUrl="'${rootURL}/descriptorByName/jenkins.advancedqueue.PriorityConfiguration/checkJobPattern?value='+encode(this.value)"/>
 		            			</f:entry>           					
 	    					</f:optionalBlock>
-							<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="Use additional rules when assigning a priority to a Job">
+	    					<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="Use additional rules when assigning a priority to a Job">
 								<f:entry>
 									<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="Priority Strategy">
 										<table width="75%">

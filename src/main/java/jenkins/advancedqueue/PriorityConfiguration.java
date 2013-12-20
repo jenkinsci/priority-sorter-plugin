@@ -27,7 +27,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
-import hudson.model.AbstractProject;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
@@ -42,8 +41,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -51,6 +52,8 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.advancedqueue.sorter.ItemInfo;
+import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -69,6 +72,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
 
+	transient private Map<Integer, JobGroup> id2jobGroup;
 	private List<JobGroup> jobGroups;
 
 	public PriorityConfiguration() {
@@ -82,13 +86,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			}
 		});
 		//
+		id2jobGroup = new HashMap<Integer, JobGroup>();
 		for (JobGroup jobGroup : jobGroups) {
+			id2jobGroup.put(jobGroup.getId(), jobGroup);
 			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategyHolder>() {
 				public int compare(JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) {
 					return o1.getId() - o2.getId();
 				}
 			});
-
 		}
 	}
 
@@ -123,6 +128,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return items;
 	}
+	
+	public JobGroup getJobGroup(int id) {
+		return id2jobGroup.get(id);
+	}
 
 	public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
 		return PriorityStrategy.all();
@@ -135,6 +144,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
 		jobGroups = new LinkedList<JobGroup>();
+		id2jobGroup = new HashMap<Integer, JobGroup>();
 		//
 		String parameter = req.getParameter("json");
 		JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
@@ -147,21 +157,9 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			}
 			JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
 			jobGroups.add(jobGroup);
+			id2jobGroup.put(jobGroup.getId(), jobGroup);
 		}
 		save();
-		// Removed cached priority values
-		@SuppressWarnings("rawtypes")
-		List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-		for (AbstractProject<?, ?> project : allProjects) {
-			try {
-				// Remove the calculated priority
-				project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
-				project.save();
-			} catch (IOException e) {
-				LOGGER.warning("Failed to update Actual Advanced Job Priority To " + project.getName());
-			}
-		}
-		//
 		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
 	}
 
@@ -180,39 +178,19 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return FormValidation.ok();
 	}
 
-	public int getPriority(Queue.Item item) {
-		// Get priority
-		Job<?, ?> job = (Job<?, ?>) item.task;
-		int priority = getPriorityValue(item);
-		try {
-			// And cache the calculated value on the Job
-			ActualAdvancedQueueSorterJobProperty jp = job.getProperty(ActualAdvancedQueueSorterJobProperty.class);
-			if (jp == null) {
-				jp = new ActualAdvancedQueueSorterJobProperty(priority);
-				((AbstractProject<?, ?>) job).addProperty(jp);
-			} else {
-				jp.setPriority(priority);
-			}
-			job.save();
-		} catch (Exception e) {
-			LOGGER.warning("Failed to add Actual Advanced Job Priority To " + job.getName());
-		}
-		return priority;
-	}
-
-	private int getPriorityValue(Queue.Item item) {
+	public PriorityConfigurationCallback getPriority(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
 
 		// [JENKINS-8597]
 		// For MatrixConfiguration use the latest assigned Priority from the MatrixProject
 		if (job instanceof MatrixConfiguration) {
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
-			ActualAdvancedQueueSorterJobProperty property = matrixProject
-					.getProperty(ActualAdvancedQueueSorterJobProperty.class);
-			if (property == null) {
-				return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
+			// Can be null (for example) at startup when the MatrixBuild got lost (was running at restart)
+			if(itemInfo != null) {
+				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId());
 			}
-			return property.getPriority();
+			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
@@ -222,7 +200,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
 					priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 				}
-				return priority;
+				return priorityCallback.setPrioritySelection(priority);
 			}
 		}
 		//
@@ -258,13 +236,13 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 						if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
 							priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 						}
-						return priority;
+						return priorityCallback.setPrioritySelection(priority, jobGroup.getId());
 					}
 				}
 			}
 		}
 		//
-		return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
 	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {

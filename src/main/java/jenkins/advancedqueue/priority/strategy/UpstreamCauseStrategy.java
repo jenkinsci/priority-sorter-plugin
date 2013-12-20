@@ -1,6 +1,8 @@
 /*
  * The MIT License
  *
+ * Copyright (c) 2013, Magnus Sandberg
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -19,12 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
-import hudson.model.Job;
-import hudson.views.ListViewColumn;
-import hudson.views.ListViewColumnDescriptor;
+import hudson.model.Cause;
+import hudson.model.Cause.UpstreamCause;
+import hudson.model.Queue;
+
+import java.util.List;
+
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
@@ -32,44 +37,44 @@ import jenkins.advancedqueue.sorter.QueueItemCache;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Priority column on the jobs overview page. The column displays priority set
- * for the job and is an easy way to compare the priorities of many jobs.
+ * @author Magnus Sandberg
+ * @since 2.3
  */
-public class PrioritySorterJobColumn extends ListViewColumn {
-	
-	@DataBoundConstructor
-	public PrioritySorterJobColumn() {
-	}
-
-	public String getPriority(final Job<?, ?> job) {
-		if(PrioritySorterConfiguration.get().getLegacyMode()) {
-			final PrioritySorterJobProperty jp = job.getProperty(PrioritySorterJobProperty.class);
-			if (jp != null) {
-				return Integer.toString(jp.priority);
-			} else {
-				// No priority has been set for this job - use the default
-				return Integer.toString(PrioritySorterDefaults.getDefault());
-			}
-		} else {
-			ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
-			if(itemInfo == null) {
-				return "Pending"; // You need to run a Job
-			}
-			return Integer.toString(itemInfo.getPriority());
-		}
-	}
+public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension
-	public static class DescriptorImpl extends ListViewColumnDescriptor {
-
-		@Override
-		public String getDisplayName() {
-			return "Priority Value";
+	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+		public BuildParameterStrategyDescriptor() {
+			super("Job Triggered by a Upstream Build");
 		}
+	};
 
-		@Override
-		public boolean shownByDefault() {
-			return false;
+	@DataBoundConstructor
+	public UpstreamCauseStrategy() {
+	}
+
+	private UpstreamCause getUpstreamCause(Queue.Item item) {
+		List<Cause> causes = item.getCauses();
+		for (Cause cause : causes) {
+			if (cause.getClass() == UpstreamCause.class) {
+				return (UpstreamCause) cause;
+			}
 		}
+		return null;
+	}
+
+	public int getPriority(Queue.Item item) {
+		int upstreamBuildId = getUpstreamCause(item).getUpstreamBuild();
+		ItemInfo upstreamItem = QueueItemCache.get().getItem(upstreamBuildId);
+		// Upstream Item being null should be very very rare
+		if (upstreamItem != null) {
+			return upstreamItem.getPriority();
+		}
+		return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+	}
+
+	@Override
+	public boolean isApplicable(Queue.Item item) {
+		return getUpstreamCause(item) != null;
 	}
 }

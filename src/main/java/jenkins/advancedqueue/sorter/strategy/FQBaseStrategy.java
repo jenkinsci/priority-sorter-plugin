@@ -29,7 +29,7 @@ import hudson.model.Queue.LeftItem;
 import java.util.HashMap;
 import java.util.Map;
 
-import jenkins.advancedqueue.PriorityConfiguration;
+import jenkins.advancedqueue.sorter.SorterStrategyCallback;
 
 /**
  * @author Magnus Sandberg
@@ -55,12 +55,12 @@ abstract public class FQBaseStrategy extends MultiBucketStrategy {
 		maxStartedWeight = Math.max(maxStartedWeight, weight);
 	}
 
-	public float onNewItem(Queue.Item item) {
-		int priority = PriorityConfiguration.get().getPriority(item);
+	public SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback) {
+		int priority = weightCallback.getPriority();
 		float minimumWeightToAssign = getMinimumWeightToAssign(priority);
 		float weightToUse = getWeightToUse(priority, minimumWeightToAssign);
 		prio2weight.put(priority, weightToUse);
-		return weightToUse;
+		return weightCallback.setWeightSelection(weightToUse);
 	}
 
 	protected float getMinimumWeightToAssign(int priority) {

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright 2013 Magnus Sandberg, Oleg Nenashev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,46 +23,36 @@
  */
 package jenkins.advancedqueue;
 
-import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
+import static hudson.init.InitMilestone.JOB_LOADED;
+import hudson.Plugin;
+import hudson.init.Initializer;
 
-import org.kohsuke.stapler.DataBoundConstructor;
+import java.util.logging.Logger;
+
+import jenkins.advancedqueue.sorter.AdvancedQueueSorter;
 
 /**
+ * Plugin is the staring point of the Priority Sorter Plugin.
+ * 
+ * Used to make sure that the data is initialized at startup.
+ * 
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 2.3
  */
-public class ActualAdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<?, ?>> {
+public class PrioritySorterPlugin extends Plugin {
 
-	private int priority;
+	private final static Logger LOGGER = Logger.getLogger(PrioritySorterPlugin.class.getName());
 
-	@DataBoundConstructor
-	public ActualAdvancedQueueSorterJobProperty(int priority) {
-		this.priority = priority;
-	}
-
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
-
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-
-		@Override
-		public String getDisplayName() {
-			return Messages.ActualAdvancedQueueSorterJobProperty_displayName();
+	@Initializer(after = JOB_LOADED)
+	public static void init() {
+		// Check for Legacy Mode and init the Configuration
+		LOGGER.info("Configuring the Priority Sorter ...");
+		PrioritySorterConfiguration.init();
+		// If Legacy Mode - init the Queue and sort the loaded Queue items
+		if (!PrioritySorterConfiguration.get().getLegacyMode()) {
+			LOGGER.info("Sorting existing Queue ...");
+			AdvancedQueueSorter.init();
 		}
-
 	}
+
 }

@@ -25,7 +25,6 @@ package jenkins.advancedqueue.sorter;
 
 import hudson.ExtensionList;
 import hudson.model.Describable;
-import hudson.model.Descriptor;
 import hudson.model.Queue;
 import hudson.model.Queue.LeftItem;
 
@@ -49,29 +48,25 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 	/**
 	 * Called when a new {@link hudson.model.Item} enters the queue.
 	 * 
-	 * @param item
-	 *            the {@link hudson.model.WaitingItem} or
-	 *            {@link hudson.model.BuildableItem} that enters the queue
-	 * @return the weight of the item in the queue, lower value will give sooner
-	 *         start
+	 * @param item the {@link hudson.model.WaitingItem} or {@link hudson.model.BuildableItem} that
+	 *            enters the queue
+	 * @param weightCallback the callback holds the priority to use anded the called method must set
+	 *            the weight before returning
+	 * @return the {@link SorterStrategyCallback} provided to the call must be returned
 	 */
-	public abstract float onNewItem(Queue.Item item);
+	public abstract SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback);
 
 	/**
-	 * Called when a {@link hudson.model.Item} leaves the queue and it is
-	 * started.
+	 * Called when a {@link hudson.model.Item} leaves the queue and it is started.
 	 * 
-	 * @param item
-	 *            the {@link hudson.model.LeftItem}
-	 * @param weight
-	 *            the weight assigned when the item entered the queue
+	 * @param item the {@link hudson.model.LeftItem}
+	 * @param weight the weight assigned when the item entered the queue
 	 */
 	public void onStartedItem(LeftItem item, float weight) {
 	}
 
 	/**
-	 * Called when a {@link hudson.model.Item} leaves the queue and it is
-	 * canceled.
+	 * Called when a {@link hudson.model.Item} leaves the queue and it is canceled.
 	 */
 	public void onCanceledItem(LeftItem item) {
 	};

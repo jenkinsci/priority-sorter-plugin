@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.advancedqueue.PriorityConfiguration plugin="PrioritySorter@2.3-SNAPSHOT">
+  <jobGroups class="linked-list">
+    <jenkins.advancedqueue.JobGroup>
+      <id>0</id>
+      <priority>3</priority>
+      <view>All</view>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>true</useJobFilter>
+      <jobPattern>Job (0|3)</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies>
+      </priorityStrategies>
+    </jenkins.advancedqueue.JobGroup>
+  </jobGroups>
+</jenkins.advancedqueue.PriorityConfiguration>

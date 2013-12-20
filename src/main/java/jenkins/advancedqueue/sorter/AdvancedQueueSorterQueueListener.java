@@ -24,6 +24,8 @@
 package jenkins.advancedqueue.sorter;
 
 import hudson.Extension;
+import hudson.model.Queue.BlockedItem;
+import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.LeftItem;
 import hudson.model.Queue.WaitingItem;
 import hudson.model.queue.QueueListener;
@@ -43,6 +45,20 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
 	@Override
 	public void onLeft(LeftItem li) {
 		AdvancedQueueSorter.get().onLeft(li);
+	}
+
+	@Override
+	public void onEnterBuildable(BuildableItem bi) {
+		ItemInfo item = QueueItemCache.get().getItem(bi.id);
+		// Null at startup
+		if(item != null) {
+			QueueItemCache.get().getItem(bi.id).setItemStatus(ItemStatus.BUILDABLE);
+		}
+	}
+
+	@Override
+	public void onEnterBlocked(BlockedItem bi) {
+		QueueItemCache.get().getItem(bi.id).setItemStatus(ItemStatus.BLOCKED);
 	}
 
 }

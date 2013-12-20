@@ -51,12 +51,6 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 
 	@Override
 	public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
-		try {
-			owner.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
-		} catch (IOException e) {
-			LOGGER.warning("Failed to remove Actual Advanced Job Priority on " + owner.getName() + ". "
-					+ e.getMessage());
-		}
 		return super.reconfigure(req, form);
 	}
 

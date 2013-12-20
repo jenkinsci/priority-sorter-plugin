@@ -33,10 +33,9 @@ import hudson.queueSorter.PrioritySorterQueueSorter;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 
 /**
@@ -46,11 +45,10 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
 @Extension
 public class AdvancedQueueSorter extends QueueSorter {
 
-	// Keeps track of what weighted-prio each buildableItems item has
-	Map<Integer, Float> item2weight = new HashMap<Integer, Float>();
-
 	public AdvancedQueueSorter() {
-		super();
+	}
+
+	static public void init() {
 		List<BuildableItem> items = Queue.getInstance().getBuildableItems();
 		// Sort the queue in the order the items entered the queue
 		// so that onNewItem() happens in the correct order below
@@ -59,8 +57,11 @@ public class AdvancedQueueSorter extends QueueSorter {
 				return (int) (o1.getInQueueSince() - o2.getInQueueSince());
 			}
 		});
+		AdvancedQueueSorter advancedQueueSorter = AdvancedQueueSorter.get();
 		for (BuildableItem item : items) {
-			onNewItem(item);
+			advancedQueueSorter.onNewItem(item);
+			// Listener called before we get here so make sure we mark buildable
+			QueueItemCache.get().getItem(item.id).setItemStatus(ItemStatus.BUILDABLE);
 		}
 	}
 
@@ -96,28 +97,29 @@ public class AdvancedQueueSorter extends QueueSorter {
 	 */
 	private float getCalculatedWeight(BuildableItem item) {
 		try {
-			return item2weight.get(item.id);
+			return QueueItemCache.get().getItem(item.id).getWeight();
 		} catch (NullPointerException e) {
 			onNewItem(item);
-			return item2weight.get(item.id);
+			return QueueItemCache.get().getItem(item.id).getWeight();
 		}
 	}
 
 	public void onNewItem(Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		final float weight = prioritySorterStrategy.onNewItem(item);
-		item2weight.put(item.id, weight);
+		ItemInfo itemInfo = new ItemInfo(item);
+		PriorityConfiguration.get().getPriority(item, itemInfo);
+		prioritySorterStrategy.onNewItem(item, itemInfo);
+		QueueItemCache.get().addItem(itemInfo);
 	}
 
 	public void onLeft(LeftItem li) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		Float weight = item2weight.remove(li.id);
+		Float weight = QueueItemCache.get().removeItem(li.id).getWeight();
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);
 		} else {
 			prioritySorterStrategy.onStartedItem(li, weight);
 		}
-
 	}
 
 	static public AdvancedQueueSorter get() {

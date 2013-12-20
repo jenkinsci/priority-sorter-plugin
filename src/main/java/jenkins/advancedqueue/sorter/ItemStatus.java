@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg, Oleg Nenashev and contributors
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,45 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.sorter.strategy;
+package jenkins.advancedqueue.sorter;
 
-import hudson.Extension;
-import hudson.model.Queue;
-import jenkins.advancedqueue.sorter.SorterStrategyCallback;
-import jenkins.advancedqueue.strategy.Messages;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-
-/**
+/** 
+ * Statuses for Build in the the queue, used to track status in ItemInfo
+ *  
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 2.3
  */
-public class AbsoluteStrategy extends MultiBucketStrategy {
+public enum ItemStatus {
 
-	public AbsoluteStrategy() {
-	}
-
-	@DataBoundConstructor
-	public AbsoluteStrategy(int numberOfPriorities, int defaultPriority) {
-		super(numberOfPriorities, defaultPriority);
-	}
-
-	@Override
-	public SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback) {
-		return weightCallback.setWeightSelection(weightCallback.getPriority());
-	}
-
-	@Extension
-	public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
-
-		@Override
-		public String getDisplayName() {
-			return Messages.SorterStrategy_ABSOLUTE_displayName();
-		}
-
-		@Override
-		public String getShortName() {
-			return Messages.SorterStrategy_ABSOLUTE_shortName();
-		}
-	}
+	WAITING,
+	BUILDABLE,
+	BLOCKED
 }

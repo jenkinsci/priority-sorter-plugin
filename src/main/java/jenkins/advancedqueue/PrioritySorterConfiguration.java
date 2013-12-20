@@ -23,9 +23,7 @@
  */
 package jenkins.advancedqueue;
 
-import static hudson.init.InitMilestone.JOB_LOADED;
 import hudson.Extension;
-import hudson.init.Initializer;
 import hudson.model.AbstractProject;
 import hudson.model.TopLevelItem;
 import hudson.queueSorter.PrioritySorterJobProperty;
@@ -73,7 +71,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	public PrioritySorterConfiguration() {
 	}
 
-	@Initializer(after = JOB_LOADED)
 	public static void init() {
 		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
 		// Make sure default is good for updating from legacy
@@ -202,8 +199,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
 			for (AbstractProject<?, ?> project : allProjects) {
 				try {
-					// Remove the calculated priority
-					project.removeProperty(ActualAdvancedQueueSorterJobProperty.class);
 					// Scale any priority on the Job
 					AdvancedQueueSorterJobProperty priorityProperty = project
 							.getProperty(AdvancedQueueSorterJobProperty.class);

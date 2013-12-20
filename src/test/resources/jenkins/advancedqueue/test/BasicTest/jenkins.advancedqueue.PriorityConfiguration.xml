@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.advancedqueue.PriorityConfiguration>
+  <jobGroups class="linked-list"/>
+</jenkins.advancedqueue.PriorityConfiguration>
