@@ -66,7 +66,7 @@ public class QueueItemCache {
 		Integer itemId = new Integer(itemInfo.getItemId());
 		item2info.put(itemId, itemInfo);
 		weakItem2info.put(itemId, itemInfo);
-		weakJobName2info.put(itemInfo.getJobName(), itemInfo);
+		weakJobName2info.put(new String(itemInfo.getJobName()), itemInfo);
 		return itemInfo;
 	}
 
