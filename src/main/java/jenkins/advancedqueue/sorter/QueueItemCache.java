@@ -54,15 +54,15 @@ public class QueueItemCache {
 	private QueueItemCache() {
 	}
 
-	public ItemInfo getItem(int itemId) {
+	synchronized public ItemInfo getItem(int itemId) {
 		return weakItem2info.get(itemId);
 	}
 
-	public ItemInfo getItem(String jobName) {
+	synchronized public ItemInfo getItem(String jobName) {
 		return weakJobName2info.get(jobName);
 	}
 
-	public ItemInfo addItem(ItemInfo itemInfo) {
+	synchronized public ItemInfo addItem(ItemInfo itemInfo) {
 		Integer itemId = new Integer(itemInfo.getItemId());
 		item2info.put(itemId, itemInfo);
 		weakItem2info.put(itemId, itemInfo);
@@ -70,7 +70,7 @@ public class QueueItemCache {
 		return itemInfo;
 	}
 
-	public ItemInfo removeItem(int itemId) {
+	synchronized public ItemInfo removeItem(int itemId) {
 		return item2info.remove(itemId);
 	}
 
