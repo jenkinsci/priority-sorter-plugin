@@ -23,7 +23,13 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import hudson.model.Queue.BlockedItem;
+import hudson.model.Queue.BuildableItem;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -74,4 +80,16 @@ public class QueueItemCache {
 		return item2info.remove(itemId);
 	}
 
+	/**
+	 * This method will return a sorted list of all known and active
+	 * {@link ItemInfo}s this will include Items mapped to {@link BuildableItem}s
+	 * as well as {@link BlockedItem}s
+	 * 
+	 * @return the sorted list of all {@link ItemInfo}s
+	 */
+	synchronized public List<ItemInfo> getSortedList() {
+		ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
+		Collections.sort(list);
+		return Collections.unmodifiableList(list);
+	}
 }
