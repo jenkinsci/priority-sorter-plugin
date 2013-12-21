@@ -35,9 +35,11 @@ import jenkins.advancedqueue.priority.PriorityStrategy;
  * @author Magnus Sandberg
  * @since 2.3
  */
-public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCallback {
+public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCallback, Comparable<ItemInfo> {
 
 	private int itemId;
+
+	private long inQueueSince;
 
 	private int jobGroupId;
 
@@ -53,6 +55,7 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 
 	ItemInfo(Item item) {
 		this.itemId = item.id;
+		this.inQueueSince = item.getInQueueSince();
 		this.jobName = item.task.getName();
 		this.itemStatus = ItemStatus.WAITING;
 	}
@@ -88,6 +91,10 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		return itemId;
 	}
 
+	public long getInQueueSince() {
+		return inQueueSince;
+	}
+
 	public int getJobGroupId() {
 		return jobGroupId;
 	}
@@ -110,6 +117,16 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 
 	public ItemStatus getItemStatus() {
 		return itemStatus;
+	}
+
+	public int compareTo(ItemInfo o) {
+		if(this.getWeight() == o.getWeight()) {
+			if(this.getInQueueSince() == o.getInQueueSince()) {
+				return Integer.compare(this.getItemId(), o.getItemId());
+			}
+			return Long.compare(this.getInQueueSince(), o.getInQueueSince());
+		}
+		return Float.compare(this.getWeight(), o.getWeight());
 	}
 
 	@Override
