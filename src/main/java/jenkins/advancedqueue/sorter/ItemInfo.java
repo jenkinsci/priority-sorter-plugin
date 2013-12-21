@@ -23,12 +23,15 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import static jenkins.advancedqueue.ItemTransitionLogger.logBlockedItem;
+import static jenkins.advancedqueue.ItemTransitionLogger.logBuilableItem;
 import hudson.model.Queue.Item;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
+import jenkins.advancedqueue.priority.PriorityStrategy;
 
 /**
- *  Used to store info about a Queue.Item and related information calculated by the Plugin
- *  
+ * Used to store info about a Queue.Item and related information calculated by the Plugin
+ * 
  * @author Magnus Sandberg
  * @since 2.3
  */
@@ -38,12 +41,14 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 
 	private int jobGroupId;
 
+	private PriorityStrategy priorityStrategy;
+
 	private String jobName;
 
 	private float weight;
 
 	private int priority;
-	
+
 	private ItemStatus itemStatus;
 
 	ItemInfo(Item item) {
@@ -52,14 +57,15 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		this.itemStatus = ItemStatus.WAITING;
 	}
 
-	public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId) {
+	public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
 		this.priority = priority;
 		this.jobGroupId = jobGroupId;
+		this.priorityStrategy = reason;
 		return this;
 	}
 
 	public PriorityConfigurationCallback setPrioritySelection(int priority) {
-		setPrioritySelection(priority, -1);
+		setPrioritySelection(priority, -1, null);
 		return this;
 	}
 
@@ -68,12 +74,26 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		return this;
 	}
 
+	public void setBuildable() {
+		itemStatus = ItemStatus.BUILDABLE;
+		logBuilableItem(this);
+	}
+
+	public void setBlocked() {
+		itemStatus = ItemStatus.BLOCKED;
+		logBlockedItem(this);
+	}
+
 	public int getItemId() {
 		return itemId;
 	}
 
 	public int getJobGroupId() {
 		return jobGroupId;
+	}
+
+	public PriorityStrategy getPriorityStrategy() {
+		return priorityStrategy;
 	}
 
 	public String getJobName() {
@@ -92,10 +112,10 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		return itemStatus;
 	}
 
-	public void setItemStatus(ItemStatus itemStatus) {
-		this.itemStatus = itemStatus;
+	@Override
+	public String toString() {
+		return String.format("Id: %s JobName: %s, jobGroupId: %s, priority: %s, weight: %s, status: %s", itemId,
+				jobName, jobGroupId, priority, weight, itemStatus);
 	}
-	
-	
 
 }

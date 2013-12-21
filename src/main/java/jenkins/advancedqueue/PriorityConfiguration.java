@@ -128,7 +128,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return items;
 	}
-	
+
 	public JobGroup getJobGroup(int id) {
 		return id2jobGroup.get(id);
 	}
@@ -186,11 +186,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		if (job instanceof MatrixConfiguration) {
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
-			// Can be null (for example) at startup when the MatrixBuild got lost (was running at restart)
-			if(itemInfo != null) {
-				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId());
+			// Can be null (for example) at startup when the MatrixBuild got lost (was running at
+			// restart)
+			if (itemInfo != null) {
+				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId(),
+						itemInfo.getPriorityStrategy());
 			}
-			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy()
+					.getDefaultPriority());
 		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
@@ -212,18 +215,17 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 					TopLevelItem jobItem = view.getItem(job.getName());
 					// Now check if the item is actually in the view
 					if (view.contains(jobItem)) {
-						int priority = PriorityCalculationsUtil.getUseDefaultPriorityPriority();
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard
 						// it as a match all
 						if (!jobGroup.isUseJobFilter() || jobGroup.getJobPattern().trim().isEmpty()) {
-							priority = getPriorityForJobGroup(jobGroup, item);
+							return getPriorityForJobGroup(priorityCallback, jobGroup, item);
 						} else {
 							// So filtering is on - use the priority if there's
 							// a match
 							try {
 								if (job.getName().matches(jobGroup.getJobPattern())) {
-									priority = getPriorityForJobGroup(jobGroup, item);
+									return getPriorityForJobGroup(priorityCallback, jobGroup, item);
 								} else {
 									continue nextView;
 								}
@@ -233,33 +235,38 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 								continue nextView;
 							}
 						}
-						if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
-							priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-						}
-						return priorityCallback.setPrioritySelection(priority, jobGroup.getId());
 					}
 				}
 			}
 		}
 		//
-		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy()
+				.getDefaultPriority());
 	}
 
-	private int getPriorityForJobGroup(JobGroup jobGroup, Queue.Item item) {
+	private PriorityConfigurationCallback getPriorityForJobGroup(PriorityConfigurationCallback priorityCallback,
+			JobGroup jobGroup, Queue.Item item) {
+		int priority = jobGroup.getPriority();
+		PriorityStrategy reason = null;
 		if (jobGroup.isUsePriorityStrategies()) {
 			List<JobGroup.PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
 			for (JobGroup.PriorityStrategyHolder priorityStrategy : priorityStrategies) {
 				PriorityStrategy strategy = priorityStrategy.getPriorityStrategy();
 				if (strategy.isApplicable(item)) {
-					int priority = strategy.getPriority(item);
-					if (priority > 0
-							&& priority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
-						return priority;
+					int foundPriority = strategy.getPriority(item);
+					if (foundPriority > 0
+							&& foundPriority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
+						priority = foundPriority;
+						reason = strategy;
+						break;
 					}
 				}
 			}
 		}
-		return jobGroup.getPriority();
+		if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
+			priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+		}
+		return priorityCallback.setPrioritySelection(priority, jobGroup.getId(), reason);
 	}
 
 	static public PriorityConfiguration get() {
