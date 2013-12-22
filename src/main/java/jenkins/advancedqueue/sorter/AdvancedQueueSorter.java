@@ -116,7 +116,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 
 	public void onLeft(LeftItem li) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		ItemInfo itemInfo = QueueItemCache.get().removeItem(li.id);
+		ItemInfo itemInfo = QueueItemCache.get().getItem(li.id);
 		Float weight = itemInfo.getWeight();
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);
