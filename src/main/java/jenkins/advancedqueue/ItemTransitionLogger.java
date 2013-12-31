@@ -37,6 +37,7 @@ public class ItemTransitionLogger {
 
 	static public void logNewItem(ItemInfo info) {
 		LOGGER.fine("New Item: " + info.toString());
+		LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
 	}
 
 	static public void logBlockedItem(ItemInfo info) {

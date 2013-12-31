@@ -25,6 +25,10 @@ package jenkins.advancedqueue.sorter;
 
 import static jenkins.advancedqueue.ItemTransitionLogger.logBlockedItem;
 import static jenkins.advancedqueue.ItemTransitionLogger.logBuilableItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import hudson.model.Queue.Item;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
 import jenkins.advancedqueue.priority.PriorityStrategy;
@@ -52,6 +56,8 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 	private int priority;
 
 	private ItemStatus itemStatus;
+	
+	private List<String> decisionLog = new ArrayList<String>(10);
 
 	ItemInfo(Item item) {
 		this.itemId = item.id;
@@ -64,6 +70,11 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		this.priority = priority;
 		this.jobGroupId = jobGroupId;
 		this.priorityStrategy = reason;
+		return this;
+	}
+
+	public PriorityConfigurationCallback addDecisionLog(String log) {
+		this.decisionLog.add(log);
 		return this;
 	}
 
@@ -133,6 +144,14 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 	public String toString() {
 		return String.format("Id: %s JobName: %s, jobGroupId: %s, priority: %s, weight: %s, status: %s", itemId,
 				jobName, jobGroupId, priority, weight, itemStatus);
+	}
+	
+	public String getDescisionLog() {
+		StringBuffer buffer = new StringBuffer();
+		for (String  log : decisionLog) {
+			buffer.append(log).append("\n");
+		}
+		return buffer.toString();
 	}
 
 }

@@ -184,14 +184,17 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		// [JENKINS-8597]
 		// For MatrixConfiguration use the latest assigned Priority from the MatrixProject
 		if (job instanceof MatrixConfiguration) {
+			priorityCallback.addDecisionLog("Job is MatrixConfiguration ...");
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
 			// Can be null (for example) at startup when the MatrixBuild got lost (was running at
 			// restart)
 			if (itemInfo != null) {
+				priorityCallback.addDecisionLog("MatrixProject found in cache, using priority from queue-item [" + itemInfo.getItemId() + "]");
 				return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId(),
 						itemInfo.getPriorityStrategy());
 			}
+			priorityCallback.addDecisionLog("MatrixProject not found in cache, assigning global default priority");
 			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy()
 					.getDefaultPriority());
 		}
@@ -203,13 +206,16 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
 					priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 				}
+				priorityCallback.addDecisionLog("Using priority taken directly from the Job");
 				return priorityCallback.setPrioritySelection(priority);
 			}
 		}
 		//
 		for (JobGroup jobGroup : jobGroups) {
+			priorityCallback.addDecisionLog("Evaluating JobGroup [" + jobGroup.getId() + "] ...");
 			Collection<View> views = Jenkins.getInstance().getViews();
 			nextView: for (View view : views) {
+				priorityCallback.addDecisionLog("  Evaluating View [" + view.getViewName() + "] ...");
 				if (view.getViewName().equals(jobGroup.getView())) {
 					// getItem() always returns the item
 					TopLevelItem jobItem = view.getItem(job.getName());
@@ -219,19 +225,24 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 						// If filtering is used but the pattern is empty regard
 						// it as a match all
 						if (!jobGroup.isUseJobFilter() || jobGroup.getJobPattern().trim().isEmpty()) {
+							priorityCallback.addDecisionLog("    Not using filter ...");
 							return getPriorityForJobGroup(priorityCallback, jobGroup, item);
 						} else {
+							priorityCallback.addDecisionLog("    Using filter ...");
 							// So filtering is on - use the priority if there's
 							// a match
 							try {
 								if (job.getName().matches(jobGroup.getJobPattern())) {
+									priorityCallback.addDecisionLog("    Job is matching the filter ...");
 									return getPriorityForJobGroup(priorityCallback, jobGroup, item);
 								} else {
+									priorityCallback.addDecisionLog("    Job is not matching the filter ...");
 									continue nextView;
 								}
 							} catch (PatternSyntaxException e) {
 								// If the pattern is broken treat this a non
 								// match
+								priorityCallback.addDecisionLog("    Filter has syntax error");
 								continue nextView;
 							}
 						}
@@ -249,10 +260,13 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		int priority = jobGroup.getPriority();
 		PriorityStrategy reason = null;
 		if (jobGroup.isUsePriorityStrategies()) {
+			priorityCallback.addDecisionLog("      Evaluating strategies ...");
 			List<JobGroup.PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
 			for (JobGroup.PriorityStrategyHolder priorityStrategy : priorityStrategies) {
 				PriorityStrategy strategy = priorityStrategy.getPriorityStrategy();
+				priorityCallback.addDecisionLog("        Evaluating strategy [" + strategy.getDescriptor().getDisplayName() + "] ...");
 				if (strategy.isApplicable(item)) {
+					priorityCallback.addDecisionLog("        Strategy is applicable");
 					int foundPriority = strategy.getPriority(item);
 					if (foundPriority > 0
 							&& foundPriority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
@@ -262,6 +276,9 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 					}
 				}
 			}
+		}
+		if(reason == null) {
+			priorityCallback.addDecisionLog("        Using JobGroup default");
 		}
 		if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
 			priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
