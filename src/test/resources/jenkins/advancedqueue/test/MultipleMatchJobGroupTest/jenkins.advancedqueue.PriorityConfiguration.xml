@@ -19,7 +19,7 @@
       </priorityStrategies>
     </jenkins.advancedqueue.JobGroup>
     <jenkins.advancedqueue.JobGroup>
-      <id>0</id>
+      <id>1</id>
       <priority>3</priority>
       <view>All</view>
       <runExclusive>false</runExclusive>
