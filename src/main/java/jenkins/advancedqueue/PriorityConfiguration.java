@@ -34,6 +34,7 @@ import hudson.model.Queue;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
+import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -98,7 +99,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public String getIconFileName() {
-		if (PrioritySorterConfiguration.get().getLegacyMode()) {
+		if (!checkActive()) {
 			return null;
 		}
 		return "/plugin/PrioritySorter/advqueue.png";
@@ -110,10 +111,21 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public String getUrlName() {
-		if (PrioritySorterConfiguration.get().getLegacyMode()) {
+		if (!checkActive()) {
 			return null;
 		}
 		return "advanced-build-queue";
+	}
+	
+	private boolean checkActive() {
+		PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
+		if(configuration.getLegacyMode()) {
+			return false;
+		}
+		if(configuration.getOnlyAdminsMayEditPriorityConfiguration()) {
+			return Jenkins.getInstance().getACL().hasPermission(Jenkins.ADMINISTER);
+		}
+		return true;
 	}
 
 	public List<JobGroup> getJobGroups() {
