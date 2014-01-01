@@ -184,8 +184,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		// [JENKINS-8597]
 		// For MatrixConfiguration use the latest assigned Priority from the MatrixProject
 		if (job instanceof MatrixConfiguration) {
-			priorityCallback.addDecisionLog("Job is MatrixConfiguration ...");
 			MatrixProject matrixProject = ((MatrixConfiguration) job).getParent();
+			priorityCallback.addDecisionLog("Job is MatrixConfiguration [" + matrixProject.getName() + "] ...");
 			ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
 			// Can be null (for example) at startup when the MatrixBuild got lost (was running at
 			// restart)
