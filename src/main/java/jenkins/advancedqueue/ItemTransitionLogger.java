@@ -23,6 +23,7 @@
  */
 package jenkins.advancedqueue;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jenkins.advancedqueue.sorter.ItemInfo;
@@ -36,8 +37,11 @@ public class ItemTransitionLogger {
 	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
 
 	static public void logNewItem(ItemInfo info) {
-		LOGGER.fine("New Item: " + info.toString());
-		LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
+		if (LOGGER.getLevel().intValue() >= Level.FINER.intValue()) {
+			LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
+		} else {
+			LOGGER.fine("New Item: " + info.toString());
+		}
 	}
 
 	static public void logBlockedItem(ItemInfo info) {
