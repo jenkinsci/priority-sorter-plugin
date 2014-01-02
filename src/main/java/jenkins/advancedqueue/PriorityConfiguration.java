@@ -34,6 +34,7 @@ import hudson.model.Queue;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
+import hudson.security.ACL;
 import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -59,6 +60,8 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -189,8 +192,18 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return FormValidation.ok();
 	}
-
+	
 	public PriorityConfigurationCallback getPriority(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
+		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
+		try {
+			return getPriorityInternal(item, priorityCallback);
+		} finally {
+			SecurityContextHolder.setContext(saveCtx);
+		}
+	}
+	
+	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item,
+			PriorityConfigurationCallback priorityCallback) {
 		Job<?, ?> job = (Job<?, ?>) item.task;
 
 		// [JENKINS-8597]
