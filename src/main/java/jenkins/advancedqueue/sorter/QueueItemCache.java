@@ -23,9 +23,15 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import hudson.model.Queue.BlockedItem;
+import hudson.model.Queue.BuildableItem;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.logging.Logger;
 
 /**
  * Keeps track of the Queue.Items seen by the Sorter. Uses a WeakHash to store the entries that have
@@ -37,6 +43,8 @@ import java.util.WeakHashMap;
  */
 public class QueueItemCache {
 
+	private final static Logger LOGGER = Logger.getLogger(QueueItemCache.class.getName());
+
 	static private QueueItemCache queueItemCache = null;
 
 	static {
@@ -47,31 +55,55 @@ public class QueueItemCache {
 		return queueItemCache;
 	}
 
+	// Keeps track of all items currently in the queue
 	private Map<Integer, ItemInfo> item2info = new HashMap<Integer, ItemInfo>();
-	private Map<Integer, ItemInfo> weakItem2info = new WeakHashMap<Integer, ItemInfo>();
-	private Map<String, ItemInfo> weakJobName2info = new WeakHashMap<String, ItemInfo>();
+	// Keeps track of the last started item of the Job
+	private Map<String, ItemInfo> jobName2info = new HashMap<String, ItemInfo>();
 
 	private QueueItemCache() {
 	}
 
-	public ItemInfo getItem(int itemId) {
-		return weakItem2info.get(itemId);
+	/**
+	 * Gets the Item for and itemId/queueId
+	 * 
+	 * @param itemId the id of a Job currently in the queue
+	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
+	 *         queue
+	 */
+	synchronized public ItemInfo getItem(int itemId) {
+		return item2info.get(itemId);
 	}
 
-	public ItemInfo getItem(String jobName) {
-		return weakJobName2info.get(jobName);
+	/**
+	 * Get the ItemInfo for the last knows start of this Job Name
+	 * 
+	 * @param jobName a name of a Job
+	 * @return the {@link ItemInfo} for the last know start of the Job
+	 */
+	synchronized public ItemInfo getItem(String jobName) {
+		return jobName2info.get(jobName);
 	}
 
-	public ItemInfo addItem(ItemInfo itemInfo) {
+	synchronized public ItemInfo addItem(ItemInfo itemInfo) {
 		Integer itemId = new Integer(itemInfo.getItemId());
 		item2info.put(itemId, itemInfo);
-		weakItem2info.put(itemId, itemInfo);
-		weakJobName2info.put(itemInfo.getJobName(), itemInfo);
+		jobName2info.put(itemInfo.getJobName(), itemInfo);
 		return itemInfo;
 	}
 
-	public ItemInfo removeItem(int itemId) {
+	synchronized public ItemInfo removeItem(int itemId) {
 		return item2info.remove(itemId);
 	}
 
+	/**
+	 * This method will return a sorted list of all known and active {@link ItemInfo}s this will
+	 * include Items mapped to {@link BuildableItem}s as well as {@link BlockedItem}s
+	 * 
+	 * @return the sorted list of all {@link ItemInfo}s
+	 */
+	synchronized public List<ItemInfo> getSortedList() {
+		ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
+		Collections.sort(list);
+		return Collections.unmodifiableList(list);
+	}
 }

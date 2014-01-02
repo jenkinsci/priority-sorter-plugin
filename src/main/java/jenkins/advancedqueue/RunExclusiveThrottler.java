@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jenkins.advancedqueue.sorter.ItemInfo;
+import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.QueueItemCache;
 
 public class RunExclusiveThrottler {
@@ -21,17 +21,31 @@ public class RunExclusiveThrottler {
 	static private int exclusiveJobGroupId = -1;
 	static private String exclusiveJobName = "";
 
+	static PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
+		
+		public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
+			return this;
+		}
+		
+		public PriorityConfigurationCallback setPrioritySelection(int priority) {
+			return this;
+		}
+		
+		public PriorityConfigurationCallback addDecisionLog(String log) {
+			return this;
+		}
+	};
+	
 	@Extension
 	static public class RunExclusiveRunListener extends RunListener<Run> {
 
 		@Override
 		public void onStarted(Run r, TaskListener listener) {
-			ItemInfo item = QueueItemCache.get().getItem(r.getParent().getName());
-			JobGroup jobGroup = PriorityConfiguration.get().getJobGroup(item.getJobGroupId());
+			JobGroup jobGroup = PriorityConfiguration.get().getJobGroup(dummyCallback, r.getParent().getName());
 			if (jobGroup != null && jobGroup.isRunExclusive()) {
-				exclusiveJobGroupId = item.getJobGroupId();
-				exclusiveJobName = item.getJobName();
-				exclusiveJobs.add(item.getJobName());
+				exclusiveJobGroupId = jobGroup.getId();
+				exclusiveJobName = r.getParent().getName();
+				exclusiveJobs.add(exclusiveJobName);
 			}
 		}
 

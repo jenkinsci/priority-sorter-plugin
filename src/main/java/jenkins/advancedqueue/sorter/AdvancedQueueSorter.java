@@ -37,6 +37,7 @@ import java.util.List;
 
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
+import static jenkins.advancedqueue.ItemTransitionLogger.*;
 
 /**
  * @author Magnus Sandberg
@@ -61,7 +62,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		for (BuildableItem item : items) {
 			advancedQueueSorter.onNewItem(item);
 			// Listener called before we get here so make sure we mark buildable
-			QueueItemCache.get().getItem(item.id).setItemStatus(ItemStatus.BUILDABLE);
+			QueueItemCache.get().getItem(item.id).setBuildable();
 		}
 	}
 
@@ -110,15 +111,19 @@ public class AdvancedQueueSorter extends QueueSorter {
 		PriorityConfiguration.get().getPriority(item, itemInfo);
 		prioritySorterStrategy.onNewItem(item, itemInfo);
 		QueueItemCache.get().addItem(itemInfo);
+		logNewItem(itemInfo);
 	}
 
 	public void onLeft(LeftItem li) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
-		Float weight = QueueItemCache.get().removeItem(li.id).getWeight();
+		ItemInfo itemInfo = QueueItemCache.get().removeItem(li.id);
+		Float weight = itemInfo.getWeight();
 		if (li.isCancelled()) {
 			prioritySorterStrategy.onCanceledItem(li);
+			logCanceledItem(itemInfo);
 		} else {
 			prioritySorterStrategy.onStartedItem(li, weight);
+			logStartedItem(itemInfo);
 		}
 	}
 

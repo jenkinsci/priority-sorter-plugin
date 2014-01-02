@@ -23,43 +23,63 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import static jenkins.advancedqueue.ItemTransitionLogger.logBlockedItem;
+import static jenkins.advancedqueue.ItemTransitionLogger.logBuilableItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import hudson.model.Queue.Item;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
+import jenkins.advancedqueue.priority.PriorityStrategy;
 
 /**
- *  Used to store info about a Queue.Item and related information calculated by the Plugin
- *  
+ * Used to store info about a Queue.Item and related information calculated by the Plugin
+ * 
  * @author Magnus Sandberg
  * @since 2.3
  */
-public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCallback {
+public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCallback, Comparable<ItemInfo> {
 
 	private int itemId;
 
+	private long inQueueSince;
+
 	private int jobGroupId;
+
+	private PriorityStrategy priorityStrategy;
 
 	private String jobName;
 
 	private float weight;
 
 	private int priority;
-	
+
 	private ItemStatus itemStatus;
+	
+	private List<String> decisionLog = new ArrayList<String>(10);
 
 	ItemInfo(Item item) {
 		this.itemId = item.id;
+		this.inQueueSince = item.getInQueueSince();
 		this.jobName = item.task.getName();
 		this.itemStatus = ItemStatus.WAITING;
 	}
 
-	public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId) {
+	public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
 		this.priority = priority;
 		this.jobGroupId = jobGroupId;
+		this.priorityStrategy = reason;
+		return this;
+	}
+
+	public PriorityConfigurationCallback addDecisionLog(String log) {
+		this.decisionLog.add(log);
 		return this;
 	}
 
 	public PriorityConfigurationCallback setPrioritySelection(int priority) {
-		setPrioritySelection(priority, -1);
+		setPrioritySelection(priority, -1, null);
 		return this;
 	}
 
@@ -68,12 +88,30 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		return this;
 	}
 
+	public void setBuildable() {
+		itemStatus = ItemStatus.BUILDABLE;
+		logBuilableItem(this);
+	}
+
+	public void setBlocked() {
+		itemStatus = ItemStatus.BLOCKED;
+		logBlockedItem(this);
+	}
+
 	public int getItemId() {
 		return itemId;
 	}
 
+	public long getInQueueSince() {
+		return inQueueSince;
+	}
+
 	public int getJobGroupId() {
 		return jobGroupId;
+	}
+
+	public PriorityStrategy getPriorityStrategy() {
+		return priorityStrategy;
 	}
 
 	public String getJobName() {
@@ -92,10 +130,28 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		return itemStatus;
 	}
 
-	public void setItemStatus(ItemStatus itemStatus) {
-		this.itemStatus = itemStatus;
+	public int compareTo(ItemInfo o) {
+		if(this.getWeight() == o.getWeight()) {
+			if(this.getInQueueSince() == o.getInQueueSince()) {
+				return Integer.compare(this.getItemId(), o.getItemId());
+			}
+			return Long.compare(this.getInQueueSince(), o.getInQueueSince());
+		}
+		return Float.compare(this.getWeight(), o.getWeight());
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Id: %s JobName: %s, jobGroupId: %s, priority: %s, weight: %s, status: %s", itemId,
+				jobName, jobGroupId, priority, weight, itemStatus);
 	}
 	
-	
+	public String getDescisionLog() {
+		StringBuffer buffer = new StringBuffer();
+		for (String  log : decisionLog) {
+			buffer.append(log).append("\n");
+		}
+		return buffer.toString();
+	}
 
 }

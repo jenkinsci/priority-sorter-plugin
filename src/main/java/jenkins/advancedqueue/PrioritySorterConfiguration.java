@@ -66,6 +66,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	private boolean allowPriorityOnJobs;
 
+	private boolean onlyAdminsMayEditPriorityConfiguration = false;
+
 	private SorterStrategy strategy;
 
 	public PrioritySorterConfiguration() {
@@ -95,6 +97,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
 		}
 		//
+		onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
 		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
 		if (getLegacyMode()) {
 			Boolean advanced = json.getBoolean("advanced");
@@ -114,6 +117,10 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	public boolean getAllowPriorityOnJobs() {
 		return allowPriorityOnJobs;
+	}
+
+	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
+		return onlyAdminsMayEditPriorityConfiguration;
 	}
 
 	public SorterStrategy getStrategy() {

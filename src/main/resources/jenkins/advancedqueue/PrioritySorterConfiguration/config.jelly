@@ -13,6 +13,9 @@
                 <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
                 <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
                     <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
+                </f:entry>
+                <f:entry title="Only Admins can edit Job Priorities" description="Check if only Administrators should be allowed to view and edit the Job Priorities" field="onlyAdminsMayEditPriorityConfiguration">
+                    <f:checkbox name="onlyAdminsMayEditPriorityConfiguration" checked="${onlyAdminsMayEditPriorityConfiguration}"/>
                 </f:entry>               
             </f:optionalBlock>
         </j:if>
@@ -22,6 +25,9 @@
             <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
                 <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
             </f:entry>          
+            <f:entry title="Only Admins can edit Job Priorities" description="Check if only Administrators should be allowed to view and edit the Job Priorities" field="onlyAdminsMayEditPriorityConfiguration">
+                <f:checkbox name="onlyAdminsMayEditPriorityConfiguration" checked="${onlyAdminsMayEditPriorityConfiguration}"/>
+            </f:entry>               
         </j:if>
                    
     </f:section>

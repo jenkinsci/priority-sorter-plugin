@@ -21,44 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.sorter;
+package jenkins.advancedqueue;
 
-import hudson.Extension;
-import hudson.model.Queue.BlockedItem;
-import hudson.model.Queue.BuildableItem;
-import hudson.model.Queue.LeftItem;
-import hudson.model.Queue.WaitingItem;
-import hudson.model.queue.QueueListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jenkins.advancedqueue.sorter.ItemInfo;
 
 /**
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 2.4
  */
-@Extension
-public class AdvancedQueueSorterQueueListener extends QueueListener {
+public class ItemTransitionLogger {
 
-	@Override
-	public void onEnterWaiting(WaitingItem wi) {
-		AdvancedQueueSorter.get().onNewItem(wi);
-	}
+	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
 
-	@Override
-	public void onLeft(LeftItem li) {
-		AdvancedQueueSorter.get().onLeft(li);
-	}
-
-	@Override
-	public void onEnterBuildable(BuildableItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if(item != null) {
-			QueueItemCache.get().getItem(bi.id).setBuildable();
+	static public void logNewItem(ItemInfo info) {
+		if (LOGGER.getLevel().intValue() == Level.ALL.intValue()
+				|| LOGGER.getLevel().intValue() >= Level.FINER.intValue()) {
+			LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
+		} else {
+			LOGGER.fine("New Item: " + info.toString());
 		}
 	}
 
-	@Override
-	public void onEnterBlocked(BlockedItem bi) {
-		QueueItemCache.get().getItem(bi.id).setBlocked();
+	static public void logBlockedItem(ItemInfo info) {
+		LOGGER.fine("Blocking: " + info.toString());
+	}
+
+	static public void logBuilableItem(ItemInfo info) {
+		LOGGER.fine("Buildable: " + info.toString());
+	}
+
+	static public void logStartedItem(ItemInfo info) {
+		LOGGER.fine("Starting: " + info.toString());
+	}
+
+	static public void logCanceledItem(ItemInfo info) {
+		LOGGER.fine("Canceling: " + info.toString());
 	}
 
 }
