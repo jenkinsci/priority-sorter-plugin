@@ -229,6 +229,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			return getPriorityForJobGroup(priorityCallback, jobGroup, item);
 		}
 		//
+		priorityCallback.addDecisionLog("Assigning global default priority");
 		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy()
 				.getDefaultPriority());
 	}

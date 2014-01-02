@@ -37,7 +37,8 @@ public class ItemTransitionLogger {
 	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
 
 	static public void logNewItem(ItemInfo info) {
-		if (LOGGER.getLevel().intValue() >= Level.FINER.intValue()) {
+		if (LOGGER.getLevel().intValue() == Level.ALL.intValue()
+				|| LOGGER.getLevel().intValue() >= Level.FINER.intValue()) {
 			LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
 		} else {
 			LOGGER.fine("New Item: " + info.toString());
