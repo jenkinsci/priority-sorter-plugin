@@ -92,14 +92,11 @@ public class AdvancedQueueSorter extends QueueSorter {
 			}
 		});
 		//
-		if (items.size() > 0
-				&& (LOGGER.getLevel().intValue() >= Level.FINE.intValue() || LOGGER.getLevel().intValue() == Level.ALL
-						.intValue())) {
+		if (items.size() > 0 && LOGGER.isLoggable(Level.FINE)) {
 			float minWeight = QueueItemCache.get().getItem(items.get(0).id).getWeight();
 			float maxWeight = QueueItemCache.get().getItem(items.get(items.size() - 1).id).getWeight();
-			LOGGER.log(Level.INFO, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] {
-					items.size(), minWeight, maxWeight });
-		} 
+			LOGGER.log(Level.FINE, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] { items.size(), minWeight, maxWeight });
+		}
 	}
 
 	/**
