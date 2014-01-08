@@ -34,6 +34,8 @@ import hudson.queueSorter.PrioritySorterQueueSorter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
@@ -45,6 +47,8 @@ import static jenkins.advancedqueue.ItemTransitionLogger.*;
  */
 @Extension
 public class AdvancedQueueSorter extends QueueSorter {
+
+	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Sorter");
 
 	public AdvancedQueueSorter() {
 	}
@@ -64,6 +68,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 			// Listener called before we get here so make sure we mark buildable
 			QueueItemCache.get().getItem(item.id).setBuildable();
 		}
+		LOGGER.fine("Initialized the QueueSorter with " + items.size() + " Buildable Items");
 	}
 
 	@Override
@@ -86,6 +91,15 @@ public class AdvancedQueueSorter extends QueueSorter {
 				return (int) (o1.getInQueueSince() - o2.getInQueueSince());
 			}
 		});
+		//
+		if (items.size() > 0
+				&& (LOGGER.getLevel().intValue() >= Level.FINE.intValue() || LOGGER.getLevel().intValue() == Level.ALL
+						.intValue())) {
+			float minWeight = QueueItemCache.get().getItem(items.get(0).id).getWeight();
+			float maxWeight = QueueItemCache.get().getItem(items.get(items.size() - 1).id).getWeight();
+			LOGGER.log(Level.INFO, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] {
+					items.size(), minWeight, maxWeight });
+		} 
 	}
 
 	/**
