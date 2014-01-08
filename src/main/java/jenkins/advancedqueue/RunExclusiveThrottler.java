@@ -31,7 +31,7 @@ public class RunExclusiveThrottler {
 			return this;
 		}
 		
-		public PriorityConfigurationCallback addDecisionLog(String log) {
+		public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
 			return this;
 		}
 	};

@@ -73,8 +73,8 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 		return this;
 	}
 
-	public PriorityConfigurationCallback addDecisionLog(String log) {
-		this.decisionLog.add(log);
+	public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
+		this.decisionLog.add(String.format("%"+ ((indent + 1) * 2) + "s%s", "", log));
 		return this;
 	}
 
@@ -142,8 +142,12 @@ public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCa
 
 	@Override
 	public String toString() {
-		return String.format("Id: %s JobName: %s, jobGroupId: %s, priority: %s, weight: %s, status: %s", itemId,
-				jobName, jobGroupId, priority, weight, itemStatus);
+		String reason = "<none>";
+		if(priorityStrategy != null) {
+			reason = priorityStrategy.getDescriptor().getDisplayName();
+		}
+		return String.format("Id: %s, JobName: %s, jobGroupId: %s, reason: %s, priority: %s, weight: %s, status: %s", itemId,
+				jobName, jobGroupId, reason, priority, weight, itemStatus);
 	}
 	
 	public String getDescisionLog() {
