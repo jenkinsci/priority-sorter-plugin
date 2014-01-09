@@ -204,7 +204,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	
 	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item,
 			PriorityConfigurationCallback priorityCallback) {
-		Job<?, ?> job = (Job<?, ?>) item.task;
+		Queue.Task job = item.task;
 
 		// [JENKINS-8597]
 		// For MatrixConfiguration use the latest assigned Priority from the MatrixProject
@@ -225,8 +225,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 					.getDefaultPriority());
 		}
 
-		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
-			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
+		if (job instanceof Job && PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
+			AdvancedQueueSorterJobProperty priorityProperty = ((Job<?,?>) job).getProperty(AdvancedQueueSorterJobProperty.class);
 			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 				int priority = priorityProperty.priority;
 				if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
@@ -247,6 +247,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				.getDefaultPriority());
 	}
 
+    // TODO a simple jobName will not work for jobs in folders, and would be meaningless for non-Job Queue.Task’s
 	public JobGroup getJobGroup(PriorityConfigurationCallback priorityCallback, String jobName) {
 		for (JobGroup jobGroup : jobGroups) {
 			priorityCallback.addDecisionLog(0, "Evaluating JobGroup [" + jobGroup.getId() + "] ...");
