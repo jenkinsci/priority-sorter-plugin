@@ -210,14 +210,16 @@ public class JobGroup {
 		jobGroup.setUsePriorityStrategies(jobGroupObject.has("usePriorityStrategies"));
 		if (jobGroup.isUsePriorityStrategies()) {
 			JSONObject jsonObject = jobGroupObject.getJSONObject("usePriorityStrategies");
-			JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("holder"));
-			int psid = 0;
-			for (Object object : jsonArray) {
-				PriorityStrategyHolder holder = new JobGroup.PriorityStrategyHolder();
-				holder.setId(psid++);
-				PriorityStrategy strategy = req.bindJSON(Class.class, PriorityStrategy.class, object);
-				holder.setPriorityStrategy(strategy);
-				jobGroup.priorityStrategies.add(holder);
+			if (jsonObject.has("holder")) {
+				JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("holder"));
+				int psid = 0;
+				for (Object object : jsonArray) {
+					PriorityStrategyHolder holder = new JobGroup.PriorityStrategyHolder();
+					holder.setId(psid++);
+					PriorityStrategy strategy = req.bindJSON(Class.class, PriorityStrategy.class, object);
+					holder.setPriorityStrategy(strategy);
+					jobGroup.priorityStrategies.add(holder);
+				}
 			}
 			if (jobGroup.priorityStrategies.isEmpty()) {
 				jobGroup.setUsePriorityStrategies(false);
