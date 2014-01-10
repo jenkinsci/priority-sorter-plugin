@@ -231,7 +231,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 
 		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
-			AdvancedQueueSorterJobProperty priorityProperty = ((Job<?, ?>) job).getProperty(AdvancedQueueSorterJobProperty.class);
+			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
 			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 				int priority = priorityProperty.priority;
 				if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
