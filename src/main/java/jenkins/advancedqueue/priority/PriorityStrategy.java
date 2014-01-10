@@ -27,7 +27,9 @@ import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import hudson.model.Job;
 import hudson.model.Queue;
+import hudson.model.Queue.Item;
 import jenkins.model.Jenkins;
 
 /**
@@ -36,8 +38,25 @@ import jenkins.model.Jenkins;
  */
 public abstract class PriorityStrategy implements ExtensionPoint, Describable<PriorityStrategy> {
 
+	/** 
+	 * Method that checks if strategy can assign a priority to the provided {@link Item}
+	 * 
+	 * The caller garanties that the {@link Item#task} is a {@link Job}
+	 * 
+	 * @param item the {@link Item} to check
+	 * @return <code>true</code> if the {@link PriorityStrategy} is applicable else <code>false</code>
+	 */
 	abstract public boolean isApplicable(Queue.Item item);
 
+	/** 
+	 * Method that that return the priority that should be used for this {@link Item}, this method is only called id
+	 * {@link PriorityStrategy#isApplicable(Item)} returned true
+	 * 
+	 * The caller garanties that the {@link Item#task} is a {@link Job}
+	 * 
+	 * @param item the {@link Item} to check
+	 * @return the priority to be used by the provided {@link Item}
+	 */
 	abstract public int getPriority(Queue.Item item);
 
 	abstract public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities);
