@@ -242,7 +242,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			}
 		}
 		//
-		JobGroup jobGroup = getJobGroup(priorityCallback, job.getName());
+		JobGroup jobGroup = getJobGroup(priorityCallback, job);
 		if (jobGroup != null) {
 			return getPriorityForJobGroup(priorityCallback, jobGroup, item);
 		}
@@ -251,19 +251,19 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
-	// TODO a simple jobName will not work for jobs in folders, and would be
-	// meaningless for non-Job Queue.Task’s
-	public JobGroup getJobGroup(PriorityConfigurationCallback priorityCallback, String jobName) {
+	public JobGroup getJobGroup(PriorityConfigurationCallback priorityCallback, Job<?, ?> job) {
+		if(!(job instanceof TopLevelItem)) {
+			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
+			return null;
+		}
 		for (JobGroup jobGroup : jobGroups) {
 			priorityCallback.addDecisionLog(0, "Evaluating JobGroup [" + jobGroup.getId() + "] ...");
 			Collection<View> views = Jenkins.getInstance().getViews();
 			nextView: for (View view : views) {
 				priorityCallback.addDecisionLog(1, "Evaluating View [" + view.getViewName() + "] ...");
 				if (view.getViewName().equals(jobGroup.getView())) {
-					// getItem() always returns the item
-					TopLevelItem jobItem = view.getItem(jobName);
 					// Now check if the item is actually in the view
-					if (view.contains(jobItem)) {
+					if (view.contains((TopLevelItem) job)) {
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard
 						// it as a match all
@@ -275,7 +275,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 							// So filtering is on - use the priority if there's
 							// a match
 							try {
-								if (jobName.matches(jobGroup.getJobPattern())) {
+								if (job.getName().matches(jobGroup.getJobPattern())) {
 									priorityCallback.addDecisionLog(3, "Job is matching the filter ...");
 									return jobGroup;
 								} else {
