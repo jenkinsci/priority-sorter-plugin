@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
+import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -77,9 +79,22 @@ public class JobGroup {
 
 	private int id = 0;
 	private int priority = 2;
-	private String view;
+	/**
+	 * @deprecated Used 2.6 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}
+	 */
+	@Deprecated
+	private String view = null;
+	private JobInclusionStrategy jobGroupStrategy = null;
 	private boolean runExclusive = false;
+	/**
+	 * @deprecated Used 2.6 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}
+	 */
+	@Deprecated
 	private boolean useJobFilter = false;
+	/**
+	 * @deprecated Used 2.6 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}
+	 */
+	@Deprecated
 	private String jobPattern = ".*";
 	private boolean usePriorityStrategies;
 	private List<JobGroup.PriorityStrategyHolder> priorityStrategies = new ArrayList<JobGroup.PriorityStrategyHolder>();
@@ -114,19 +129,19 @@ public class JobGroup {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-
-	/**
-	 * @return the view
-	 */
-	public String getView() {
-		return view;
+		
+	public JobInclusionStrategy getJobGroupStrategy() {
+		// Convert from 2.6 and earlier
+		if(jobGroupStrategy == null && view != null) {
+			ViewBasedJobInclusionStrategy.JobPattern pattern = new ViewBasedJobInclusionStrategy.JobPattern(jobPattern);
+			jobGroupStrategy = new ViewBasedJobInclusionStrategy(view, useJobFilter == false ? null : pattern);
+		}
+		return jobGroupStrategy;
 	}
 
-	/**
-	 * @param view the view to set
-	 */
-	public void setView(String view) {
-		this.view = view;
+	public void setJobGroupStrategy(JobInclusionStrategy jobGroupStrategy) {
+		this.view = null;
+		this.jobGroupStrategy = jobGroupStrategy;
 	}
 
 	public boolean isRunExclusive() {
@@ -135,34 +150,6 @@ public class JobGroup {
 
 	public void setRunExclusive(boolean runExclusive) {
 		this.runExclusive = runExclusive;
-	}
-
-	/**
-	 * @return the useJobFilter
-	 */
-	public boolean isUseJobFilter() {
-		return useJobFilter;
-	}
-
-	/**
-	 * @param useJobFilter the useJobFilter to set
-	 */
-	public void setUseJobFilter(boolean useJobFilter) {
-		this.useJobFilter = useJobFilter;
-	}
-
-	/**
-	 * @return the jobPattern
-	 */
-	public String getJobPattern() {
-		return jobPattern;
-	}
-
-	/**
-	 * @param jobPattern the jobPattern to set
-	 */
-	public void setJobPattern(String jobPattern) {
-		this.jobPattern = jobPattern;
 	}
 
 	public boolean isUsePriorityStrategies() {
@@ -193,8 +180,11 @@ public class JobGroup {
 		JobGroup jobGroup = new JobGroup();
 		jobGroup.setId(id);
 		jobGroup.setPriority(jobGroupObject.getInt("priority"));
-		jobGroup.setView(jobGroupObject.getString("view"));
+		JSONObject jsonObjectJobGroupStrategy = jobGroupObject.getJSONObject("jobGroupStrategy");
+		JobInclusionStrategy jobGroupStrategy = req.bindJSON(Class.class, JobInclusionStrategy.class, jsonObjectJobGroupStrategy);
+		jobGroup.setJobGroupStrategy(jobGroupStrategy);
 		jobGroup.setRunExclusive(Boolean.parseBoolean(jobGroupObject.getString("runExclusive")));
+		/*
 		jobGroup.setUseJobFilter(jobGroupObject.has("useJobFilter"));
 		if (jobGroup.isUseJobFilter()) {
 			JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
@@ -206,6 +196,7 @@ public class JobGroup {
 				jobGroup.setUseJobFilter(false);
 			}
 		}
+		*/
 		//
 		jobGroup.setUsePriorityStrategies(jobGroupObject.has("usePriorityStrategies"));
 		if (jobGroup.isUsePriorityStrategies()) {

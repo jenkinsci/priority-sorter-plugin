@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hudson.model.Queue.Item;
+import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 
@@ -39,7 +40,7 @@ import jenkins.advancedqueue.priority.PriorityStrategy;
  * @author Magnus Sandberg
  * @since 2.3
  */
-public class ItemInfo implements PriorityConfigurationCallback, SorterStrategyCallback, Comparable<ItemInfo> {
+public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, SorterStrategyCallback, Comparable<ItemInfo> {
 
 	private int itemId;
 

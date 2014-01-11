@@ -23,6 +23,7 @@
  */
 package jenkins.advancedqueue;
 
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.matrix.MatrixConfiguration;
@@ -53,6 +54,7 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
 
+import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
@@ -134,15 +136,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return jobGroups;
 	}
 
-	public ListBoxModel getListViewItems() {
-		ListBoxModel items = new ListBoxModel();
-		Collection<View> views = Jenkins.getInstance().getViews();
-		for (View view : views) {
-			items.add(view.getDisplayName(), view.getViewName());
-		}
-		return items;
-	}
-
 	public JobGroup getJobGroup(int id) {
 		return id2jobGroup.get(id);
 	}
@@ -150,6 +143,11 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
 		return PriorityStrategy.all();
 	}
+	
+	public DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> getJobInclusionStrategyDescriptors() {
+		return JobInclusionStrategy.all();
+	}
+
 
 	public ListBoxModel getPriorities() {
 		ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
@@ -252,45 +250,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	public JobGroup getJobGroup(PriorityConfigurationCallback priorityCallback, Job<?, ?> job) {
-		if(!(job instanceof TopLevelItem)) {
+		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
 			return null;
 		}
 		for (JobGroup jobGroup : jobGroups) {
 			priorityCallback.addDecisionLog(0, "Evaluating JobGroup [" + jobGroup.getId() + "] ...");
-			Collection<View> views = Jenkins.getInstance().getViews();
-			nextView: for (View view : views) {
-				priorityCallback.addDecisionLog(1, "Evaluating View [" + view.getViewName() + "] ...");
-				if (view.getViewName().equals(jobGroup.getView())) {
-					// Now check if the item is actually in the view
-					if (view.contains((TopLevelItem) job)) {
-						// If filtering is not used use the priority
-						// If filtering is used but the pattern is empty regard
-						// it as a match all
-						if (!jobGroup.isUseJobFilter() || jobGroup.getJobPattern().trim().isEmpty()) {
-							priorityCallback.addDecisionLog(2, "Not using filter ...");
-							return jobGroup;
-						} else {
-							priorityCallback.addDecisionLog(2, "Using filter ...");
-							// So filtering is on - use the priority if there's
-							// a match
-							try {
-								if (job.getName().matches(jobGroup.getJobPattern())) {
-									priorityCallback.addDecisionLog(3, "Job is matching the filter ...");
-									return jobGroup;
-								} else {
-									priorityCallback.addDecisionLog(3, "Job is not matching the filter ...");
-									continue nextView;
-								}
-							} catch (PatternSyntaxException e) {
-								// If the pattern is broken treat this a non
-								// match
-								priorityCallback.addDecisionLog(3, " Filter has syntax error");
-								continue nextView;
-							}
-						}
-					}
-				}
+			if (jobGroup.getJobGroupStrategy().contains(priorityCallback, job)) {
+				return jobGroup;
 			}
 		}
 		return null;
