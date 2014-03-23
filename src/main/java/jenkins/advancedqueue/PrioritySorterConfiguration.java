@@ -209,15 +209,16 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 					// Scale any priority on the Job
 					AdvancedQueueSorterJobProperty priorityProperty = project
 							.getProperty(AdvancedQueueSorterJobProperty.class);
-					if (priorityProperty != null) {
+					if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
 								strategy.getNumberOfPriorities(), priorityProperty.priority);
-						project.removeProperty(priorityProperty);
-						project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(),
-								newPriority));
-						project.save();
+                        if (newPriority != priorityProperty.getPriority()) {
+                            project.removeProperty(priorityProperty);
+                            project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(),
+                                    newPriority));
+                            project.save();
+                        }
 					}
-					project.save();
 				} catch (IOException e) {
 					LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());
 				}
