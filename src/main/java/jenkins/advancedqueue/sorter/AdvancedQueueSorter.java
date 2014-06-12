@@ -97,6 +97,19 @@ public class AdvancedQueueSorter extends QueueSorter {
 			float maxWeight = QueueItemCache.get().getItem(items.get(items.size() - 1).id).getWeight();
 			LOGGER.log(Level.FINE, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] { items.size(), minWeight, maxWeight });
 		}
+		//
+		if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
+			StringBuffer queueStr = new StringBuffer("Queue:\n"
+					+ "+-----------------------------------+\n"
+					+ "|   Item Id  |        Weight        |\n"
+					+ "+-----------------------------------+\n");
+			for (BuildableItem item : items) {
+				queueStr.append(String.format("| %10d | %20.5f |\n",  item.id, QueueItemCache.get().getItem(item.id).getWeight()));
+				
+			}
+			queueStr.append("+-----------------------------------+");
+			LOGGER.log(Level.FINER, queueStr.toString());
+		}
 	}
 
 	/**
