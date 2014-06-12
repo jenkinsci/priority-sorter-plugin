@@ -100,14 +100,19 @@ public class AdvancedQueueSorter extends QueueSorter {
 		//
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
 			StringBuffer queueStr = new StringBuffer("Queue:\n"
-					+ "+-----------------------------------+\n"
-					+ "|   Item Id  |        Weight        |\n"
-					+ "+-----------------------------------+\n");
+					+ "+----------------------------------------------------------------------+\n"
+					+ "|   Item Id  |        Job Name       | Priority |        Weight        |\n"
+					+ "+----------------------------------------------------------------------+\n");
 			for (BuildableItem item : items) {
-				queueStr.append(String.format("| %10d | %20.5f |\n",  item.id, QueueItemCache.get().getItem(item.id).getWeight()));
+				ItemInfo itemInfo = QueueItemCache.get().getItem(item.id);
+				String jobName = itemInfo.getJobName();
+				if(jobName.length() > 21) {
+					jobName = jobName.substring(0, 9) + "..." + jobName.substring(jobName.length() - 9 , jobName.length());
+				}
+				queueStr.append(String.format("| %10d | %20s | %8d | %20.5f |\n",  item.id, jobName, itemInfo.getPriority(), itemInfo.getWeight()));
 				
 			}
-			queueStr.append("+-----------------------------------+");
+			queueStr.append("+----------------------------------------------------------------------+");
 			LOGGER.log(Level.FINER, queueStr.toString());
 		}
 	}
