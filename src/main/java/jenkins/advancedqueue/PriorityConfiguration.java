@@ -33,6 +33,7 @@ import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
+import hudson.model.ViewGroup;
 import hudson.model.View;
 import hudson.security.ACL;
 import hudson.security.Permission;
@@ -263,7 +264,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 				priorityCallback.addDecisionLog(1, "Evaluating View [" + view.getViewName() + "] ...");
 				if (view.getViewName().equals(jobGroup.getView())) {
 					// Now check if the item is actually in the view
-					if (view.contains((TopLevelItem) job)) {
+					if (isJobInView(job, view)) {
 						// If filtering is not used use the priority
 						// If filtering is used but the pattern is empty regard
 						// it as a match all
@@ -295,7 +296,25 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		return null;
 	}
-
+	
+	private boolean isJobInView(Job<?, ?> job, View view) {
+		if(view instanceof ViewGroup) {
+			return isJobInViewGroup(job, (ViewGroup) view);
+		} else {
+			return view.contains((TopLevelItem) job); 
+		}
+	}
+	
+	private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
+		Collection<View> views = viewGroup.getViews();
+		for (View view : views) {
+			if(isJobInView(job, view)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private PriorityConfigurationCallback getPriorityForJobGroup(PriorityConfigurationCallback priorityCallback, JobGroup jobGroup, Queue.Item item) {
 		int priority = jobGroup.getPriority();
 		PriorityStrategy reason = null;
