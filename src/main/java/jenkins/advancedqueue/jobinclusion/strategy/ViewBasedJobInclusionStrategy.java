@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
+import hudson.model.ViewGroup;
 import hudson.util.ListBoxModel;
 
 import java.util.Collection;
@@ -106,7 +107,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 	@Override
 	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
 		View view = Jenkins.getInstance().getView(viewName);
-		if (view.contains((TopLevelItem) job)) {
+		if (isJobInView(job, view)) {
 			if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
 				decisionLogger.addDecisionLog(2, "Not using filter ...");
 				return true;
@@ -132,4 +133,23 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		}
 		return false;
 	}
+	
+	private boolean isJobInView(Job<?, ?> job, View view) {
+		if(view instanceof ViewGroup) {
+			return isJobInViewGroup(job, (ViewGroup) view);
+		} else {
+			return view.contains((TopLevelItem) job); 
+		}
+	}
+	
+	private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
+		Collection<View> views = viewGroup.getViews();
+		for (View view : views) {
+			if(isJobInView(job, view)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
