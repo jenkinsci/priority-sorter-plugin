@@ -309,9 +309,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		// Then try to iterate over the ViewGroup (Nested View)
 		if(view instanceof ViewGroup) {
 			return isJobInViewGroup(job, (ViewGroup) view);
-		} else {
-			return view.contains((TopLevelItem) job); 
-		}
+		} 
+		return false;
 	}
 	
 	private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
