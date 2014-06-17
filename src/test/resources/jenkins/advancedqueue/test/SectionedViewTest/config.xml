@@ -63,10 +63,10 @@
         <hudson.plugins.sectioned__view.ListViewSection>
           <jobNames>
             <comparator class="hudson.util.CaseInsensitiveComparator"/>
-        	<string>Job 2</string>
           </jobNames>
           <jobFilters/>
           <name>List View Section</name>
+          <includeRegex>.*Job 2.*</includeRegex>
           <width>FULL</width>
           <alignment>CENTER</alignment>
           <columns>
