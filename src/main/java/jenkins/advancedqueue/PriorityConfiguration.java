@@ -302,10 +302,11 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		if(view.contains((TopLevelItem) job)) {
 			return true;
 		}
-		// Then try to get the Items (Sectioned View, Nested View etc)
+		// Then try to get the Items (Sectioned View)
 		if(view.getItem(job.getName()) != null) {
 			return true;
 		}
+		// Then try to iterate over the ViewGroup (Nested View)
 		if(view instanceof ViewGroup) {
 			return isJobInViewGroup(job, (ViewGroup) view);
 		} else {
