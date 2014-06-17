@@ -31,16 +31,13 @@ import hudson.model.ViewGroup;
 import hudson.util.ListBoxModel;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * @author Magnus Sandberg
@@ -135,11 +132,19 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 	}
 	
 	private boolean isJobInView(Job<?, ?> job, View view) {
+		// First do a simple test using contains
+		if(view.contains((TopLevelItem) job)) {
+			return true;
+		}
+		// Then try to get the Items (Sectioned View)
+		if(view.getItems().contains(job)) {
+			return true;
+		}
+		// Then try to iterate over the ViewGroup (Nested View)
 		if(view instanceof ViewGroup) {
 			return isJobInViewGroup(job, (ViewGroup) view);
-		} else {
-			return view.contains((TopLevelItem) job); 
-		}
+		} 
+		return false;
 	}
 	
 	private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
