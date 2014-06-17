@@ -303,7 +303,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			return true;
 		}
 		// Then try to get the Items (Sectioned View)
-		if(view.getItem(job.getName()) != null) {
+		if(view.getItems().contains(job)) {
 			return true;
 		}
 		// Then try to iterate over the ViewGroup (Nested View)

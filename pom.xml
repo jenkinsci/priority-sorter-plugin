@@ -48,6 +48,15 @@
 		 -->
 	</developers>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>sectioned-view</artifactId>
+			<version>1.18</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
