@@ -298,6 +298,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 	
 	private boolean isJobInView(Job<?, ?> job, View view) {
+		// First do a simple test using contains
+		if(view.contains((TopLevelItem) job)) {
+			return true;
+		}
+		// Then try to get the Items (Sectioned View, Nested View etc)
+		if(view.getItem(job.getName()) != null) {
+			return true;
+		}
 		if(view instanceof ViewGroup) {
 			return isJobInViewGroup(job, (ViewGroup) view);
 		} else {
