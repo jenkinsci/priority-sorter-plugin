@@ -25,8 +25,6 @@ package jenkins.advancedqueue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
@@ -80,19 +78,19 @@ public class JobGroup {
 	private int id = 0;
 	private int priority = 2;
 	/**
-	 * @deprecated Used 2.7 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}
+	 * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}
 	 */
 	@Deprecated
 	private String view = null;
 	private JobInclusionStrategy jobGroupStrategy = null;
 	private boolean runExclusive = false;
 	/**
-	 * @deprecated Used 2.7 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}
+	 * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}
 	 */
 	@Deprecated
 	private boolean useJobFilter = false;
 	/**
-	 * @deprecated Used 2.7 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}
+	 * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}
 	 */
 	@Deprecated
 	private String jobPattern = ".*";
@@ -126,7 +124,7 @@ public class JobGroup {
 	/**
 	 * @return the viewName or <code>null</code> if the strategy is not {@link jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy}
 	 *
-	 * @deprecated Used 2.7 and earlier now replaced with dynamic {@link JobGroup#jobGroupStrategy}, will return the view
+	 * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}, will return the view
 	 */
 	@Deprecated
 	public String getView() {
@@ -144,7 +142,7 @@ public class JobGroup {
 	}
 		
 	public JobInclusionStrategy getJobGroupStrategy() {
-		// Convert from 2.7 and earlier
+		// Convert from 2.x 
 		if(jobGroupStrategy == null && view != null) {
 			ViewBasedJobInclusionStrategy.JobPattern pattern = new ViewBasedJobInclusionStrategy.JobPattern(jobPattern);
 			jobGroupStrategy = new ViewBasedJobInclusionStrategy(view, useJobFilter == false ? null : pattern);
