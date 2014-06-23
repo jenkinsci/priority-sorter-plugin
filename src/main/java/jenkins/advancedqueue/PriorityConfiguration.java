@@ -124,9 +124,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	private boolean checkActive() {
 		PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
-		if (configuration.getLegacyMode()) {
-			return false;
-		}
 		if (configuration.getOnlyAdminsMayEditPriorityConfiguration()) {
 			return Jenkins.getInstance().getACL().hasPermission(Jenkins.ADMINISTER);
 		}

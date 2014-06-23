@@ -91,7 +91,7 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 
 		public boolean isUsed() {
 			PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
-			return !configuration.getLegacyMode() && configuration.getAllowPriorityOnJobs();
+			return configuration.getAllowPriorityOnJobs();
 		}
 	}
 }

@@ -23,14 +23,14 @@
  */
 package hudson.queueSorter;
 
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import hudson.Extension;
+import hudson.model.AbstractProject;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
-import hudson.model.AbstractProject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+@Deprecated
 public class PrioritySorterJobProperty extends
 		JobProperty<AbstractProject<?, ?>> {
 
@@ -62,7 +62,7 @@ public class PrioritySorterJobProperty extends
 		}
 		
 		public boolean isUsed() {
-			return PrioritySorterConfiguration.get().getLegacyMode();
+			return false;
 		}
 	}
 }

@@ -45,14 +45,12 @@ public class PrioritySorterPlugin extends Plugin {
 
 	@Initializer(after = JOB_LOADED)
 	public static void init() {
-		// Check for Legacy Mode and init the Configuration
+		// Check for any Legacy Configuration and init the Configuration
 		LOGGER.info("Configuring the Priority Sorter ...");
 		PrioritySorterConfiguration.init();
-		// If Legacy Mode - init the Queue and sort the loaded Queue items
-		if (!PrioritySorterConfiguration.get().getLegacyMode()) {
-			LOGGER.info("Sorting existing Queue ...");
-			AdvancedQueueSorter.init();
-		}
+		// Init the Queue and sort the loaded Queue items
+		LOGGER.info("Sorting existing Queue ...");
+		AdvancedQueueSorter.init();
 	}
 
 }

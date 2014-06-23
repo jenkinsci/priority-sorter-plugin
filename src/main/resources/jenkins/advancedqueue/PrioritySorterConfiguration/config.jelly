@@ -1,15 +1,9 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
     <f:section title="Priority Sorter">
         <j:if test="${instance.legacyMode}">
+        	<h3>Priority Sorter found Legacy configuration data, please update the configuration to continue using the Priority Sorter</h3>
             <f:optionalBlock title="${%Switch to Advanced Priority Sorter Mode}" 
                              checked="false" inline="true" name="advanced">
-                <f:description>
-                    <h3>Priority Sorter is currently in Legacy Mode. After switching to Advanced Mode
-                        <li>you cannot switch back to Legacy Mode.</li>
-                        <li>the legacy priority property on Jobs is no longer used.</li>
-                        <li>the Configuration Slicing Plugin cannot be used to configure priorities.</li>
-                    </h3>
-                </f:description>    
                 <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
                 <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
                     <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
