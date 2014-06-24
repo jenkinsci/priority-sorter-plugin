@@ -9,7 +9,6 @@
 			<div>
 				<h2>Job Priorities</h2>
 				Assign Priorities by creating JobGroups. Priorities are assigned top down by first match.
-				If a Job has a Priority assigned directly on the Job that Priority will be used and the below will not be used.
 				<br/>
 				<br/> 
 			</div>

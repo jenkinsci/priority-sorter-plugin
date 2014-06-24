@@ -64,6 +64,10 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private Integer legacyMaxPriority = Integer.MAX_VALUE;
 	private Integer legacyMinPriority = Integer.MIN_VALUE;
 
+	/**
+	 * @deprecated used in 2.x - replaces with XXX
+	 */
+	@Deprecated
 	private boolean allowPriorityOnJobs;
 
 	private boolean onlyAdminsMayEditPriorityConfiguration = false;
@@ -77,7 +81,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
 		// Make sure default is good for updating from legacy
 		prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
-		prioritySorterConfiguration.allowPriorityOnJobs = true;
+		prioritySorterConfiguration.allowPriorityOnJobs = false;
 		// Check for legacy
 		prioritySorterConfiguration.checkLegacy();
 		if (!prioritySorterConfiguration.getLegacyMode()) {
@@ -98,7 +102,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 		//
 		onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
-		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
 		if (getLegacyMode()) {
 			Boolean advanced = json.getBoolean("advanced");
 			if (advanced) {
@@ -113,10 +116,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
 	private final boolean getLegacyMode() {
 		return legacyMode;
-	}
-
-	public boolean getAllowPriorityOnJobs() {
-		return allowPriorityOnJobs;
 	}
 
 	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
@@ -254,7 +253,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				for (AbstractProject<?, ?> project : allProjects) {
 					PrioritySorterJobProperty legacyPriorityProperty = project
 							.getProperty(PrioritySorterJobProperty.class);
-					if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
+					if (legacyPriorityProperty != null) {
 						int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority,
 								strategy.getNumberOfPriorities(), legacyPriorityProperty.priority);
 						AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
@@ -273,7 +272,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 						LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
 					}
 				}
-
+				
 				// Finally, switch Legacy Mode
 				legacyMode = false;
 			}

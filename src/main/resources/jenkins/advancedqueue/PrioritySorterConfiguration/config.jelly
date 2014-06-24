@@ -5,9 +5,6 @@
             <f:optionalBlock title="${%Switch to Advanced Priority Sorter Mode}" 
                              checked="false" inline="true" name="advanced">
                 <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
-                <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
-                    <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
-                </f:entry>
                 <f:entry title="Only Admins can edit Job Priorities" description="Check if only Administrators should be allowed to view and edit the Job Priorities" field="onlyAdminsMayEditPriorityConfiguration">
                     <f:checkbox name="onlyAdminsMayEditPriorityConfiguration" checked="${onlyAdminsMayEditPriorityConfiguration}"/>
                 </f:entry>               
@@ -16,9 +13,6 @@
         <!-- TODO: remove code duplication -->
         <j:if test="${not instance.legacyMode}">
             <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
-            <f:entry title="Allow priorities directly on Jobs" description="Check if you still want to have the ability to set priority directly on Jobs" field="allowPriorityOnJobs">
-                <f:checkbox id="ps_allowPriorityOnJobs" name="allowPriorityOnJobs" checked="${allowPriorityOnJobs}"/>
-            </f:entry>          
             <f:entry title="Only Admins can edit Job Priorities" description="Check if only Administrators should be allowed to view and edit the Job Priorities" field="onlyAdminsMayEditPriorityConfiguration">
                 <f:checkbox name="onlyAdminsMayEditPriorityConfiguration" checked="${onlyAdminsMayEditPriorityConfiguration}"/>
             </f:entry>               

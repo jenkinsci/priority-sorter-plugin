@@ -226,17 +226,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 		}
 
-		if (PrioritySorterConfiguration.get().getAllowPriorityOnJobs()) {
-			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
-			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
-				int priority = priorityProperty.priority;
-				if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
-					priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-				}
-				priorityCallback.addDecisionLog(0, "Using priority taken directly from the Job");
-				return priorityCallback.setPrioritySelection(priority);
-			}
-		}
 		//
 		JobGroup jobGroup = getJobGroup(priorityCallback, job);
 		if (jobGroup != null) {

@@ -24,15 +24,16 @@
 package jenkins.advancedqueue;
 
 import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor.FormException;
+import hudson.model.Job;
+import hudson.model.JobProperty;
+import hudson.model.JobPropertyDescriptor;
 import hudson.util.ListBoxModel;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
+import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -75,6 +76,22 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 
 	@Extension
 	public static final class DescriptorImpl extends JobPropertyDescriptor {
+		
+		private PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
+			
+			public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
+				return this;
+			}
+			
+			public PriorityConfigurationCallback setPrioritySelection(int priority) {
+				return this;
+			}
+			
+			public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
+				return this;
+			}
+		};
+		
 		@Override
 		public String getDisplayName() {
 			return Messages.AdvancedQueueSorterJobProperty_displayName();
@@ -89,9 +106,10 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 			return items;
 		}
 
-		public boolean isUsed() {
-			PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
-			return configuration.getAllowPriorityOnJobs();
+		public boolean isUsed(Job<?,?> owner) {
+			PriorityConfiguration configuration = PriorityConfiguration.get();
+			JobGroup jobGroup = configuration.getJobGroup(dummyCallback, owner);
+			return jobGroup != null;
 		}
 	}
 }
