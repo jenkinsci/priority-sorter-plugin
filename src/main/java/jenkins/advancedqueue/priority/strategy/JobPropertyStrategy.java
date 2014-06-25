@@ -27,7 +27,6 @@ import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Queue.Item;
-import jenkins.advancedqueue.AdvancedQueueSorterJobProperty;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -54,7 +53,7 @@ public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 	private Integer getPriorityInternal(Queue.Item item) {
 		if(item.task instanceof Job<?, ?>) {
 			Job<?, ?> job = (Job<?, ?>) item.task;
-			AdvancedQueueSorterJobProperty priorityProperty = job.getProperty(AdvancedQueueSorterJobProperty.class);
+			PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
 			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 				return priorityProperty.priority;
 			}

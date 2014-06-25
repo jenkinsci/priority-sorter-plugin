@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
+import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
@@ -206,14 +207,14 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			for (AbstractProject<?, ?> project : allProjects) {
 				try {
 					// Scale any priority on the Job
-					AdvancedQueueSorterJobProperty priorityProperty = project
-							.getProperty(AdvancedQueueSorterJobProperty.class);
+					PriorityJobProperty priorityProperty = project
+							.getProperty(PriorityJobProperty.class);
 					if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
 								strategy.getNumberOfPriorities(), priorityProperty.priority);
                         if (newPriority != priorityProperty.getPriority()) {
                             project.removeProperty(priorityProperty);
-                            project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(),
+                            project.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(),
                                     newPriority));
                             project.save();
                         }
@@ -256,7 +257,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 					if (legacyPriorityProperty != null) {
 						int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority,
 								strategy.getNumberOfPriorities(), legacyPriorityProperty.priority);
-						AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
+						PriorityJobProperty advancedQueueSorterJobProperty = new PriorityJobProperty(
 								true, advancedPriority);
 						try {
 							project.addProperty(advancedQueueSorterJobProperty);

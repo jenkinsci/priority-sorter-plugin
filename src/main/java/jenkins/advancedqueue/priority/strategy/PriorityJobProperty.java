@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue;
+package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
@@ -33,6 +33,11 @@ import hudson.util.ListBoxModel;
 
 import java.util.logging.Logger;
 
+import jenkins.advancedqueue.JobGroup;
+import jenkins.advancedqueue.Messages;
+import jenkins.advancedqueue.PriorityConfiguration;
+import jenkins.advancedqueue.PriorityConfigurationCallback;
+import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONObject;
 
@@ -43,9 +48,9 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<?, ?>> {
+public class PriorityJobProperty extends JobProperty<AbstractProject<?, ?>> {
 
-	private final static Logger LOGGER = Logger.getLogger(AdvancedQueueSorterJobProperty.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(PriorityJobProperty.class.getName());
 
 	public final boolean useJobPriority;
 	public final int priority;
@@ -56,7 +61,7 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 	}
 
 	@DataBoundConstructor
-	public AdvancedQueueSorterJobProperty(boolean useJobPriority, int priority) {
+	public PriorityJobProperty(boolean useJobPriority, int priority) {
 		this.useJobPriority = useJobPriority;
 		this.priority = priority;
 	}
