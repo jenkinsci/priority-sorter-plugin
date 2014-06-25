@@ -24,57 +24,59 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
 import hudson.Extension;
-import hudson.model.Job;
 import hudson.util.ListBoxModel;
-
-import java.util.List;
-
-import jenkins.advancedqueue.DecisionLogger;
-import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
-import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import com.cloudbees.hudson.plugins.folder.FolderProperty;
+import com.cloudbees.hudson.plugins.folder.FolderPropertyDescriptor;
 import com.cloudbees.hudson.plugins.folder.Folder;
 
 /**
  * @author Magnus Sandberg
- * @since 2.7
+ * @since 3.0
  */
-public class CloudbeesFoldersBasedJobInclusionStrategy extends JobInclusionStrategy {
+public class JobInclusionFolderProperty extends FolderProperty<Folder> {
 
-	@Extension(optional = true)
-	static public class CloudbeesFoldersBasedJobInclusionStrategyDescriptor extends
-			AbstractJobInclusionStrategyDescriptor<CloudbeesFoldersBasedJobInclusionStrategy> {
+	private boolean useJobGroup;
 
-		public CloudbeesFoldersBasedJobInclusionStrategyDescriptor() {
-			super("Jobs that are included in a Cloudbees Folder");
-		}
-
-		public ListBoxModel getListFolderItems() {
-			ListBoxModel items = new ListBoxModel();
-			List<Folder> folders = Jenkins.getInstance().getAllItems(Folder.class);
-			for (Folder folder : folders) {
-				items.add(folder.getFullName(), folder.getFullName());
-			}
-			return items;
-		}
-
-	};
-
-	private String folderName;
+	private String jobGroupName;
 
 	@DataBoundConstructor
-	public CloudbeesFoldersBasedJobInclusionStrategy(String folderName) {
-		this.folderName = folderName;
+	public JobInclusionFolderProperty(Boolean useJobGroup, String jobGroupName) {
+		this.useJobGroup = useJobGroup;
+		this.jobGroupName = jobGroupName;
 	}
 
-	public String getFolderName() {
-		return folderName;
+	public String getJobGroupName() {
+		return jobGroupName;
 	}
+	
+	public boolean isUseJobGroup() {
+		return useJobGroup;
+	}
+
 
 	@Override
-	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		return job.getFullName().startsWith(folderName);
+	public DescriptorImpl getDescriptor() {
+		return (DescriptorImpl) super.getDescriptor();
 	}
+
+	@Extension
+	public static final class DescriptorImpl extends FolderPropertyDescriptor {
+		
+		@Override
+		public String getDisplayName() {
+			return "XXX";
+		}
+
+		public ListBoxModel getJobGroups() {
+			return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
+		}
+
+		public boolean isUsed() {
+			return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups().size() > 0;
+		}
+	}
+
 }

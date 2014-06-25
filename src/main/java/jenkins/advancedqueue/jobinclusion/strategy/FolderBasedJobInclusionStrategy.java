@@ -21,46 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.jobinclusion;
+package jenkins.advancedqueue.jobinclusion.strategy;
 
-import hudson.DescriptorExtensionList;
-import hudson.ExtensionPoint;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
+import hudson.Extension;
 import hudson.model.Job;
+import hudson.util.ListBoxModel;
+
+import java.util.List;
+
 import jenkins.advancedqueue.DecisionLogger;
+import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
+
+import org.kohsuke.stapler.DataBoundConstructor;
+
+import com.cloudbees.hudson.plugins.folder.Folder;
 
 /**
  * @author Magnus Sandberg
  * @since 3.0
  */
-public abstract class JobInclusionStrategy implements ExtensionPoint, Describable<JobInclusionStrategy> {
+public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
-	static public class AbstractJobInclusionStrategyDescriptor<T extends JobInclusionStrategy> extends Descriptor<JobInclusionStrategy> {
+	@Extension(optional = true)
+	static public class CloudbeesFoldersBasedJobInclusionStrategyDescriptor extends
+			AbstractJobInclusionStrategyDescriptor<FolderBasedJobInclusionStrategy> {
 
-		private final String displayName;
-
-		protected AbstractJobInclusionStrategyDescriptor(String displayName) {
-			this.displayName = displayName;
+		public CloudbeesFoldersBasedJobInclusionStrategyDescriptor() {
+			super("Jobs included in Folder");
 		}
 
-		@Override
-		public String getDisplayName() {
-			return displayName;
+		public ListBoxModel getListFolderItems() {
+			ListBoxModel items = new ListBoxModel();
+			List<Folder> folders = Jenkins.getInstance().getAllItems(Folder.class);
+			for (Folder folder : folders) {
+				items.add(folder.getFullName(), folder.getFullName());
+			}
+			return items;
 		}
 
 	};
 
-	@SuppressWarnings("unchecked")
-	public Descriptor<JobInclusionStrategy> getDescriptor() {
-		return Jenkins.getInstance().getDescriptor(this.getClass());
+	private String folderName;
+
+	@DataBoundConstructor
+	public FolderBasedJobInclusionStrategy(String folderName) {
+		this.folderName = folderName;
 	}
 
-	abstract public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job);
-
-	public static DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> all() {
-		return Jenkins.getInstance().getDescriptorList(JobInclusionStrategy.class);
+	public String getFolderName() {
+		return folderName;
 	}
 
+	@Override
+	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+		return job.getFullName().startsWith(folderName);
+	}
 }

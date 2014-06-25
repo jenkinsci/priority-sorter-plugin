@@ -41,7 +41,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
- * @since 2.7
+ * @since 3.0
  */
 public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 
@@ -53,9 +53,9 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 		@Override
 		public String getDisplayName() {
 			if (cloudbeesFolders) {
-				return "Add Properties to Jobs and Cloudbees Folders to include in Job Group";
+				return "Jobs and Folders marked for inclusion";
 			} else {
-				return "Add Properties to Jobs to include in Job Group";
+				return "Jobs marked for inclusion";
 			}
 		}
 
@@ -95,7 +95,7 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 			return match;
 		}
 		if (((PropertyBasedJobInclusionStrategyDescriptor) getDescriptor()).cloudbeesFolders) {
-			String jobViewName = CloudbeesPropertyLoader.getJobViewName(decisionLogger, job);
+			String jobViewName = FolderPropertyLoader.getJobGroupName(decisionLogger, job);
 			if (jobViewName == null) {
 				return false;
 			}

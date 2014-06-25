@@ -41,7 +41,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
- * @since 2.7
+ * @since 3.0
  */
 public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
@@ -50,7 +50,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 			AbstractJobInclusionStrategyDescriptor<ViewBasedJobInclusionStrategy> {
 
 		public ViewBasedJobInclusionStrategyDescriptor() {
-			super("Jobs that are included in a View");
+			super("Jobs included in a View");
 		}
 
 		public ListBoxModel getListViewItems() {
