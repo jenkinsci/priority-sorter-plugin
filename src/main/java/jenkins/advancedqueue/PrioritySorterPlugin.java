@@ -53,7 +53,9 @@ public class PrioritySorterPlugin extends Plugin {
 	@Initializer(before=PLUGINS_STARTED) 
 	public static void addAliases() { 
 		// Moved in 3.0 when JobPropertyStrategy was added
-	   Items.XSTREAM2.addCompatibilityAlias("jenkins.advancedqueue.AdvancedQueueSorterJobProperty", PriorityJobProperty.class);
+		Items.XSTREAM2.addCompatibilityAlias("jenkins.advancedqueue.AdvancedQueueSorterJobProperty", PriorityJobProperty.class);
+		// moved in 3.0 everything in hudson.* is deprecated '
+		Items.XSTREAM2.addCompatibilityAlias("hudson.queueSorter.PrioritySorterJobColumn", PriorityJobProperty.class);		
 	}
 	
 	@Initializer(after = JOB_LOADED)

@@ -19,13 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue;
 
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
 

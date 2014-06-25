@@ -23,6 +23,7 @@
  */
 package hudson.queueSorter;
 
+@Deprecated
 public class PrioritySorterDefaults {
 
 	final static int defaultPriority = 100;
