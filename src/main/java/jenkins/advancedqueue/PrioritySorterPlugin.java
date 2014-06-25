@@ -28,15 +28,11 @@ import static hudson.init.InitMilestone.PLUGINS_STARTED;
 import hudson.Plugin;
 import hudson.init.Initializer;
 import hudson.model.Items;
-import hudson.widgets.Widget;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.AdvancedQueueSorter;
-import jenkins.advancedqueue.widgets.BuildQueueWidget;
-import jenkins.model.Jenkins;
 
 /**
  * Plugin is the staring point of the Priority Sorter Plugin.
