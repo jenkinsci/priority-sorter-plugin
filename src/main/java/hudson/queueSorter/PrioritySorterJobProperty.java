@@ -58,7 +58,7 @@ public class PrioritySorterJobProperty extends
 		}
 
 		public int getDefault() {
-			return PrioritySorterDefaults.getDefault();
+			return 0;
 		}
 		
 		public boolean isUsed() {
