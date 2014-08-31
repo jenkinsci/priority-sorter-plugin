@@ -14,6 +14,9 @@
 				<br/> 
 			</div>
 			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
+                                <f:entry title="Description">
+                                        <f:textbox name="description" value="${jobGroup.description}"/>
+                                </f:entry>
 				<f:entry>
 					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
 						<table width="75%">

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.annotation.Nonnull;
+
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -37,7 +39,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Describes job group for Advanced Queue Sorter.
- * 
+ *
  * @author Magnus Sandberg
  * @author Oleg Nenashev
  * @since 2.0
@@ -77,6 +79,7 @@ public class JobGroup {
 
 	private int id = 0;
 	private int priority = 2;
+	private String description = "";
 	private String view;
 	private boolean runExclusive = false;
 	private boolean useJobFilter = false;
@@ -100,6 +103,14 @@ public class JobGroup {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+    public @Nonnull String getDescription() {
+        return hudson.Util.fixNull(description);
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 	/**
 	 * @return the priority
@@ -183,7 +194,7 @@ public class JobGroup {
 
 	/**
 	 * Creates a Job Group from JSON object.
-	 * 
+	 *
 	 * @param jobGroupObject JSON object with class description
 	 * @param id ID of the item to be created
 	 * @return created group
@@ -192,6 +203,7 @@ public class JobGroup {
 	public static JobGroup newInstance(StaplerRequest req, JSONObject jobGroupObject, int id) {
 		JobGroup jobGroup = new JobGroup();
 		jobGroup.setId(id);
+		jobGroup.setDescription(jobGroupObject.getString("description"));
 		jobGroup.setPriority(jobGroupObject.getInt("priority"));
 		jobGroup.setView(jobGroupObject.getString("view"));
 		jobGroup.setRunExclusive(Boolean.parseBoolean(jobGroupObject.getString("runExclusive")));
