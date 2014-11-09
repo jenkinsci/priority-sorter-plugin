@@ -51,14 +51,18 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
 	public void onEnterBuildable(BuildableItem bi) {
 		ItemInfo item = QueueItemCache.get().getItem(bi.id);
 		// Null at startup
-		if(item != null) {
+		if (item != null) {
 			QueueItemCache.get().getItem(bi.id).setBuildable();
 		}
 	}
 
 	@Override
 	public void onEnterBlocked(BlockedItem bi) {
-		QueueItemCache.get().getItem(bi.id).setBlocked();
+		ItemInfo item = QueueItemCache.get().getItem(bi.id);
+		// Null at startup
+		if (item != null) {
+			item.setBlocked();
+		}
 	}
 
 }

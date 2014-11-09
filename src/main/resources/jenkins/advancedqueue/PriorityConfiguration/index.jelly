@@ -13,9 +13,12 @@
 				<br/> 
 			</div>
 			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
-				<f:entry>
+ 				<f:entry>
 					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
 						<table width="75%">
+                           <f:entry title="Description">
+                                    <f:textarea name="description" value="${jobGroup.description}"/>
+                            </f:entry>
 							<f:entry>
 								<j:set var="instance" value="${jobGroup}"/>
 			 					<f:dropdownDescriptorSelector title="Jobs to include" field="jobGroupStrategy" descriptors="${it.jobInclusionStrategyDescriptors}"/>

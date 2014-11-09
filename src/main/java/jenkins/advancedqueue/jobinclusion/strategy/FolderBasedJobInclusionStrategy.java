@@ -44,10 +44,10 @@ import com.cloudbees.hudson.plugins.folder.Folder;
 public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	@Extension(optional = true)
-	static public class CloudbeesFoldersBasedJobInclusionStrategyDescriptor extends
+	static public class FolderBasedJobInclusionStrategyDescriptor extends
 			AbstractJobInclusionStrategyDescriptor<FolderBasedJobInclusionStrategy> {
 
-		public CloudbeesFoldersBasedJobInclusionStrategyDescriptor() {
+		public FolderBasedJobInclusionStrategyDescriptor() {
 			super("Jobs included in Folder");
 		}
 

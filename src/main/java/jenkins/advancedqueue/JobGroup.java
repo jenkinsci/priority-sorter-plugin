@@ -28,6 +28,8 @@ import java.util.List;
 
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
+import javax.annotation.Nonnull;
+
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -37,7 +39,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Describes job group for Advanced Queue Sorter.
- * 
+ *
  * @author Magnus Sandberg
  * @author Oleg Nenashev
  * @since 2.0
@@ -83,6 +85,8 @@ public class JobGroup {
 	@Deprecated
 	private String view = null;
 	private JobInclusionStrategy jobGroupStrategy = null;
+	private String description = "";
+
 	private boolean runExclusive = false;
 	/**
 	 * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}
@@ -113,6 +117,14 @@ public class JobGroup {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+    public @Nonnull String getDescription() {
+        return hudson.Util.fixNull(description);
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 	/**
 	 * @return the priority
@@ -181,7 +193,7 @@ public class JobGroup {
 
 	/**
 	 * Creates a Job Group from JSON object.
-	 * 
+	 *
 	 * @param jobGroupObject JSON object with class description
 	 * @param id ID of the item to be created
 	 * @return created group
@@ -190,6 +202,7 @@ public class JobGroup {
 	public static JobGroup newInstance(StaplerRequest req, JSONObject jobGroupObject, int id) {
 		JobGroup jobGroup = new JobGroup();
 		jobGroup.setId(id);
+		jobGroup.setDescription(jobGroupObject.getString("description"));
 		jobGroup.setPriority(jobGroupObject.getInt("priority"));
 		JSONObject jsonObjectJobGroupStrategy = jobGroupObject.getJSONObject("jobGroupStrategy");
 		JobInclusionStrategy jobGroupStrategy = req.bindJSON(Class.class, JobInclusionStrategy.class, jsonObjectJobGroupStrategy);
