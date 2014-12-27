@@ -2,7 +2,7 @@
     <f:section title="Priority Sorter">
         <j:if test="${instance.legacyMode}">
         	<h3>Priority Sorter found Legacy configuration data (version 1.x). This data will be removed when you switch to Advanced mode.</h3>
-        	<h3><i>To keep and convert you priority configurations please downgrade to version 2.x, switch to advanced mode and then to 3.x</i></h3>
+        	<h3><i>To keep and convert you priority configurations please downgrade to version 2.x, switch to advanced mode and then upgrade to 3.x</i></h3>
             <f:optionalBlock title="${%Switch to Advanced Priority Sorter Mode}" 
                              checked="false" inline="true" name="advanced">
                 <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
