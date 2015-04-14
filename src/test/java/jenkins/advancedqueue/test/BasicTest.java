@@ -26,6 +26,14 @@ public class BasicTest {
 	}
 
 	@Test
+	public void simple_two_jobs_with_no_configuration() throws Exception {
+		TestRunListener.init(new ExpectedItem("Job 0", 3), new ExpectedItem("Job 1", 3));
+		jobHelper.scheduleProjects(new UserIdCause(), new UserIdCause());
+		j.waitUntilNoActivity();
+		TestRunListener.assertStartedItems();		
+	}
+	
+	@Test
 	@LocalData
 	public void simple_two_jobs_with_basic_configuration() throws Exception {
 		TestRunListener.init(new ExpectedItem("Job 0", 9), new ExpectedItem("Job 1", 9));
