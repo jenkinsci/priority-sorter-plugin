@@ -88,7 +88,15 @@ public class AdvancedQueueSorter extends QueueSorter {
 				if (o1weight < o2weight) {
 					return -1;
 				}
-				return (int) (o1.getInQueueSince() - o2.getInQueueSince());
+				// Same weights sort on time in queue
+				if(o1.getInQueueSince() > o2.getInQueueSince()) {
+					return 1;
+				}
+				if(o1.getInQueueSince() < o2.getInQueueSince()) {
+					return -1;
+				}
+				// Having same time-stamp is not likely - but maybe it can happen ...
+				return o1.getDisplayName().compareTo(o2.getDisplayName());
 			}
 		});
 		//
