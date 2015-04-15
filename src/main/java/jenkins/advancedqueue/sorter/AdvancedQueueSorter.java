@@ -96,7 +96,8 @@ public class AdvancedQueueSorter extends QueueSorter {
 					return -1;
 				}
 				// Having same time-stamp is not likely - but maybe it can happen ...
-				return o1.getDisplayName().compareTo(o2.getDisplayName());
+				// ... but what is the alternative here?
+				return 0;
 			}
 		});
 		//
