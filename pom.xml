@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.520</version>
+		<version>1.580</version>
 	</parent>
 	<artifactId>PrioritySorter</artifactId>
 	<version>2.10-SNAPSHOT</version>
@@ -34,18 +35,9 @@
 			</roles>
 			<timezone>CET</timezone>
 		</developer>
-		<!-- Removed not to show on Wiki 
-		<developer>
-			<id>bklarson</id>
-			<name>Brad Larson</name>
-			<email>bklarson@gmail.com</email>
-			<roles>
-				<role>developer</role>
-				<role>retired maintainer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		 -->
+		<!-- Removed not to show on Wiki <developer> <id>bklarson</id> <name>Brad 
+			Larson</name> <email>bklarson@gmail.com</email> <roles> <role>developer</role> 
+			<role>retired maintainer</role> </roles> <timezone>-6</timezone> </developer> -->
 	</developers>
 
 	<build>
@@ -70,8 +62,14 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>matrix-project</artifactId>
+			<version>1.4</version>
+			<optional>false</optional> <!-- should be true but for now require this -->
+		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>cloudbees-folder</artifactId>
@@ -100,11 +98,11 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-	<scm>               
+	<scm>
 		<connection>scm:git:git://github.com/jenkinsci/priority-sorter-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/priority-sorter-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 </project>
