@@ -96,8 +96,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 					return -1;
 				}
 				// Having same time-stamp is not likely - but maybe it can happen ...
-				// ... but what is the alternative here?
-				return 0;
+				return new Integer(o1.id).compareTo(o2.id);
 			}
 		});
 		//
