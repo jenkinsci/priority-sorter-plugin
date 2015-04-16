@@ -1,5 +1,6 @@
 The MIT License
 
+Copyright (c) 2013-, Magnus Sandberg
 Copyright (c) 2010-, Brad Larson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
