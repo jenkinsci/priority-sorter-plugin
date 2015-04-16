@@ -24,11 +24,14 @@
 package jenkins.advancedqueue;
 
 import static hudson.init.InitMilestone.JOB_LOADED;
+import static hudson.init.InitMilestone.PLUGINS_STARTED;
 import hudson.Plugin;
 import hudson.init.Initializer;
+import hudson.model.Items;
 
 import java.util.logging.Logger;
 
+import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.AdvancedQueueSorter;
 
 /**
@@ -43,16 +46,22 @@ public class PrioritySorterPlugin extends Plugin {
 
 	private final static Logger LOGGER = Logger.getLogger(PrioritySorterPlugin.class.getName());
 
+	@Initializer(before=PLUGINS_STARTED) 
+	public static void addAliases() { 
+		// Moved in 3.0 when JobPropertyStrategy was added
+		Items.XSTREAM2.addCompatibilityAlias("jenkins.advancedqueue.AdvancedQueueSorterJobProperty", PriorityJobProperty.class);
+		// moved in 3.0 everything in hudson.* is deprecated
+		Items.XSTREAM2.addCompatibilityAlias("hudson.queueSorter.PrioritySorterJobColumn", PrioritySorterJobColumn.class);		
+	}
+	
 	@Initializer(after = JOB_LOADED)
 	public static void init() {
-		// Check for Legacy Mode and init the Configuration
+		// Check for any Legacy Configuration and init the Configuration
 		LOGGER.info("Configuring the Priority Sorter ...");
 		PrioritySorterConfiguration.init();
-		// If Legacy Mode - init the Queue and sort the loaded Queue items
-		if (!PrioritySorterConfiguration.get().getLegacyMode()) {
-			LOGGER.info("Sorting existing Queue ...");
-			AdvancedQueueSorter.init();
-		}
+		// Init the Queue and sort the loaded Queue items
+		LOGGER.info("Sorting existing Queue ...");
+		AdvancedQueueSorter.init();
 	}
 
 }

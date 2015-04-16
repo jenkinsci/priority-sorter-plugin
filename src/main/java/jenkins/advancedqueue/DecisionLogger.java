@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2013, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,13 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue;
 
-public class PrioritySorterDefaults {
+/**
+ * @author Magnus Sandberg
+ * @since 2.7
+ */
+public interface DecisionLogger {
 
-	final static int defaultPriority = 100;
+	DecisionLogger addDecisionLog(int indent, String log);
 
-	static public int getDefault() {
-		return defaultPriority;
-	}
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright (c) 2014, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.sorter;
+package jenkins.advancedqueue.jobinclusion.strategy;
 
 import hudson.Extension;
-import hudson.model.Queue.BlockedItem;
-import hudson.model.Queue.BuildableItem;
-import hudson.model.Queue.LeftItem;
-import hudson.model.Queue.WaitingItem;
-import hudson.model.queue.QueueListener;
+import hudson.model.Job;
+import jenkins.advancedqueue.DecisionLogger;
+import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
+
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 3.0
  */
-@Extension
-public class AdvancedQueueSorterQueueListener extends QueueListener {
+public class AllJobsJobInclusionStrategy extends JobInclusionStrategy {
 
-	@Override
-	public void onEnterWaiting(WaitingItem wi) {
-		AdvancedQueueSorter.get().onNewItem(wi);
-	}
+	@Extension
+	static public class AllJobsJobInclusionStrategyDescriptor extends
+			AbstractJobInclusionStrategyDescriptor<AllJobsJobInclusionStrategy> {
 
-	@Override
-	public void onLeft(LeftItem li) {
-		AdvancedQueueSorter.get().onLeft(li);
-	}
-
-	@Override
-	public void onEnterBuildable(BuildableItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if (item != null) {
-			QueueItemCache.get().getItem(bi.id).setBuildable();
+		public AllJobsJobInclusionStrategyDescriptor() {
+			super("All Jobs");
 		}
+	};
+
+	@DataBoundConstructor
+	public AllJobsJobInclusionStrategy() {
 	}
 
 	@Override
-	public void onEnterBlocked(BlockedItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if (item != null) {
-			item.setBlocked();
-		}
+	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+		return true;
 	}
-
 }

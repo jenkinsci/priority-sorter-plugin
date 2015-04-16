@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Magnus Sandberg
+ * Copyright (c) 2014, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue.sorter;
+package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
-import hudson.model.Queue.BlockedItem;
-import hudson.model.Queue.BuildableItem;
-import hudson.model.Queue.LeftItem;
-import hudson.model.Queue.WaitingItem;
-import hudson.model.queue.QueueListener;
+import hudson.model.Job;
+import hudson.model.Queue;
+import hudson.model.Queue.Item;
+
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
- * @since 2.0
+ * @since 3.0
  */
-@Extension
-public class AdvancedQueueSorterQueueListener extends QueueListener {
+public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 
-	@Override
-	public void onEnterWaiting(WaitingItem wi) {
-		AdvancedQueueSorter.get().onNewItem(wi);
-	}
+	@Extension
+	public static class UserIdCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
-	@Override
-	public void onLeft(LeftItem li) {
-		AdvancedQueueSorter.get().onLeft(li);
-	}
-
-	@Override
-	public void onEnterBuildable(BuildableItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if (item != null) {
-			QueueItemCache.get().getItem(bi.id).setBuildable();
+		public UserIdCauseStrategyDescriptor() {
+			super("Take the priority from Property on the Job");
 		}
+
+	}
+
+	@DataBoundConstructor
+	public JobPropertyStrategy() {
+	}
+	
+
+	private Integer getPriorityInternal(Queue.Item item) {
+		if(item.task instanceof Job<?, ?>) {
+			Job<?, ?> job = (Job<?, ?>) item.task;
+			PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
+			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
+				return priorityProperty.priority;
+			}
+		} 
+		return null;
 	}
 
 	@Override
-	public void onEnterBlocked(BlockedItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if (item != null) {
-			item.setBlocked();
-		}
+	public boolean isApplicable(Queue.Item item) {
+		return getPriorityInternal(item) != null;
+	}
+
+	@Override
+	public int getPriority(Item item) {
+		return getPriorityInternal(item);
 	}
 
 }

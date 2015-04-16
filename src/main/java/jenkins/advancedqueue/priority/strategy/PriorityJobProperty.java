@@ -21,18 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jenkins.advancedqueue;
+package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor.FormException;
+import hudson.model.Job;
+import hudson.model.JobProperty;
+import hudson.model.JobPropertyDescriptor;
 import hudson.util.ListBoxModel;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
+import jenkins.advancedqueue.JobGroup;
+import jenkins.advancedqueue.Messages;
+import jenkins.advancedqueue.PriorityConfiguration;
+import jenkins.advancedqueue.PriorityConfigurationCallback;
+import jenkins.advancedqueue.PrioritySorterConfiguration;
+import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -42,9 +48,9 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<?, ?>> {
+public class PriorityJobProperty extends JobProperty<AbstractProject<?, ?>> {
 
-	private final static Logger LOGGER = Logger.getLogger(AdvancedQueueSorterJobProperty.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(PriorityJobProperty.class.getName());
 
 	public final boolean useJobPriority;
 	public final int priority;
@@ -55,7 +61,7 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 	}
 
 	@DataBoundConstructor
-	public AdvancedQueueSorterJobProperty(boolean useJobPriority, int priority) {
+	public PriorityJobProperty(boolean useJobPriority, int priority) {
 		this.useJobPriority = useJobPriority;
 		this.priority = priority;
 	}
@@ -75,6 +81,22 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 
 	@Extension
 	public static final class DescriptorImpl extends JobPropertyDescriptor {
+		
+		private PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
+			
+			public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
+				return this;
+			}
+			
+			public PriorityConfigurationCallback setPrioritySelection(int priority) {
+				return this;
+			}
+			
+			public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
+				return this;
+			}
+		};
+		
 		@Override
 		public String getDisplayName() {
 			return Messages.AdvancedQueueSorterJobProperty_displayName();
@@ -89,9 +111,10 @@ public class AdvancedQueueSorterJobProperty extends JobProperty<AbstractProject<
 			return items;
 		}
 
-		public boolean isUsed() {
-			PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
-			return !configuration.getLegacyMode() && configuration.getAllowPriorityOnJobs();
+		public boolean isUsed(Job<?,?> owner) {
+			PriorityConfiguration configuration = PriorityConfiguration.get();
+			JobGroup jobGroup = configuration.getJobGroup(dummyCallback, owner);
+			return jobGroup != null;
 		}
 	}
 }

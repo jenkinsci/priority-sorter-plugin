@@ -29,7 +29,6 @@ import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.Item;
 import hudson.model.Queue.LeftItem;
 import hudson.model.queue.QueueSorter;
-import hudson.queueSorter.PrioritySorterQueueSorter;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,11 +72,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 
 	@Override
 	public void sortBuildableItems(List<BuildableItem> items) {
-		// Handle Legacy mode
-		if (PrioritySorterConfiguration.get().getLegacyMode()) {
-			new PrioritySorterQueueSorter().sortBuildableItems(items);
-		}
-		// Sort
+
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
 				float o1weight = getCalculatedWeight(o1);

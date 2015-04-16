@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2010, Brad Larson
+ * Copyright (c) 2014, Magnus Sandberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue.jobinclusion.strategy;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
+import hudson.util.ListBoxModel;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-@Deprecated
-public class PrioritySorterJobProperty extends
-		JobProperty<AbstractProject<?, ?>> {
+import com.cloudbees.hudson.plugins.folder.FolderProperty;
+import com.cloudbees.hudson.plugins.folder.FolderPropertyDescriptor;
+import com.cloudbees.hudson.plugins.folder.Folder;
 
-	public final int priority;
+/**
+ * @author Magnus Sandberg
+ * @since 3.0
+ */
+public class JobInclusionFolderProperty extends FolderProperty<Folder> {
+
+	private boolean useJobGroup;
+
+	private String jobGroupName;
 
 	@DataBoundConstructor
-	public PrioritySorterJobProperty(int priority) {
-		this.priority = priority;
+	public JobInclusionFolderProperty(Boolean useJobGroup, String jobGroupName) {
+		this.useJobGroup = useJobGroup;
+		this.jobGroupName = jobGroupName;
 	}
 
-	public int getPriority() {
-		return priority;
+	public String getJobGroupName() {
+		return jobGroupName;
 	}
+	
+	public boolean isUseJobGroup() {
+		return useJobGroup;
+	}
+
 
 	@Override
 	public DescriptorImpl getDescriptor() {
@@ -51,18 +63,20 @@ public class PrioritySorterJobProperty extends
 	}
 
 	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
+	public static final class DescriptorImpl extends FolderPropertyDescriptor {
+		
 		@Override
 		public String getDisplayName() {
-			return "Job Priority";
+			return "XXX";
 		}
 
-		public int getDefault() {
-			return 0;
+		public ListBoxModel getJobGroups() {
+			return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
 		}
-		
+
 		public boolean isUsed() {
-			return false;
+			return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups().size() > 0;
 		}
 	}
+
 }

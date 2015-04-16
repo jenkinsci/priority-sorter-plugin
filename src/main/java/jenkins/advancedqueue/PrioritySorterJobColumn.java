@@ -19,13 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.queueSorter;
+package jenkins.advancedqueue;
 
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
-import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
 
@@ -42,21 +41,11 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 	}
 
 	public String getPriority(final Job<?, ?> job) {
-		if(PrioritySorterConfiguration.get().getLegacyMode()) {
-			final PrioritySorterJobProperty jp = job.getProperty(PrioritySorterJobProperty.class);
-			if (jp != null) {
-				return Integer.toString(jp.priority);
-			} else {
-				// No priority has been set for this job - use the default
-				return Integer.toString(PrioritySorterDefaults.getDefault());
-			}
-		} else {
-			ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
-			if(itemInfo == null) {
-				return "Pending"; // You need to run a Job
-			}
-			return Integer.toString(itemInfo.getPriority());
+		ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
+		if(itemInfo == null) {
+			return "Pending"; // You need to run a Job
 		}
+		return Integer.toString(itemInfo.getPriority());
 	}
 
 	@Extension

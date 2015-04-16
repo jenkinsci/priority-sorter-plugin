@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
+import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
@@ -61,9 +62,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
 
 	private boolean legacyMode = false;
-	private Integer legacyMaxPriority = Integer.MAX_VALUE;
-	private Integer legacyMinPriority = Integer.MIN_VALUE;
 
+	/**
+	 * @deprecated used in 2.x - replaces with XXX
+	 */
+	@Deprecated
 	private boolean allowPriorityOnJobs;
 
 	private boolean onlyAdminsMayEditPriorityConfiguration = false;
@@ -77,7 +80,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
 		// Make sure default is good for updating from legacy
 		prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
-		prioritySorterConfiguration.allowPriorityOnJobs = true;
+		prioritySorterConfiguration.allowPriorityOnJobs = false;
 		// Check for legacy
 		prioritySorterConfiguration.checkLegacy();
 		if (!prioritySorterConfiguration.getLegacyMode()) {
@@ -98,7 +101,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 		//
 		onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
-		allowPriorityOnJobs = json.getBoolean("allowPriorityOnJobs");
 		if (getLegacyMode()) {
 			Boolean advanced = json.getBoolean("advanced");
 			if (advanced) {
@@ -111,12 +113,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return true;
 	}
 
-	public final boolean getLegacyMode() {
+	private final boolean getLegacyMode() {
 		return legacyMode;
-	}
-
-	public boolean getAllowPriorityOnJobs() {
-		return allowPriorityOnJobs;
 	}
 
 	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
@@ -175,8 +173,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
 		try {
 			legacyMode = false;
-			legacyMaxPriority = Integer.MAX_VALUE;
-			legacyMinPriority = Integer.MIN_VALUE;
 
 			// getAllItems() doesn't return MatrixProject even if actually is a Project
 			// since it also is a group of items (ItemGroup) in the tree being traversed
@@ -187,8 +183,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 					PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
 					if (priority != null) {
 						legacyMode = true;
-						legacyMaxPriority = Math.max(legacyMaxPriority, priority.priority);
-						legacyMinPriority = Math.min(legacyMinPriority, priority.priority);
 					}
 				}
 			}
@@ -207,14 +201,14 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			for (AbstractProject<?, ?> project : allProjects) {
 				try {
 					// Scale any priority on the Job
-					AdvancedQueueSorterJobProperty priorityProperty = project
-							.getProperty(AdvancedQueueSorterJobProperty.class);
+					PriorityJobProperty priorityProperty = project
+							.getProperty(PriorityJobProperty.class);
 					if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
 								strategy.getNumberOfPriorities(), priorityProperty.priority);
                         if (newPriority != priorityProperty.getPriority()) {
                             project.removeProperty(priorityProperty);
-                            project.addProperty(new AdvancedQueueSorterJobProperty(priorityProperty.getUseJobPriority(),
+                            project.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(),
                                     newPriority));
                             project.save();
                         }
@@ -241,42 +235,24 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	private void convertFromLegacyToAdvanced() {
-		// Update legacy range first
-		checkLegacy();
 		// Shouldn't really by a permission problem when getting here but
 		// to be on the safe side
 		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
 		try {
-			if (getLegacyMode()) {
-				//
-				@SuppressWarnings("rawtypes")
-				List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-				for (AbstractProject<?, ?> project : allProjects) {
-					PrioritySorterJobProperty legacyPriorityProperty = project
-							.getProperty(PrioritySorterJobProperty.class);
-					if (legacyPriorityProperty != null && getAllowPriorityOnJobs()) {
-						int advancedPriority = legacyPriorityToAdvancedPriority(legacyMinPriority, legacyMaxPriority,
-								strategy.getNumberOfPriorities(), legacyPriorityProperty.priority);
-						AdvancedQueueSorterJobProperty advancedQueueSorterJobProperty = new AdvancedQueueSorterJobProperty(
-								true, advancedPriority);
-						try {
-							project.addProperty(advancedQueueSorterJobProperty);
-							project.save();
-						} catch (IOException e) {
-							LOGGER.warning("Failed to add Advanced Job Priority To " + project.getName());
-						}
-					}
-					try {
-						project.removeProperty(legacyPriorityProperty);
-						project.save();
-					} catch (IOException e) {
-						LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
-					}
+			@SuppressWarnings("rawtypes")
+			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+			for (AbstractProject<?, ?> project : allProjects) {
+				PrioritySorterJobProperty legacyPriorityProperty = project
+						.getProperty(PrioritySorterJobProperty.class);
+				try {
+					project.removeProperty(PrioritySorterJobProperty.class);
+					project.save();
+				} catch (IOException e) {
+					LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
 				}
-
-				// Finally, switch Legacy Mode
-				legacyMode = false;
-			}
+			}			
+			// Finally, switch Legacy Mode
+			legacyMode = false;
 		} finally {
 			SecurityContextHolder.setContext(saveCtx);
 		}
