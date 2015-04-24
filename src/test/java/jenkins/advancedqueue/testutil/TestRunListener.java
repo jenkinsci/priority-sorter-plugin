@@ -32,8 +32,6 @@ public class TestRunListener extends RunListener<Run> {
 	@Override
 	public void onStarted(Run r, TaskListener listener) {
 		LOGGER.info("ON STARTED: " + r.getParent().getName());
-		LOGGER.info("ON STARTED: " + QueueItemCache.get());
-		LOGGER.info("ON STARTED: " + QueueItemCache.get().getItem(r.getParent().getName()));
 		try {
 			ItemInfo item = QueueItemCache.get().getItem(r.getParent().getName());
 			actual.add(item);
@@ -46,8 +44,8 @@ public class TestRunListener extends RunListener<Run> {
 		Assert.assertEquals("Wrong number of started items", expected.length, actual.size());
 		for (int i = 0; i < actual.size(); i++) {
 			LOGGER.info("Validating Build " + i);
-			Assert.assertEquals("Job mismatch", expected[i].getJobName(), actual.get(i).getJobName());
-			Assert.assertEquals("Priority mismatch", expected[i].getPriority(), actual.get(i).getPriority());
+			Assert.assertEquals("Job mismatch at position [" + i + "]", expected[i].getJobName(), actual.get(i).getJobName());
+			Assert.assertEquals("Priority mismatch at position [" + i + "]", expected[i].getPriority(), actual.get(i).getPriority());
 		}
 	}
 	

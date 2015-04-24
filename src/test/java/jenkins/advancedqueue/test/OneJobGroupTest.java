@@ -29,7 +29,7 @@ public class OneJobGroupTest {
 			public String getShortDescription() {
 				return "Dummy Cause";
 			}
-		});
+		}).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}
@@ -38,7 +38,7 @@ public class OneJobGroupTest {
 	@LocalData
 	public void test_UserIdCause() throws Exception {
 		TestRunListener.init(new ExpectedItem("Job 0", 4));
-		jobHelper.scheduleProjects(new Cause.UserIdCause());
+		jobHelper.scheduleProjects(new Cause.UserIdCause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}
@@ -47,7 +47,7 @@ public class OneJobGroupTest {
 	@LocalData
 	public void test_CLICause() throws Exception {
 		TestRunListener.init(new ExpectedItem("Job 0", 5));
-		jobHelper.scheduleProjects(new CLICause());
+		jobHelper.scheduleProjects(new CLICause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}
@@ -61,7 +61,7 @@ public class OneJobGroupTest {
 			public String getShortDescription() {
 				return "Dummy Cause";
 			}
-		});
+		}).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}

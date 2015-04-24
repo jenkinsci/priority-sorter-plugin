@@ -4,7 +4,7 @@
     <string>OldData</string>
   </disabledAdministrativeMonitors>
   <version>1.520</version>
-  <numExecutors>1</numExecutors>
+  <numExecutors>0</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
   <authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
