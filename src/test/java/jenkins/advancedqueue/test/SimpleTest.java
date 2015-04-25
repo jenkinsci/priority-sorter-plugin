@@ -41,7 +41,7 @@ public class SimpleTest {
 	public void simple_matrix_with_no_configuration() throws Exception {
 		TestRunListener.init(
 				new ExpectedItem("Matrix 0", 3), 
-				new ExpectedItem("0A1=0A3", 3), new ExpectedItem("0A1=0A2", 3)
+				new ExpectedItem("0A1=0A.", 3), new ExpectedItem("0A1=0A.", 3)
 		);
 		jobHelper.scheduleMatrixProjects(new UserIdCause()).go();
 		j.waitUntilNoActivity();
@@ -53,8 +53,8 @@ public class SimpleTest {
 	public void simple_two_matrix_with_no_configuration() throws Exception {
 		TestRunListener.init(
 				new ExpectedItem("Matrix 0", 3), new ExpectedItem("Matrix 1", 3), 
-				new ExpectedItem("0A1=0A3", 3), new ExpectedItem("0A1=0A2", 3),
-				new ExpectedItem("1A1=1A3", 3), new ExpectedItem("1A1=1A2", 3)
+				new ExpectedItem("0A1=0A.", 3), new ExpectedItem("0A1=0A.", 3),
+				new ExpectedItem("1A1=1A.", 3), new ExpectedItem("1A1=1A.", 3)
 		);
 		jobHelper.scheduleMatrixProjects(new UserIdCause(), new UserIdCause()).go();
 		j.waitUntilNoActivity();
