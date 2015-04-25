@@ -21,7 +21,7 @@ public class JobPatternGroupTest {
 	@LocalData
 	public void test_job_pattern_1() throws Exception {
 		TestRunListener.init(new ExpectedItem("Job 0", 3));
-		jobHelper.scheduleProjects(new UserIdCause());
+		jobHelper.scheduleProjects(new UserIdCause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}
@@ -30,7 +30,7 @@ public class JobPatternGroupTest {
 	@LocalData
 	public void test_job_pattern_2() throws Exception {
 		TestRunListener.init(new ExpectedItem("Job 0", 3), new ExpectedItem("Job 1", 9));
-		jobHelper.scheduleProjects(new UserIdCause(), new UserIdCause());
+		jobHelper.scheduleProjects(new UserIdCause(), new UserIdCause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}
@@ -40,7 +40,7 @@ public class JobPatternGroupTest {
 	public void test_job_pattern_3() throws Exception {
 		TestRunListener.init(new ExpectedItem("Job 0", 3), new ExpectedItem("Job 3", 3), new ExpectedItem("Job 1", 9),
 				new ExpectedItem("Job 2", 9));
-		jobHelper.scheduleProjects(new UserIdCause(), new UserIdCause(), new UserIdCause(), new UserIdCause());
+		jobHelper.scheduleProjects(new UserIdCause(), new UserIdCause(), new UserIdCause(), new UserIdCause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.advancedqueue.PrioritySorterConfiguration>
+  <legacyMode>false</legacyMode>
+  <legacyMaxPriority>2147483647</legacyMaxPriority>
+  <legacyMinPriority>-2147483648</legacyMinPriority>
+  <allowPriorityOnJobs>true</allowPriorityOnJobs>
+  <strategy class="jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy">
+    <ifCondition></ifCondition>
+    <unlessCondition></unlessCondition>
+    <children/>
+    <location>
+      <lineNumber>0</lineNumber>
+      <columnNumber>0</columnNumber>
+    </location>
+    <numberOfPriorities>10</numberOfPriorities>
+    <defaultPriority>5</defaultPriority>
+  </strategy>
+</jenkins.advancedqueue.PrioritySorterConfiguration>

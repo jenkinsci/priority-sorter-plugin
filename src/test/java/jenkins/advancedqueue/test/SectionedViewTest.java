@@ -24,7 +24,7 @@ public class SectionedViewTest {
 		// Job 1 matches View1 and All -> View1 is before All -> priority is 2
 		// Job 0 matched only All -> priority is 3
 		TestRunListener.init(new ExpectedItem("Job 2", 1), new ExpectedItem("Job 1", 2), new ExpectedItem("Job 0", 3));
-		jobHelper.scheduleProjects(new CLICause(), new CLICause(), new CLICause());
+		jobHelper.scheduleProjects(new CLICause(), new CLICause(), new CLICause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}

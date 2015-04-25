@@ -25,7 +25,7 @@ public class MultipleMatchJobGroupTest {
 		// Job 0 and 1 matched only All -> priorities are 3 and 4
 		TestRunListener.init(new ExpectedItem("Job 2", 1), new ExpectedItem("Job 3", 2), new ExpectedItem("Job 0", 3),
 				new ExpectedItem("Job 1", 4));
-		jobHelper.scheduleProjects(new CLICause(), new Cause.UserIdCause(), new CLICause(), new Cause.UserIdCause());
+		jobHelper.scheduleProjects(new CLICause(), new Cause.UserIdCause(), new CLICause(), new Cause.UserIdCause()).go();
 		j.waitUntilNoActivity();
 		TestRunListener.assertStartedItems();
 	}

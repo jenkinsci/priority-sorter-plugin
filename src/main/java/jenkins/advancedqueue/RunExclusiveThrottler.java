@@ -34,6 +34,11 @@ public class RunExclusiveThrottler {
 		public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
 			return this;
 		}
+
+		public PriorityConfigurationCallback setPrioritySelection(int priority, long sortAsInQueueSince,
+				int jobGroupId, PriorityStrategy reason) {
+			return this;
+		}
 	};
 	
 	@Extension

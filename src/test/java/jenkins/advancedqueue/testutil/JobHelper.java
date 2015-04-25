@@ -1,10 +1,14 @@
 package jenkins.advancedqueue.testutil;
 
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
+import hudson.matrix.AxisList;
+import hudson.matrix.MatrixProject;
+import hudson.matrix.TextAxis;
 import hudson.model.BuildListener;
+import hudson.model.AbstractBuild;
 import hudson.model.Cause;
 import hudson.model.FreeStyleProject;
+import hudson.model.Project;
 import hudson.tasks.Builder;
 
 import java.io.IOException;
@@ -53,17 +57,44 @@ public class JobHelper {
 		return projects;
 	}
 
-	public void scheduleProjects(Cause... causes) throws Exception {
+	public List<MatrixProject> createMatrixProjects(int numberOfProjects) throws Exception {
+		List<MatrixProject> projects = new ArrayList<MatrixProject>(numberOfProjects);
+		for (int i = 0; i < numberOfProjects; i++) {
+			MatrixProject project = j.createMatrixProject("Matrix " + i);
+			project.getBuildersList().add(new TestBuilder(100));
+	        AxisList axes = new AxisList();
+	        axes.add(new TextAxis(i + "A1", i + "A2", i + "A3"));
+	        project.setAxes(axes);
+			projects.add(project);
+		}
+		return projects;
+	}
+	
+	public JobHelper scheduleMatrixProjects(Cause... causes) throws Exception {
+		List<MatrixProject> projects = createMatrixProjects(causes.length);
+		// Scheduling executors is zero
+		for (int i = 0; i < causes.length; i++) {
+			projects.get(i).scheduleBuild(0, causes[i]);
+			Thread.sleep(100);
+		}
+		return this;
+	}
+
+	public JobHelper scheduleProjects(Cause... causes) throws Exception {
 		List<FreeStyleProject> projects = createProjects(causes.length);
 		// Scheduling executors is zero
 		for (int i = 0; i < causes.length; i++) {
 			projects.get(i).scheduleBuild(0, causes[i]);
 			Thread.sleep(100);
 		}
+		return this;
+	}
+
+	public void go() throws Exception {
 		// Set the executors to one and restart
 		Jenkins.getInstance().setNumExecutors(1);
 		// TODO: is there any other way to make the 1 take effect than a reload?
-		Jenkins.getInstance().reload();
+		Jenkins.getInstance().reload();			
 	}
-
+	
 }

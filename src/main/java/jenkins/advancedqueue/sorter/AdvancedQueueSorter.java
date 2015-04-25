@@ -75,30 +75,17 @@ public class AdvancedQueueSorter extends QueueSorter {
 
 		Collections.sort(items, new Comparator<BuildableItem>() {
 			public int compare(BuildableItem o1, BuildableItem o2) {
-				float o1weight = getCalculatedWeight(o1);
-				float o2weight = getCalculatedWeight(o2);
-				if (o1weight > o2weight) {
-					return 1;
-				}
-				if (o1weight < o2weight) {
-					return -1;
-				}
-				// Same weights sort on time in queue
-				if(o1.getInQueueSince() > o2.getInQueueSince()) {
-					return 1;
-				}
-				if(o1.getInQueueSince() < o2.getInQueueSince()) {
-					return -1;
-				}
-				// Having same time-stamp is not likely - but maybe it can happen ...
-				return new Integer(o1.id).compareTo(o2.id);
+				ItemInfo item1 = QueueItemCache.get().getItem(o1.id);
+				ItemInfo item2 = QueueItemCache.get().getItem(o2.id);
+				return item1.compareTo(item2);
 			}
 		});
 		//
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINE)) {
 			float minWeight = QueueItemCache.get().getItem(items.get(0).id).getWeight();
 			float maxWeight = QueueItemCache.get().getItem(items.get(items.size() - 1).id).getWeight();
-			LOGGER.log(Level.FINE, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] { items.size(), minWeight, maxWeight });
+			LOGGER.log(Level.FINE, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] {
+					items.size(), minWeight, maxWeight });
 		}
 		//
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
@@ -109,11 +96,13 @@ public class AdvancedQueueSorter extends QueueSorter {
 			for (BuildableItem item : items) {
 				ItemInfo itemInfo = QueueItemCache.get().getItem(item.id);
 				String jobName = itemInfo.getJobName();
-				if(jobName.length() > 21) {
-					jobName = jobName.substring(0, 9) + "..." + jobName.substring(jobName.length() - 9 , jobName.length());
+				if (jobName.length() > 21) {
+					jobName = jobName.substring(0, 9) + "..."
+							+ jobName.substring(jobName.length() - 9, jobName.length());
 				}
-				queueStr.append(String.format("| %10d | %20s | %8d | %20.5f |\n",  item.id, jobName, itemInfo.getPriority(), itemInfo.getWeight()));
-				
+				queueStr.append(String.format("| %10d | %20s | %8d | %20.5f |\n", item.id, jobName,
+						itemInfo.getPriority(), itemInfo.getWeight()));
+
 			}
 			queueStr.append("+----------------------------------------------------------------------+");
 			LOGGER.log(Level.FINER, queueStr.toString());

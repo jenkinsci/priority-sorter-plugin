@@ -45,6 +45,8 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	private int itemId;
 
 	private long inQueueSince;
+	
+	private Long sortAsInQueueSince = null;
 
 	private int jobGroupId;
 
@@ -69,6 +71,14 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 
 	public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
 		this.priority = priority;
+		this.jobGroupId = jobGroupId;
+		this.priorityStrategy = reason;
+		return this;
+	}
+
+	public PriorityConfigurationCallback setPrioritySelection(int priority, long sortAsInQueueSince, int jobGroupId, PriorityStrategy reason) {
+		this.priority = priority;
+		this.sortAsInQueueSince = sortAsInQueueSince;
 		this.jobGroupId = jobGroupId;
 		this.priorityStrategy = reason;
 		return this;
@@ -107,6 +117,13 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 		return inQueueSince;
 	}
 
+	public long getSortableInQueueSince() {
+		if(sortAsInQueueSince != null) {
+			return sortAsInQueueSince;
+		}
+		return inQueueSince;
+	}
+
 	public int getJobGroupId() {
 		return jobGroupId;
 	}
@@ -133,7 +150,7 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 
 	public int compareTo(ItemInfo o) {
 		if(this.getWeight() == o.getWeight()) {
-			if(this.getInQueueSince() == o.getInQueueSince()) {
+			if(this.getSortableInQueueSince() == o.getSortableInQueueSince()) {
 				return Integer.compare(this.getItemId(), o.getItemId());
 			}
 			return Long.compare(this.getInQueueSince(), o.getInQueueSince());
