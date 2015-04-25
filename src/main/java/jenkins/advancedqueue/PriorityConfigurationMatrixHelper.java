@@ -21,8 +21,7 @@ class PriorityConfigurationMatrixHelper {
 		priorityCallback.addDecisionLog(0, "Job is MatrixConfiguration [" + matrixProject.getName() + "] ...");
 		ItemInfo itemInfo = QueueItemCache.get().getItem(matrixProject.getName());
 		// Can be null (for example) at startup when the MatrixBuild got
-		// lost (was running at
-		// restart)
+		// lost (was running at restart)
 		if (itemInfo != null) {
 			priorityCallback.addDecisionLog(0, "MatrixProject found in cache, using priority from queue-item ["
 					+ itemInfo.getItemId() + "]");
