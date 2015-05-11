@@ -67,7 +67,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 			// Listener called before we get here so make sure we mark buildable
 			QueueItemCache.get().getItem(item.id).setBuildable();
 		}
-		LOGGER.fine("Initialized the QueueSorter with " + items.size() + " Buildable Items");
+		LOGGER.info("Initialized the QueueSorter with " + items.size() + " Buildable Items");
 	}
 
 	@Override
@@ -77,6 +77,10 @@ public class AdvancedQueueSorter extends QueueSorter {
 			public int compare(BuildableItem o1, BuildableItem o2) {
 				ItemInfo item1 = QueueItemCache.get().getItem(o1.id);
 				ItemInfo item2 = QueueItemCache.get().getItem(o2.id);
+				if(item1 == null || item2 == null) {
+					LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
+					return new Long(o1.getInQueueSince()).compareTo(o2.getInQueueSince());
+				}
 				return item1.compareTo(item2);
 			}
 		});
