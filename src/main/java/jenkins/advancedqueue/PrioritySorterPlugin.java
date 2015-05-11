@@ -54,11 +54,15 @@ public class PrioritySorterPlugin extends Plugin {
 		Items.XSTREAM2.addCompatibilityAlias("hudson.queueSorter.PrioritySorterJobColumn", PrioritySorterJobColumn.class);		
 	}
 	
-	@Initializer(after = JOB_LOADED)
-	public static void init() {
+	@Initializer(before = JOB_LOADED)
+	public static void init1() {
 		// Check for any Legacy Configuration and init the Configuration
 		LOGGER.info("Configuring the Priority Sorter ...");
 		PrioritySorterConfiguration.init();
+	}
+
+	@Initializer(after = JOB_LOADED)
+	public static void init2() {
 		// Init the Queue and sort the loaded Queue items
 		LOGGER.info("Sorting existing Queue ...");
 		AdvancedQueueSorter.init();
