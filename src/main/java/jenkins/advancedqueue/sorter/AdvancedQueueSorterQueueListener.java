@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import java.util.logging.Logger;
+
 import hudson.Extension;
 import hudson.model.Queue.BlockedItem;
 import hudson.model.Queue.BuildableItem;
@@ -37,6 +39,8 @@ import hudson.model.queue.QueueListener;
 @Extension
 public class AdvancedQueueSorterQueueListener extends QueueListener {
 
+	private final static Logger LOGGER = Logger.getLogger(AdvancedQueueSorterQueueListener.class.getName());
+
 	@Override
 	public void onEnterWaiting(WaitingItem wi) {
 		AdvancedQueueSorter.get().onNewItem(wi);
@@ -50,19 +54,23 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
 	@Override
 	public void onEnterBuildable(BuildableItem bi) {
 		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if (item != null) {
-			QueueItemCache.get().getItem(bi.id).setBuildable();
+		// Null at startup - onEnterWaiting not called during startup (?)
+		if (item == null) {
+			LOGGER.warning("onEnterBuilding() called without prior call to onEnterWaiting() for '" + bi.task.getDisplayName() + "'"); 
+			AdvancedQueueSorter.get().onNewItem(bi);
 		}
+		QueueItemCache.get().getItem(bi.id).setBuildable();
 	}
 
 	@Override
 	public void onEnterBlocked(BlockedItem bi) {
 		ItemInfo item = QueueItemCache.get().getItem(bi.id);
-		// Null at startup
-		if (item != null) {
-			item.setBlocked();
+		// Null at startup - onEnterWaiting not called during startup (?)
+		if (item == null) {
+			LOGGER.warning("onEnterBlocked() called without prior call to onEnterWaiting() for '" + bi.task.getDisplayName() + "'"); 
+			AdvancedQueueSorter.get().onNewItem(bi);
 		}
+		QueueItemCache.get().getItem(bi.id).setBlocked();
 	}
 
 }
