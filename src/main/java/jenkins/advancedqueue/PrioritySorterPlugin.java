@@ -25,6 +25,7 @@ package jenkins.advancedqueue;
 
 import static hudson.init.InitMilestone.JOB_LOADED;
 import static hudson.init.InitMilestone.PLUGINS_STARTED;
+import static hudson.init.InitMilestone.EXTENSIONS_AUGMENTED;
 import hudson.Plugin;
 import hudson.init.Initializer;
 import hudson.model.Items;
@@ -54,7 +55,7 @@ public class PrioritySorterPlugin extends Plugin {
 		Items.XSTREAM2.addCompatibilityAlias("hudson.queueSorter.PrioritySorterJobColumn", PrioritySorterJobColumn.class);		
 	}
 	
-	@Initializer(before = JOB_LOADED)
+	@Initializer(after = EXTENSIONS_AUGMENTED)
 	public static void init1() {
 		// Check for any Legacy Configuration and init the Configuration
 		LOGGER.info("Configuring the Priority Sorter ...");
