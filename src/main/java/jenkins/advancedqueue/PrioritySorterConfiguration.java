@@ -25,8 +25,6 @@ package jenkins.advancedqueue;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
-import hudson.model.TopLevelItem;
-import hudson.queueSorter.PrioritySorterJobProperty;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -61,8 +59,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private final static SorterStrategy DEFAULT_STRATEGY = new AbsoluteStrategy(
 			MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
 
-	private boolean legacyMode = false;
-
 	/**
 	 * @deprecated used in 2.x - replaces with XXX
 	 */
@@ -81,11 +77,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		// Make sure default is good for updating from legacy
 		prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
 		prioritySorterConfiguration.allowPriorityOnJobs = false;
-		// Check for legacy
-		prioritySorterConfiguration.checkLegacy();
-		if (!prioritySorterConfiguration.getLegacyMode()) {
-			prioritySorterConfiguration.load();
-		}
+		prioritySorterConfiguration.load();
 	}
 
 	@Override
@@ -101,20 +93,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 		//
 		onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
-		if (getLegacyMode()) {
-			Boolean advanced = json.getBoolean("advanced");
-			if (advanced) {
-				convertFromLegacyToAdvanced();
-			}
-		} else {
-			updatePriorities(prevNumberOfPriorities);
-		}
+		//
+		updatePriorities(prevNumberOfPriorities);
+		//
 		save();
 		return true;
-	}
-
-	private final boolean getLegacyMode() {
-		return legacyMode;
 	}
 
 	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
@@ -167,30 +150,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return FormValidation.ok();
 	}
 
-	private void checkLegacy() {
-		// Shouldn't really by a permission problem when getting here but
-		// to be on the safe side
-		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
-		try {
-			legacyMode = false;
-
-			// getAllItems() doesn't return MatrixProject even if actually is a Project
-			// since it also is a group of items (ItemGroup) in the tree being traversed
-			List<TopLevelItem> allItems = Jenkins.getInstance().getItems();
-			for (TopLevelItem item : allItems) {
-				if (item instanceof AbstractProject) {
-					AbstractProject<?, ?> project = (AbstractProject<?, ?>) item;
-					PrioritySorterJobProperty priority = project.getProperty(PrioritySorterJobProperty.class);
-					if (priority != null) {
-						legacyMode = true;
-					}
-				}
-			}
-		} finally {
-			SecurityContextHolder.setContext(saveCtx);
-		}
-	}
-
 	private void updatePriorities(int prevNumberOfPriorities) {
 		// Shouldn't really by a permission problem when getting here but
 		// to be on the safe side
@@ -229,30 +188,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				}
 			}
 			PriorityConfiguration.get().save();
-		} finally {
-			SecurityContextHolder.setContext(saveCtx);
-		}
-	}
-
-	private void convertFromLegacyToAdvanced() {
-		// Shouldn't really by a permission problem when getting here but
-		// to be on the safe side
-		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
-		try {
-			@SuppressWarnings("rawtypes")
-			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-			for (AbstractProject<?, ?> project : allProjects) {
-				PrioritySorterJobProperty legacyPriorityProperty = project
-						.getProperty(PrioritySorterJobProperty.class);
-				try {
-					project.removeProperty(PrioritySorterJobProperty.class);
-					project.save();
-				} catch (IOException e) {
-					LOGGER.warning("Failed to remove Legacy Job Priority From " + project.getName());
-				}
-			}			
-			// Finally, switch Legacy Mode
-			legacyMode = false;
 		} finally {
 			SecurityContextHolder.setContext(saveCtx);
 		}

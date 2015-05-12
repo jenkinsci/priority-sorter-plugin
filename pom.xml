@@ -45,6 +45,9 @@
 				<groupId>org.jenkins-ci.tools</groupId>
 				<artifactId>maven-hpi-plugin</artifactId>
 				<extensions>true</extensions>
+				<configuration>
+          			<compatibleSinceVersion>3.1</compatibleSinceVersion>
+        		</configuration>
 			</plugin>
 			<!-- http://stackoverflow.com/questions/15166781/mvn-releaseprepare-not-committing-changes-to-pom-xml -->
 			<plugin>
