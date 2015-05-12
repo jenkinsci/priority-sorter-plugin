@@ -62,7 +62,7 @@ public class JobInclusionFolderProperty extends FolderProperty<Folder> {
 		return (DescriptorImpl) super.getDescriptor();
 	}
 
-	@Extension
+	@Extension(optional = true)
 	public static final class DescriptorImpl extends FolderPropertyDescriptor {
 		
 		@Override
