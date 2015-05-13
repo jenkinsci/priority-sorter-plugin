@@ -31,6 +31,7 @@ import hudson.model.ViewGroup;
 import hudson.util.ListBoxModel;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
@@ -45,6 +46,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
+	private final static Logger LOGGER = Logger.getLogger(ViewBasedJobInclusionStrategy.class.getName());
+	
 	@Extension
 	static public class ViewBasedJobInclusionStrategyDescriptor extends
 			AbstractJobInclusionStrategyDescriptor<ViewBasedJobInclusionStrategy> {
@@ -56,12 +59,20 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		public ListBoxModel getListViewItems() {
 			ListBoxModel items = new ListBoxModel();
 			Collection<View> views = Jenkins.getInstance().getViews();
-			for (View view : views) {
-				items.add(view.getDisplayName(), view.getViewName());
-			}
+			addViews("", items, views);
 			return items;
 		}
-
+		
+		
+		private void addViews(String parent, ListBoxModel items, Collection<View> views) {
+			for (View view : views) {
+				items.add(parent + view.getDisplayName(), parent + view.getViewName());
+				if(view instanceof ViewGroup) {
+					addViews(parent + view.getDisplayName() + "/", items, ((ViewGroup) view).getViews());
+				}
+			}			
+		}
+		
 	};
 
 	static public class JobPattern {
@@ -75,7 +86,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 	}
 
 	private String viewName;
-
+	
 	private boolean useJobFilter = false;
 
 	private String jobPattern = ".*";
@@ -101,10 +112,26 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		return jobPattern;
 	}
 
+	private View getView() {
+		String[] nestedViewNames = this.viewName.split("/");
+		View view = Jenkins.getInstance().getView(nestedViewNames[0]);
+		if(null == view) {
+			LOGGER.severe("Configured View does not exixts '" + viewName + "' using primary view");
+			return Jenkins.getInstance().getPrimaryView();
+		}
+		for(int i = 1; i < nestedViewNames.length; i++) {
+			view = ((ViewGroup) view).getView(nestedViewNames[i]);
+			if(null == view) {
+				LOGGER.severe("Configured View does not exixts '" + viewName + "' using primary view");
+				return Jenkins.getInstance().getPrimaryView();
+			}
+		}
+		return view;
+	}
+	
 	@Override
 	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		View view = Jenkins.getInstance().getView(viewName);
-		if (isJobInView(job, view)) {
+		if (isJobInView(job, getView())) {
 			if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
 				decisionLogger.addDecisionLog(2, "Not using filter ...");
 				return true;
