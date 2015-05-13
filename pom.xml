@@ -84,6 +84,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>nested-view</artifactId>
+			<version>1.14</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>credentials</artifactId>
 			<version>1.22</version>
 			<scope>test</scope>
