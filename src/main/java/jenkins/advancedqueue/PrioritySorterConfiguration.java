@@ -39,6 +39,7 @@ import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
 import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
+import jenkins.advancedqueue.util.PrioritySorterUtil;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -118,20 +119,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	public ListBoxModel doGetPriorityItems() {
-		ListBoxModel items = internalFillDefaultPriorityItems(strategy.getNumberOfPriorities());
+		ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
 		items.add(
 				0,
 				new ListBoxModel.Option("-- use default priority --", String.valueOf(PriorityCalculationsUtil
 						.getUseDefaultPriorityPriority())));
-		return items;
-	}
-
-	// TODO: move to helper class
-	private ListBoxModel internalFillDefaultPriorityItems(int value) {
-		ListBoxModel items = new ListBoxModel();
-		for (int i = 1; i <= value; i++) {
-			items.add(String.valueOf(i));
-		}
 		return items;
 	}
 
