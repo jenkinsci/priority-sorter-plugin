@@ -31,9 +31,11 @@ import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.util.ListBoxModel;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import jenkins.advancedqueue.JobGroup;
+import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
@@ -119,7 +121,15 @@ public class PriorityJobProperty extends JobProperty<AbstractProject<?, ?>> {
 		public boolean isUsed(Job<?,?> owner) {
 			PriorityConfiguration configuration = PriorityConfiguration.get();
 			JobGroup jobGroup = configuration.getJobGroup(dummyCallback, owner);
-			return jobGroup != null;
+			if(jobGroup != null && jobGroup.isUsePriorityStrategies()) {
+				List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+				for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+					if(priorityStrategyHolder.getPriorityStrategy() instanceof JobPropertyStrategy) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }
