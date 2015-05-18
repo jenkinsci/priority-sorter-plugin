@@ -6,7 +6,7 @@
 			</j:forEach>
 			<f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="Use a regular expression to only include a subset of the included Jobs">
 				<f:entry title="Regular Expression">                   
-					<f:textbox name="jobPattern" value="${instance.jobPattern}" checkUrl="'${rootURL}/descriptorByName/jenkins.advancedqueue.PriorityConfiguration/checkJobPattern?value='+encode(this.value)"/>
+					<f:textbox name="jobPattern" field="jobPattern" value="${instance.jobPattern}" />
 				</f:entry>           					
 	    	</f:optionalBlock>			
 		</select>
