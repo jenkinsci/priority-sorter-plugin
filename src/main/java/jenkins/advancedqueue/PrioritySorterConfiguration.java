@@ -185,32 +185,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 	}
 
-	static int legacyPriorityToAdvancedPriority(int legacyMinPriority, int legacyMaxPriority, int numberOfPriorities,
-			int priority) {
-		int offset = normalizedOffset(legacyMinPriority);
-		int normalized = inverseAndNormalize(legacyMinPriority, legacyMaxPriority, priority);
-		int advancedPriority = PriorityCalculationsUtil.scale(legacyMaxPriority + offset, numberOfPriorities,
-				normalized);
-		return advancedPriority;
-	}
-
-	/**
-	 * Calculates how much must be added to a legacy value to get into the positive numbers
-	 */
-	static int normalizedOffset(int min) {
-		int offset = -min + 1;
-		return offset;
-	}
-
-	static int inverseAndNormalize(int min, int max, int value) {
-		int offset = normalizedOffset(min);
-		max += offset;
-		value += offset;
-		// Inverse
-		value = max - value + 1;
-		return value;
-	}
-
 	static public PrioritySorterConfiguration get() {
 		return (PrioritySorterConfiguration) Jenkins.getInstance().getDescriptor(PrioritySorterConfiguration.class);
 	}
