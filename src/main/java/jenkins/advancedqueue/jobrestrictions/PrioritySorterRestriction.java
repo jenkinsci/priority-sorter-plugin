@@ -1,5 +1,7 @@
 package jenkins.advancedqueue.jobrestrictions;
 
+import java.util.logging.Logger;
+
 import hudson.Extension;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Run;
@@ -19,6 +21,8 @@ import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestri
  * @since 3.3
  */
 public class PrioritySorterRestriction extends JobRestriction {
+	
+	private final static Logger LOGGER = Logger.getLogger(PrioritySorterRestriction.class.getName());
 
 	@Extension(optional = true)
 	public static class DescriptorImpl extends JobRestrictionDescriptor {
@@ -73,6 +77,10 @@ public class PrioritySorterRestriction extends JobRestriction {
 	@Override
 	public boolean canTake(BuildableItem buildableItem) {
 		ItemInfo item = QueueItemCache.get().getItem(buildableItem.id);
+		if(item == null) {
+			LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
+			return true;
+		}
 		int priority = item.getPriority();
 		return priority >= fromPriority && priority <= toPriority;
 	}
