@@ -39,6 +39,7 @@ import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
 import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
+import jenkins.advancedqueue.util.PrioritySorterUtil;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -118,20 +119,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	}
 
 	public ListBoxModel doGetPriorityItems() {
-		ListBoxModel items = internalFillDefaultPriorityItems(strategy.getNumberOfPriorities());
+		ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
 		items.add(
 				0,
 				new ListBoxModel.Option("-- use default priority --", String.valueOf(PriorityCalculationsUtil
 						.getUseDefaultPriorityPriority())));
-		return items;
-	}
-
-	// TODO: move to helper class
-	private ListBoxModel internalFillDefaultPriorityItems(int value) {
-		ListBoxModel items = new ListBoxModel();
-		for (int i = 1; i <= value; i++) {
-			items.add(String.valueOf(i));
-		}
 		return items;
 	}
 
@@ -191,32 +183,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		} finally {
 			SecurityContextHolder.setContext(saveCtx);
 		}
-	}
-
-	static int legacyPriorityToAdvancedPriority(int legacyMinPriority, int legacyMaxPriority, int numberOfPriorities,
-			int priority) {
-		int offset = normalizedOffset(legacyMinPriority);
-		int normalized = inverseAndNormalize(legacyMinPriority, legacyMaxPriority, priority);
-		int advancedPriority = PriorityCalculationsUtil.scale(legacyMaxPriority + offset, numberOfPriorities,
-				normalized);
-		return advancedPriority;
-	}
-
-	/**
-	 * Calculates how much must be added to a legacy value to get into the positive numbers
-	 */
-	static int normalizedOffset(int min) {
-		int offset = -min + 1;
-		return offset;
-	}
-
-	static int inverseAndNormalize(int min, int max, int value) {
-		int offset = normalizedOffset(min);
-		max += offset;
-		value += offset;
-		// Inverse
-		value = max - value + 1;
-		return value;
 	}
 
 	static public PrioritySorterConfiguration get() {

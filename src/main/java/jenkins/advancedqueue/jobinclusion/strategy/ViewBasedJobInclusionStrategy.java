@@ -28,10 +28,12 @@ import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewGroup;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.util.Collection;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
@@ -39,6 +41,7 @@ import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * @author Magnus Sandberg
@@ -72,6 +75,18 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 				}
 			}			
 		}
+		
+		public FormValidation doCheckJobPattern(@QueryParameter String jobPattern) {
+			if(jobPattern.isEmpty()) {
+				return FormValidation.ok("Empty pattern matches all Jobs.");
+			}
+            try {
+                Pattern.compile(jobPattern);
+            } catch (PatternSyntaxException exception) {
+                return FormValidation.error(exception.getDescription());
+            }
+            return FormValidation.ok("Pattern is valid.");
+        }
 		
 	};
 
