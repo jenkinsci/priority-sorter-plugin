@@ -151,9 +151,9 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	public int compareTo(ItemInfo o) {
 		if(this.getWeight() == o.getWeight()) {
 			if(this.getSortableInQueueSince() == o.getSortableInQueueSince()) {
-				return Integer.compare(this.getItemId(), o.getItemId());
+				return new Integer(this.getItemId()).compareTo(o.getItemId());
 			}
-			return Long.compare(this.getInQueueSince(), o.getInQueueSince());
+			return new Long(this.getInQueueSince()).compareTo(o.getInQueueSince());
 		}
 		return Float.compare(this.getWeight(), o.getWeight());
 	}
