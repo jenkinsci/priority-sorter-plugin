@@ -131,13 +131,13 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		String[] nestedViewNames = this.viewName.split("/");
 		View view = Jenkins.getInstance().getView(nestedViewNames[0]);
 		if(null == view) {
-			LOGGER.severe("Configured View does not exixts '" + viewName + "' using primary view");
+			LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
 			return Jenkins.getInstance().getPrimaryView();
 		}
 		for(int i = 1; i < nestedViewNames.length; i++) {
 			view = ((ViewGroup) view).getView(nestedViewNames[i]);
 			if(null == view) {
-				LOGGER.severe("Configured View does not exixts '" + viewName + "' using primary view");
+				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
 				return Jenkins.getInstance().getPrimaryView();
 			}
 		}
