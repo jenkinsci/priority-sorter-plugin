@@ -43,8 +43,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension
-	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
-		public BuildParameterStrategyDescriptor() {
+	static public class UpstreamCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+		public UpstreamCauseStrategyDescriptor() {
 			super("Job Triggered by a Upstream Build");
 		}
 	};
