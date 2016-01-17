@@ -30,8 +30,8 @@ import hudson.model.Job;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * @author ...
- * @since X.X
+ * @author Bela Schaum
+ * @since 3.5
  */
 public class BuildNumberStrategy extends AbstractDynamicPriorityStrategy {
 
