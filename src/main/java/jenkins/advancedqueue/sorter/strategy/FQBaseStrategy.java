@@ -32,16 +32,18 @@ import java.util.Map;
 import jenkins.advancedqueue.sorter.SorterStrategyCallback;
 
 /**
+ * Scheduler based on Fair Queuing algorithm.
  * @author Magnus Sandberg
  * @since 2.0
  */
 abstract public class FQBaseStrategy extends MultiBucketStrategy {
-	//
+	// The equivalent of a packet size for a network scheduler.
 	static final protected float MIN_STEP_SIZE = 0.00001F;
 	// Keeps track on the last assigned weight for a given priority
-	static Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
+	static final protected Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
+	static final private float MIN_STARTED_WEIGHT = 1F;
 	// Keeps track on the max weight of started jobs
-	transient private float maxStartedWeight = 1F;
+	static protected float maxStartedWeight = MIN_STARTED_WEIGHT;
 
 	public FQBaseStrategy() {
 	}
@@ -72,23 +74,18 @@ abstract public class FQBaseStrategy extends MultiBucketStrategy {
 	}
 
 	protected float getWeightToUse(int priority, float minimumWeightToAssign) {
-		float stepSize = getStepSize(priority);
-		double weight = Math.ceil(minimumWeightToAssign / stepSize) * stepSize;
-		// Cannot be smaller but maybe rounding problems (?)
-		if (weight <= minimumWeightToAssign) {
-			weight += stepSize;
-		}
+		float weight = minimumWeightToAssign * (1F + getStepSize(priority));
 		// Protect us from values going through the roof if we run for a very
 		// long time
 		// This below might leave some jobs in the queue with very large weight
 		// this probably improbable to happen so let's do it like this for now
 		// ...
-		if (Double.POSITIVE_INFINITY == weight) {
-			maxStartedWeight = 1F;
+		if (Float.POSITIVE_INFINITY == weight) {
+			maxStartedWeight = MIN_STARTED_WEIGHT;
 			prio2weight.clear();
 			return getWeightToUse(priority, minimumWeightToAssign);
 		}
-		return (float) weight;
+		return weight;
 	}
 
 	abstract float getStepSize(int priority);
