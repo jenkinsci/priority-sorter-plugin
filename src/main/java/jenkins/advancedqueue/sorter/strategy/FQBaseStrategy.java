@@ -83,7 +83,7 @@ abstract public class FQBaseStrategy extends MultiBucketStrategy {
 		if (Float.POSITIVE_INFINITY == weight) {
 			maxStartedWeight = MIN_STARTED_WEIGHT;
 			prio2weight.clear();
-			return getWeightToUse(priority, minimumWeightToAssign);
+			return MIN_STARTED_WEIGHT;
 		}
 		return weight;
 	}

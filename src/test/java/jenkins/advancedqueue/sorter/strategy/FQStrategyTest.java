@@ -17,6 +17,7 @@ public class FQStrategyTest {
 	public void testGetWeightToUse() {
 		Assert.assertEquals(1.00000F + FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getWeightToUse(1, 1.00000F), 0F);
 		Assert.assertEquals(1.00001F + FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getWeightToUse(1, 1.00001F), 0F);
+		Assert.assertEquals(1F, new FQStrategy().getWeightToUse(1, Float.MAX_VALUE), 0F);
 		assertIncreasingWeight(1F);
 		assertIncreasingWeight(100000F);
 	}
