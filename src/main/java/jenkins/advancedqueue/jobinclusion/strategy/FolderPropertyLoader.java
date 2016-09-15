@@ -23,14 +23,15 @@
  */
 package jenkins.advancedqueue.jobinclusion.strategy;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
+import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
+import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.util.DescribableList;
 import jenkins.advancedqueue.DecisionLogger;
 
-import com.cloudbees.hudson.plugins.folder.FolderProperty;
-import com.cloudbees.hudson.plugins.folder.FolderPropertyDescriptor;
 import com.cloudbees.hudson.plugins.folder.Folder;
 
 /**
@@ -43,11 +44,11 @@ public class FolderPropertyLoader {
 		ItemGroup<?> parent = job.getParent();
 		decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");
 		while(parent != null) {
-			if(parent instanceof Folder) {
-				Folder folder = (Folder) parent;
+			if(parent instanceof AbstractFolder) {
+				AbstractFolder folder = (AbstractFolder) parent;
 				decisionLogger.addDecisionLog(3, "Evaluating Folder [" + folder.getFullName() + "] ...");
-				DescribableList<FolderProperty<?>,FolderPropertyDescriptor> properties = folder.getProperties();
-				for(FolderProperty<?> property : properties) {
+				DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = folder.getProperties();
+				for(AbstractFolderProperty<?> property : properties) {
 					if(property instanceof JobInclusionFolderProperty) {
 						JobInclusionFolderProperty incProperty = (JobInclusionFolderProperty) property;
 						if(incProperty.isUseJobGroup()) {
