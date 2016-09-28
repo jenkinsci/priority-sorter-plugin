@@ -66,6 +66,7 @@ import net.sf.json.JSONObject;
 
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -207,6 +208,9 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
+		if (item.task instanceof ExecutorStepExecution.PlaceholderTask) {
+			return getPriorityFromOwnerTask(item, priorityCallback);
+		}
 
 		if (!(item.task instanceof Job)) {
 			// Not a job generally this mean that this is a lightweight task so
@@ -290,6 +294,14 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 		}
 		return priorityCallback.setPrioritySelection(priority, jobGroup.getId(), reason);
+	}
+
+	private PriorityConfigurationCallback getPriorityFromOwnerTask(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
+		Job<?, ?> job = (Job<?, ?>) item.task.getOwnerTask();
+		ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
+		itemInfo.getPriority();
+		priorityCallback.setPrioritySelection(itemInfo.getPriority());
+		return priorityCallback;
 	}
 
 	static public PriorityConfiguration get() {
