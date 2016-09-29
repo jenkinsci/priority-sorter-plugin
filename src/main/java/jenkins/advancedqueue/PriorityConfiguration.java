@@ -82,6 +82,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	transient private Map<Integer, JobGroup> id2jobGroup;
 	transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
+	transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper;
 	private List<JobGroup> jobGroups;
 
 	public PriorityConfiguration() {
@@ -110,6 +111,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			priorityConfigurationMatrixHelper = null;
 		} else {
 			priorityConfigurationMatrixHelper = new PriorityConfigurationMatrixHelper();
+		}
+
+		if (PriorityConfigurationPlaceholderTaskHelper.isPlaceholderTaskUsed()) {
+			placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
 		}
 	}
 
@@ -208,8 +213,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
-		if (item.task instanceof ExecutorStepExecution.PlaceholderTask) {
-			return getPriorityFromOwnerTask(item, priorityCallback);
+		if (placeholderTaskHelper != null && placeholderTaskHelper.isPlaceholderTask(item.task)) {
+			return placeholderTaskHelper.getPriority((ExecutorStepExecution.PlaceholderTask) item.task, priorityCallback);
 		}
 
 		if (!(item.task instanceof Job)) {
@@ -294,14 +299,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 		}
 		return priorityCallback.setPrioritySelection(priority, jobGroup.getId(), reason);
-	}
-
-	private PriorityConfigurationCallback getPriorityFromOwnerTask(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
-		Job<?, ?> job = (Job<?, ?>) item.task.getOwnerTask();
-		ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
-		itemInfo.getPriority();
-		priorityCallback.setPrioritySelection(itemInfo.getPriority());
-		return priorityCallback;
 	}
 
 	static public PriorityConfiguration get() {
