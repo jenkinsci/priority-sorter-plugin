@@ -6,7 +6,7 @@
 		<version>1.580</version>
 	</parent>
 	<artifactId>PrioritySorter</artifactId>
-	<version>3.4.1</version>
+	<version>3.4.2-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Priority Sorter Plugin</name>
 	<description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
@@ -120,7 +120,7 @@
 		<connection>scm:git:git://github.com/jenkinsci/priority-sorter-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/priority-sorter-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
-		<tag>PrioritySorter-3.4.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 </project>
