@@ -82,7 +82,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	transient private Map<Integer, JobGroup> id2jobGroup;
 	transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
-	transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper;
+	transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
 	private List<JobGroup> jobGroups;
 
 	public PriorityConfiguration() {
@@ -111,10 +111,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			priorityConfigurationMatrixHelper = null;
 		} else {
 			priorityConfigurationMatrixHelper = new PriorityConfigurationMatrixHelper();
-		}
-
-		if (PriorityConfigurationPlaceholderTaskHelper.isPlaceholderTaskUsed()) {
-			placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
 		}
 	}
 
@@ -213,7 +209,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
-		if (placeholderTaskHelper != null && placeholderTaskHelper.isPlaceholderTask(item.task)) {
+		if (placeholderTaskHelper.isPlaceholderTask(item.task)) {
 			return placeholderTaskHelper.getPriority((ExecutorStepExecution.PlaceholderTask) item.task, priorityCallback);
 		}
 

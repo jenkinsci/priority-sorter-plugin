@@ -10,8 +10,10 @@ import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 
 class PriorityConfigurationPlaceholderTaskHelper {
 
+    private static boolean placeholderTaskUsed = Jenkins.getInstance().getPlugin("workflow-durable-task-step") != null;
+
     boolean isPlaceholderTask(Queue.Task task) {
-        return task instanceof  ExecutorStepExecution.PlaceholderTask;
+        return placeholderTaskUsed && task instanceof  ExecutorStepExecution.PlaceholderTask;
     }
 
     PriorityConfigurationCallback getPriority(ExecutorStepExecution.PlaceholderTask task, PriorityConfigurationCallback priorityCallback) {
@@ -23,7 +25,7 @@ class PriorityConfigurationPlaceholderTaskHelper {
     }
 
     static boolean isPlaceholderTaskUsed() {
-        return Jenkins.getInstance().getPlugin("workflow-durable-task-step") != null;
+        return placeholderTaskUsed;
     }
 
 }
