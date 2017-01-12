@@ -73,7 +73,7 @@ abstract public class FQBaseStrategy extends MultiBucketStrategy {
 
 	protected float getWeightToUse(int priority, float minimumWeightToAssign) {
 		float stepSize = getStepSize(priority);
-		double weight = Math.ceil(minimumWeightToAssign / stepSize) * stepSize;
+		float weight = (float) Math.ceil(minimumWeightToAssign / stepSize) * stepSize;
 		// Cannot be smaller but maybe rounding problems (?)
 		if (weight <= minimumWeightToAssign) {
 			weight += stepSize;
@@ -88,7 +88,7 @@ abstract public class FQBaseStrategy extends MultiBucketStrategy {
 			prio2weight.clear();
 			return getWeightToUse(priority, minimumWeightToAssign);
 		}
-		return (float) weight;
+		return weight;
 	}
 
 	abstract float getStepSize(int priority);
