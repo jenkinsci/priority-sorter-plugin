@@ -66,6 +66,7 @@ import net.sf.json.JSONObject;
 
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -81,6 +82,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 
 	transient private Map<Integer, JobGroup> id2jobGroup;
 	transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
+	transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
 	private List<JobGroup> jobGroups;
 
 	public PriorityConfiguration() {
@@ -207,6 +209,9 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
+		if (placeholderTaskHelper.isPlaceholderTask(item.task)) {
+			return placeholderTaskHelper.getPriority((ExecutorStepExecution.PlaceholderTask) item.task, priorityCallback);
+		}
 
 		if (!(item.task instanceof Job)) {
 			// Not a job generally this mean that this is a lightweight task so
