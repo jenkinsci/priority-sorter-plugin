@@ -1,6 +1,7 @@
 package jenkins.advancedqueue;
 
 
+import hudson.Plugin;
 import hudson.model.Job;
 import hudson.model.Queue;
 import jenkins.advancedqueue.sorter.ItemInfo;
@@ -23,7 +24,8 @@ class PriorityConfigurationPlaceholderTaskHelper {
     }
 
     static boolean isPlaceholderTaskUsed() {
-        return Jenkins.getInstance().getPlugin("workflow-durable-task-step") != null;
+        Plugin plugin = Jenkins.getInstance().getPlugin("workflow-durable-task-step");
+        return plugin != null && plugin.getWrapper().isActive();
     }
 
 }
