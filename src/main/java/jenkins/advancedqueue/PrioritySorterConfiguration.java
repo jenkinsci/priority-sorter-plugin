@@ -24,13 +24,14 @@
 package jenkins.advancedqueue;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
+import hudson.model.Job;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
@@ -148,24 +149,24 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
 		try {
 			@SuppressWarnings("rawtypes")
-			List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-			for (AbstractProject<?, ?> project : allProjects) {
+			List<Job> allJobs = Jenkins.getInstance().getAllItems(Job.class);
+			for (Job<?, ?> job : allJobs) {
 				try {
 					// Scale any priority on the Job
-					PriorityJobProperty priorityProperty = project
+					PriorityJobProperty priorityProperty = job
 							.getProperty(PriorityJobProperty.class);
 					if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
 						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
 								strategy.getNumberOfPriorities(), priorityProperty.priority);
                         if (newPriority != priorityProperty.getPriority()) {
-                            project.removeProperty(priorityProperty);
-                            project.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(),
+                            job.removeProperty(priorityProperty);
+                            job.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(),
                                     newPriority));
-                            project.save();
+                            job.save();
                         }
 					}
 				} catch (IOException e) {
-					LOGGER.warning("Failed to update Advanced Job Priority To " + project.getName());
+					LOGGER.log(Level.WARNING, "Failed to update Advanced Job Priority To {0}", job.getName());
 				}
 			}
 			//

@@ -24,7 +24,7 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
+import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.util.ListBoxModel;
@@ -35,7 +35,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 3.0
  */
-public class JobInclusionJobProperty extends JobProperty<AbstractProject<?, ?>> {
+public class JobInclusionJobProperty extends JobProperty<Job<?, ?>> {
 
 	private boolean useJobGroup;
 
