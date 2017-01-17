@@ -50,7 +50,7 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Magnus Sandberg
  * @since 2.0
  */
-public class PriorityJobProperty extends JobProperty<AbstractProject<?, ?>> {
+public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
 
 	private final static Logger LOGGER = Logger.getLogger(PriorityJobProperty.class.getName());
 
