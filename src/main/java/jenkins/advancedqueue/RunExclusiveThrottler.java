@@ -52,6 +52,8 @@ public class RunExclusiveThrottler {
 				exclusiveJobName = r.getParent().getName();
 				exclusiveJobs.add(exclusiveJobName);
 			}
+			//
+			QueueItemCache.get().removeItem(item.getItemId());
 		}
 
 		@Override
