@@ -32,6 +32,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import hudson.model.Run;
+import hudson.model.Queue.Executable;
 import hudson.model.queue.WorkUnit;
 
 /**
@@ -126,10 +127,10 @@ public class StartedJobItemCache {
 
 		for (final Iterator<PendingItem> it = pendingItems.iterator(); it.hasNext();) {
 			final PendingItem pi = it.next();
-			final Run<?, ?> run = (Run<?, ?>) pi.workUnit.getExecutable();
+			final Executable e = pi.workUnit.getExecutable();
 
-			if (run != null) {
-				startedItems.put(new StartedItem(pi.itemInfo.getJobName(), run.getNumber()), pi.itemInfo);
+			if (e instanceof Run) {
+				startedItems.put(new StartedItem(pi.itemInfo.getJobName(), ((Run<?, ?>) e).getNumber()), pi.itemInfo);
 				it.remove();
 			}
 		}
