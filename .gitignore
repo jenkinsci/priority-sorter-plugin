@@ -5,3 +5,4 @@ work
 .settings
 .project
 .classpath
+/bin/
