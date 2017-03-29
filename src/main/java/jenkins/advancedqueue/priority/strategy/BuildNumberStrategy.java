@@ -24,57 +24,35 @@
 package jenkins.advancedqueue.priority.strategy;
 
 import hudson.Extension;
-import hudson.model.Cause;
-import hudson.model.Cause.UpstreamCause;
 import hudson.model.Queue;
-
-import java.util.List;
-
-import jenkins.advancedqueue.PrioritySorterConfiguration;
-import jenkins.advancedqueue.sorter.ItemInfo;
-import jenkins.advancedqueue.sorter.QueueItemCache;
+import hudson.model.Job;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * @author Magnus Sandberg
- * @since 2.3
+ * @author Bela Schaum
+ * @since 3.5
  */
-public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
+public class BuildNumberStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension
-	static public class UpstreamCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
-		public UpstreamCauseStrategyDescriptor() {
-			super("Job Triggered by a Upstream Build");
+	static public class BuildNumberStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+
+		public BuildNumberStrategyDescriptor() {
+			super("Use Priority from Build Number");
 		}
 	};
 
 	@DataBoundConstructor
-	public UpstreamCauseStrategy() {
-	}
-
-	private UpstreamCause getUpstreamCause(Queue.Item item) {
-		List<Cause> causes = item.getCauses();
-		for (Cause cause : causes) {
-			if (cause.getClass() == UpstreamCause.class) {
-				return (UpstreamCause) cause;
-			}
-		}
-		return null;
+	public BuildNumberStrategy() {
 	}
 
 	public int getPriority(Queue.Item item) {
-		int upstreamBuildId = getUpstreamCause(item).getUpstreamBuild();
-		ItemInfo upstreamItem = QueueItemCache.get().getItem(upstreamBuildId);
-		// Upstream Item being null should be very very rare
-		if (upstreamItem != null) {
-			return upstreamItem.getPriority();
-		}
-		return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+		return ((Job)item.task).getNextBuildNumber();
 	}
 
 	@Override
 	public boolean isApplicable(Queue.Item item) {
-		return getUpstreamCause(item) != null;
+		return true;
 	}
 }
