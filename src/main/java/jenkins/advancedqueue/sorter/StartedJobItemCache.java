@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013, Ronny Schuetz
+ * Copyright (c) 2017, Ronny Schuetz
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.CheckForNull;
+
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -40,7 +42,7 @@ import hudson.model.queue.WorkUnit;
  * to become jobs, for UpstreamCauseStrategy.
  *
  * @author Ronny Schuetz
- * @since 2.3
+ * @since 3.6.0
  */
 public class StartedJobItemCache {
 
@@ -84,7 +86,7 @@ public class StartedJobItemCache {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (obj == null)
 				return false;
 			if (getClass() != obj.getClass())
@@ -94,7 +96,7 @@ public class StartedJobItemCache {
 		}
 	}
 
-	private LinkedList<PendingItem> pendingItems = new LinkedList<PendingItem>();
+	private final LinkedList<PendingItem> pendingItems = new LinkedList<PendingItem>();
 
 	private final Cache<StartedItem, ItemInfo> startedItems = CacheBuilder.newBuilder()
 			.expireAfterWrite(RETENTION_TIME_HOURS, TimeUnit.HOURS).maximumSize(RETENTION_COUNT).build();
@@ -112,12 +114,12 @@ public class StartedJobItemCache {
 	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if
 	 *         projectName/buildNumber combination is unknown
 	 */
-	public synchronized ItemInfo getStartedItem(String projectName, int buildNumber) {
+	public synchronized @CheckForNull ItemInfo getStartedItem(final String projectName, final int buildNumber) {
 		maintainCache();
 		return startedItems.getIfPresent(new StartedItem(projectName, buildNumber));
 	}
 
-	public synchronized void addItem(ItemInfo itemInfo, WorkUnit primaryWorkUnit) {
+	public synchronized void addItem(final ItemInfo itemInfo, final WorkUnit primaryWorkUnit) {
 		pendingItems.addLast(new PendingItem(itemInfo, primaryWorkUnit));
 		maintainCache();
 	}
