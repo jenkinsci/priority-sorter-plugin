@@ -21,7 +21,7 @@ import jenkins.model.Jenkins;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class JobHelper {
-	
+
 	private final static Logger LOGGER = Logger.getLogger(JobHelper.class.getName());
 
 	public JenkinsRule j;
@@ -47,6 +47,12 @@ public class JobHelper {
 		}
 	}
 
+	public FreeStyleProject createProject(String name) throws Exception {
+		FreeStyleProject project = j.createFreeStyleProject(name);
+		project.getBuildersList().add(new TestBuilder(100));
+		return project;
+	}
+
 	public List<FreeStyleProject> createProjects(int numberOfProjects) throws Exception {
 		List<FreeStyleProject> projects = new ArrayList<FreeStyleProject>(numberOfProjects);
 		for (int i = 0; i < numberOfProjects; i++) {
@@ -69,7 +75,7 @@ public class JobHelper {
 		}
 		return projects;
 	}
-	
+
 	public JobHelper scheduleMatrixProjects(Cause... causes) throws Exception {
 		List<MatrixProject> projects = createMatrixProjects(causes.length);
 		// Scheduling executors is zero
@@ -77,6 +83,14 @@ public class JobHelper {
 			projects.get(i).scheduleBuild(0, causes[i]);
 			Thread.sleep(100);
 		}
+		return this;
+	}
+
+	public JobHelper scheduleProject(String name, Cause cause) throws Exception {
+		FreeStyleProject project = createProject(name);
+		// Scheduling executors is zero
+		project.scheduleBuild(0, cause);
+		Thread.sleep(100);
 		return this;
 	}
 
@@ -94,7 +108,7 @@ public class JobHelper {
 		// Set the executors to one and restart
 		Jenkins.getInstance().setNumExecutors(1);
 		// TODO: is there any other way to make the 1 take effect than a reload?
-		Jenkins.getInstance().reload();			
+		Jenkins.getInstance().reload();
 	}
-	
+
 }
