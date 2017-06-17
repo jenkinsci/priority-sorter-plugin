@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 
 /**
  * Keeps track of the Queue.Items seen by the Sorter. Uses a WeakHash to store the entries that have
@@ -91,6 +92,7 @@ public class QueueItemCache {
 		return itemInfo;
 	}
 
+        @CheckForNull
 	synchronized public ItemInfo removeItem(int itemId) {
 		return item2info.remove(itemId);
 	}

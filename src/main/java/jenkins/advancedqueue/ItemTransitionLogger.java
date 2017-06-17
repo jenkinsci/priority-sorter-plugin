@@ -25,6 +25,7 @@ package jenkins.advancedqueue;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.model.Jenkins;
@@ -37,7 +38,7 @@ public class ItemTransitionLogger {
 
 	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
 
-	static public void logNewItem(ItemInfo info) {
+	static public void logNewItem(@Nonnull ItemInfo info) {
 		if (LOGGER.isLoggable(Level.FINER)) {
 			LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
 		} else {
@@ -45,19 +46,19 @@ public class ItemTransitionLogger {
 		}
 	}
 
-	static public void logBlockedItem(ItemInfo info) {
+	static public void logBlockedItem(@Nonnull ItemInfo info) {
 		LOGGER.fine("Blocking: " + info.toString());
 	}
 
-	static public void logBuilableItem(ItemInfo info) {
+	static public void logBuilableItem(@Nonnull ItemInfo info) {
 		LOGGER.fine("Buildable: " + info.toString());
 	}
 
-	static public void logStartedItem(ItemInfo info) {
+	static public void logStartedItem(@Nonnull ItemInfo info) {
 		LOGGER.fine("Starting: " + info.toString());
 	}
 
-	static public void logCanceledItem(ItemInfo info) {
+	static public void logCanceledItem(@Nonnull ItemInfo info) {
 		LOGGER.fine("Canceling: " + info.toString());
 	}
 
