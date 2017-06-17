@@ -79,8 +79,10 @@ public class QueueItemCache {
 	 * Get the ItemInfo for the last knows start of this Job Name
 	 * 
 	 * @param jobName a name of a Job
-	 * @return the {@link ItemInfo} for the last know start of the Job
+	 * @return the {@link ItemInfo} for the last know start of the Job.
+         *         Can be {@code null} if job didn't run yet
 	 */
+        @CheckForNull
 	synchronized public ItemInfo getItem(String jobName) {
 		return jobName2info.get(jobName);
 	}

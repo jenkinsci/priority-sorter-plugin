@@ -1,6 +1,5 @@
 package jenkins.advancedqueue;
 
-
 import hudson.Plugin;
 import hudson.model.Job;
 import hudson.model.Queue;
@@ -16,9 +15,9 @@ class PriorityConfigurationPlaceholderTaskHelper {
 
     private static final Logger LOGGER = Logger.getLogger(PriorityConfigurationPlaceholderTaskHelper.class.getName());
     
-    boolean isPlaceholderTask(Queue.Task task) {
-        return isPlaceholderTaskUsed() && task instanceof  ExecutorStepExecution.PlaceholderTask;
-    }
+	boolean isPlaceholderTask(Queue.Task task) {
+		return isPlaceholderTaskUsed() && task instanceof ExecutorStepExecution.PlaceholderTask;
+	}
 
     @Nonnull
     PriorityConfigurationCallback getPriority(@Nonnull ExecutorStepExecution.PlaceholderTask task, @Nonnull PriorityConfigurationCallback priorityCallback) {
@@ -26,8 +25,11 @@ class PriorityConfigurationPlaceholderTaskHelper {
         if (ownerTask instanceof Job<?, ?>) {
             Job<?, ?> job = (Job<?, ?>) ownerTask;
             ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
-            itemInfo.getPriority();
-            priorityCallback.setPrioritySelection(itemInfo.getPriority());
+            if (itemInfo != null) {
+                priorityCallback.setPrioritySelection(itemInfo.getPriority());
+            } else {
+                priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+            }
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Cannot determine priority of the Pipeline Placeholder Task {0}. Its owner task {1} is not a Job (type is {2}). " +
@@ -38,9 +40,9 @@ class PriorityConfigurationPlaceholderTaskHelper {
         return priorityCallback;
     }
 
-    static boolean isPlaceholderTaskUsed() {
-        Plugin plugin = Jenkins.getInstance().getPlugin("workflow-durable-task-step");
-        return plugin != null && plugin.getWrapper().isActive();
-    }
+	static boolean isPlaceholderTaskUsed() {
+		Plugin plugin = Jenkins.getInstance().getPlugin("workflow-durable-task-step");
+		return plugin != null && plugin.getWrapper().isActive();
+	}
 
 }

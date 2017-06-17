@@ -33,6 +33,7 @@ import java.util.List;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
+import jenkins.advancedqueue.sorter.StartedJobItemCache;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -64,8 +65,10 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 	}
 
 	public int getPriority(Queue.Item item) {
-		int upstreamBuildId = getUpstreamCause(item).getUpstreamBuild();
-		ItemInfo upstreamItem = QueueItemCache.get().getItem(upstreamBuildId);
+		UpstreamCause upstreamCause = getUpstreamCause(item);
+		String upstreamProject = upstreamCause.getUpstreamProject();
+		int upstreamBuildId = upstreamCause.getUpstreamBuild();
+		ItemInfo upstreamItem = StartedJobItemCache.get().getStartedItem(upstreamProject, upstreamBuildId);
 		// Upstream Item being null should be very very rare
 		if (upstreamItem != null) {
 			return upstreamItem.getPriority();
