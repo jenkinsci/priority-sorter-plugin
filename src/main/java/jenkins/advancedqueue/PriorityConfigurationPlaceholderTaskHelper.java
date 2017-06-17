@@ -36,6 +36,7 @@ class PriorityConfigurationPlaceholderTaskHelper {
                         "Custom priority will not be set",
                         new Object[] {task, ownerTask, ownerTask != null ? ownerTask.getClass() : "null"});
             }
+            priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
         }
         return priorityCallback;
     }
