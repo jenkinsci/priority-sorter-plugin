@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 
 /**
  * Keeps track of the Queue.Items seen by the Sorter. Uses a WeakHash to store the entries that have
@@ -78,8 +79,10 @@ public class QueueItemCache {
 	 * Get the ItemInfo for the last knows start of this Job Name
 	 * 
 	 * @param jobName a name of a Job
-	 * @return the {@link ItemInfo} for the last know start of the Job
+	 * @return the {@link ItemInfo} for the last know start of the Job.
+         *         Can be {@code null} if job didn't run yet
 	 */
+        @CheckForNull
 	synchronized public ItemInfo getItem(String jobName) {
 		return jobName2info.get(jobName);
 	}
@@ -91,6 +94,7 @@ public class QueueItemCache {
 		return itemInfo;
 	}
 
+        @CheckForNull
 	synchronized public ItemInfo removeItem(int itemId) {
 		return item2info.remove(itemId);
 	}
