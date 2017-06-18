@@ -26,6 +26,7 @@ package jenkins.advancedqueue.sorter.strategy;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
+import javax.annotation.CheckForNull;
 
 import javax.servlet.ServletException;
 
@@ -98,6 +99,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 			return items;
 		}
 
+		@CheckForNull
 		private MultiBucketStrategy getStrategy() {
 			SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
 			if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {

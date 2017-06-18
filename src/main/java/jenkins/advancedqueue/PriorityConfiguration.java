@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import javax.servlet.ServletException;
 
@@ -236,7 +238,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
-	public JobGroup getJobGroup(PriorityConfigurationCallback priorityCallback, Job<?, ?> job) {
+        @CheckForNull
+	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
 		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
 			return null;

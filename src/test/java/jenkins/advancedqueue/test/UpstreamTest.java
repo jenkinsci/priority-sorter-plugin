@@ -13,6 +13,7 @@ import org.jvnet.hudson.test.recipes.LocalData;
 import hudson.model.Cause;
 import hudson.model.Cause.UpstreamCause;
 import hudson.model.Cause.UserIdCause;
+import javax.annotation.CheckForNull;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
 import jenkins.advancedqueue.testutil.TestRunListener;
@@ -56,6 +57,7 @@ public class UpstreamTest {
 		TestRunListener.assertStartedItems();
 	}
 
+	@CheckForNull
 	private UpstreamCause createUpstreamCause(final String upstreamProject, final int upstreamBuild) throws Exception {
 		final Class<?> clazz = UpstreamCause.class;
 		final Constructor<?>[] constructors = clazz.getDeclaredConstructors();

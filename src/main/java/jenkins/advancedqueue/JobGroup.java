@@ -25,6 +25,7 @@ package jenkins.advancedqueue;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.CheckForNull;
 
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
@@ -139,6 +140,7 @@ public class JobGroup {
 	 * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}, will return the view
 	 */
 	@Deprecated
+        @CheckForNull
 	public String getView() {
 		if(jobGroupStrategy instanceof ViewBasedJobInclusionStrategy) {
 			return ((ViewBasedJobInclusionStrategy) jobGroupStrategy).getViewName();
