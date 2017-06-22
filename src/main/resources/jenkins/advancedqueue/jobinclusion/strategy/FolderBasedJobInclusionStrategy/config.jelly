@@ -4,6 +4,11 @@
 			<j:forEach var="folder" items="${descriptor.listFolderItems}">
 				<f:option value="${folder.value}" selected="${folder.value==instance.folderName}">${folder.name}</f:option>
 			</j:forEach>
+			<f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="Use a regular expression to only include a subset of the included Jobs">
+			    <f:entry title="Regular Expression">
+			        <f:textbox name="jobPattern" field="jobPattern" value="${instance.jobPattern}" />
+			    </f:entry>
+			</f:optionalBlock>
 		</select>
 	</f:entry>
 </j:jelly>

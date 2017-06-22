@@ -28,6 +28,8 @@ import hudson.model.Job;
 import hudson.util.ListBoxModel;
 
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
@@ -42,6 +44,8 @@ import com.cloudbees.hudson.plugins.folder.Folder;
  * @since 3.0
  */
 public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
+
+	private final static Logger LOGGER = Logger.getLogger(FolderBasedJobInclusionStrategy.class.getName());
 
 	@Extension(optional = true)
 	static public class FolderBasedJobInclusionStrategyDescriptor extends
@@ -62,19 +66,70 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	};
 
+	static public class JobPattern {
+		private String jobPattern;
+
+		@DataBoundConstructor
+		public JobPattern(String jobPattern) {
+			this.jobPattern = jobPattern;
+		}
+
+	}
+
 	private String folderName;
 
+	private boolean useJobFilter = false;
+
+	private String jobPattern = ".*";
+
 	@DataBoundConstructor
-	public FolderBasedJobInclusionStrategy(String folderName) {
+	public FolderBasedJobInclusionStrategy(String folderName, JobPattern jobFilter) {
 		this.folderName = folderName;
+		this.useJobFilter = (jobFilter != null);
+		if (this.useJobFilter) {
+			this.jobPattern = jobFilter.jobPattern;
+		}
 	}
 
 	public String getFolderName() {
 		return folderName;
 	}
 
+	public boolean isUseJobFilter() {
+		return useJobFilter;
+	}
+
+	public String getJobPattern() {
+		return jobPattern;
+	}
+
 	@Override
 	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		return job.getFullName().startsWith(folderName);
+		if (job.getFullName().startsWith(folderName)) {
+			if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
+				decisionLogger.addDecisionLog(2, "Not using filter ...");
+				LOGGER.info("Not using filter ...");
+				return true;
+			} else {
+				decisionLogger.addDecisionLog(2, "Using filter ...");
+				LOGGER.info("Using filter ...");
+				try {
+					if (job.getName().matches(getJobPattern())) {
+						decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
+						LOGGER.info("Job is matching the filter ...");
+						return true;
+					} else {
+						decisionLogger.addDecisionLog(3, "Job is not matching the filter ...");
+						LOGGER.info("Job is not matching the filter ...");
+						return false;
+					}
+				} catch (PatternSyntaxException e) {
+					decisionLogger.addDecisionLog(3, "Filter has syntax error");
+					LOGGER.info("Filter has syntax error");
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 }
