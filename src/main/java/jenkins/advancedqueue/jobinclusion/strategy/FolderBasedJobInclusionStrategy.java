@@ -29,6 +29,7 @@ import hudson.util.ListBoxModel;
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
@@ -81,6 +82,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 	private boolean useJobFilter = false;
 
 	private String jobPattern = ".*";
+	private transient Pattern compiledPattern;
 
 	@DataBoundConstructor
 	public FolderBasedJobInclusionStrategy(String folderName, JobPattern jobFilter) {
@@ -89,6 +91,10 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 		if (this.useJobFilter) {
 			this.jobPattern = jobFilter.jobPattern;
 		}
+	}
+
+	public FolderBasedJobInclusionStrategy(String folderName) {
+		this.folderName = folderName;
 	}
 
 	public String getFolderName() {
@@ -103,29 +109,31 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 		return jobPattern;
 	}
 
+	private Pattern getCompiledPattern() {
+		if (compiledPattern == null)
+			compiledPattern = Pattern.compile(jobPattern);
+
+		return compiledPattern;
+	}
+
 	@Override
 	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
 		if (job.getFullName().startsWith(folderName)) {
 			if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
 				decisionLogger.addDecisionLog(2, "Not using filter ...");
-				LOGGER.info("Not using filter ...");
 				return true;
 			} else {
 				decisionLogger.addDecisionLog(2, "Using filter ...");
-				LOGGER.info("Using filter ...");
 				try {
-					if (job.getName().matches(getJobPattern())) {
+					if (getCompiledPattern().matcher(job.getName()).matches()) {
 						decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
-						LOGGER.info("Job is matching the filter ...");
 						return true;
 					} else {
 						decisionLogger.addDecisionLog(3, "Job is not matching the filter ...");
-						LOGGER.info("Job is not matching the filter ...");
 						return false;
 					}
 				} catch (PatternSyntaxException e) {
 					decisionLogger.addDecisionLog(3, "Filter has syntax error");
-					LOGGER.info("Filter has syntax error");
 					return false;
 				}
 			}
