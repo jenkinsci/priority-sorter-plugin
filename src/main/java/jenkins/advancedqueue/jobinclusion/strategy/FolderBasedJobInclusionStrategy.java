@@ -36,9 +36,13 @@ import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+
+import javax.annotation.CheckForNull;
 
 /**
  * @author Magnus Sandberg
@@ -67,6 +71,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	};
 
+	@Restricted(NoExternalUse.class)
 	static public class JobPattern {
 		private String jobPattern;
 
@@ -81,7 +86,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	private boolean useJobFilter = false;
 
-	private String jobPattern = ".*";
+	private String jobPattern;
 	private transient Pattern compiledPattern;
 
 	@DataBoundConstructor
@@ -105,11 +110,16 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 		return useJobFilter;
 	}
 
+	@CheckForNull
 	public String getJobPattern() {
 		return jobPattern;
 	}
 
-	private Pattern getCompiledPattern() {
+	@CheckForNull
+	private Pattern getCompiledPattern() throws PatternSyntaxException {
+		if (jobPattern == null)
+			return null;
+
 		if (compiledPattern == null)
 			compiledPattern = Pattern.compile(jobPattern);
 
@@ -118,6 +128,9 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	@Override
 	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+		if (getJobPattern() == null || getCompiledPattern() == null)
+			return false;
+
 		if (job.getFullName().startsWith(folderName)) {
 			if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
 				decisionLogger.addDecisionLog(2, "Not using filter ...");
