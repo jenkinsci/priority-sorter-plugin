@@ -30,6 +30,7 @@ import hudson.model.Queue.LeftItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
@@ -95,6 +96,7 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 		return strategies;
 	}
 
+	@CheckForNull
 	public static SorterStrategyDescriptor getSorterStrategy(String key) {
 		List<SorterStrategyDescriptor> allSorterStrategies = getAllSorterStrategies();
 		for (SorterStrategyDescriptor sorterStrategy : allSorterStrategies) {
@@ -105,6 +107,7 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 		return null;
 	}
 
+	@CheckForNull
 	public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
 		ExtensionList<SorterStrategy> all = all();
 		for (SorterStrategy prioritySorterStrategy : all) {

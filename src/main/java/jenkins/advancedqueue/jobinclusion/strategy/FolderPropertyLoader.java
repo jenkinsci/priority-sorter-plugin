@@ -33,6 +33,7 @@ import hudson.util.DescribableList;
 import jenkins.advancedqueue.DecisionLogger;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+import javax.annotation.CheckForNull;
 
 /**
  * @author Magnus Sandberg
@@ -40,6 +41,7 @@ import com.cloudbees.hudson.plugins.folder.Folder;
  */
 public class FolderPropertyLoader {
 
+	@CheckForNull    
 	static public String getJobGroupName(DecisionLogger decisionLogger, Job<?, ?> job) {
 		ItemGroup<?> parent = job.getParent();
 		decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");

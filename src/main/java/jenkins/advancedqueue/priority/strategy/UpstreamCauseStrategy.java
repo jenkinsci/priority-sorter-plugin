@@ -29,6 +29,8 @@ import hudson.model.Cause.UpstreamCause;
 import hudson.model.Queue;
 
 import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
@@ -54,7 +56,8 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 	public UpstreamCauseStrategy() {
 	}
 
-	private UpstreamCause getUpstreamCause(Queue.Item item) {
+	@CheckForNull
+	private UpstreamCause getUpstreamCause(@Nonnull Queue.Item item) {
 		List<Cause> causes = item.getCauses();
 		for (Cause cause : causes) {
 			if (cause.getClass() == UpstreamCause.class) {
@@ -66,6 +69,11 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 
 	public int getPriority(Queue.Item item) {
 		UpstreamCause upstreamCause = getUpstreamCause(item);
+                if (upstreamCause == null) {
+                    // Cannot determine
+                    return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+                }
+                
 		String upstreamProject = upstreamCause.getUpstreamProject();
 		int upstreamBuildId = upstreamCause.getUpstreamBuild();
 		ItemInfo upstreamItem = StartedJobItemCache.get().getStartedItem(upstreamProject, upstreamBuildId);
