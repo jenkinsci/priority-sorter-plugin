@@ -24,6 +24,7 @@
 package jenkins.advancedqueue.sorter;
 
 import hudson.ExtensionList;
+import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Queue;
 import hudson.model.Queue.LeftItem;
@@ -35,13 +36,11 @@ import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
 
-import org.apache.tools.ant.ExtensionPoint;
-
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class SorterStrategy extends ExtensionPoint implements Describable<SorterStrategy> {
+public abstract class SorterStrategy implements ExtensionPoint, Describable<SorterStrategy> {
 
 	public SorterStrategyDescriptor getDescriptor() {
 		return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
