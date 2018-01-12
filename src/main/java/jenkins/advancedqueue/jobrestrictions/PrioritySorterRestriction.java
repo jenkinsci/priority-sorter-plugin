@@ -103,7 +103,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 	@Override
 	public boolean canTake(BuildableItem buildableItem) {
-		ItemInfo item = QueueItemCache.get().getItem(buildableItem.id);
+		ItemInfo item = QueueItemCache.get().getItem(buildableItem.getId());
 		if(item == null) {
 			LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
 			return true;

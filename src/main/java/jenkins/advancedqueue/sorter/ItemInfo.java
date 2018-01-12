@@ -33,6 +33,8 @@ import hudson.model.Queue.Item;
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 
 /**
  * Used to store info about a Queue.Item and related information calculated by the Plugin
@@ -42,7 +44,7 @@ import jenkins.advancedqueue.priority.PriorityStrategy;
  */
 public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, SorterStrategyCallback, Comparable<ItemInfo> {
 
-	private int itemId;
+	private long itemId;
 
 	private long inQueueSince;
 	
@@ -63,7 +65,7 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	private List<String> decisionLog = new ArrayList<String>(10);
 
 	ItemInfo(Item item) {
-		this.itemId = item.id;
+		this.itemId = item.getId();
 		this.inQueueSince = item.getInQueueSince();
 		this.jobName = item.task.getName();
 		this.itemStatus = ItemStatus.WAITING;
@@ -109,7 +111,27 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 		logBlockedItem(this);
 	}
 
+
+	/**
+	 * @deprecated Use {@link #getQueueItemId()} instead.
+	 */
+	@Deprecated
+	@Restricted(DoNotUse.class)
 	public int getItemId() {
+		if (itemId > Integer.MAX_VALUE) {
+			throw new IllegalStateException("Sorry, you need to update any Plugins attempting to " +
+					"assign 'Queue.Item.id' to an int value. 'Queue.Item.id' is now a long value and " +
+					"has incremented to a value greater than Integer.MAX_VALUE (2^31 - 1).");
+		}
+		return (int)itemId;
+	}
+
+	/**
+	 * Gets queue ID of the item.
+	 * @return ID
+	 * @since TODO
+	 */
+	public long getQueueItemId() {
 		return itemId;
 	}
 
@@ -151,7 +173,7 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	public int compareTo(ItemInfo o) {
 		if(this.getWeight() == o.getWeight()) {
 			if(this.getSortableInQueueSince() == o.getSortableInQueueSince()) {
-				return new Integer(this.getItemId()).compareTo(o.getItemId());
+				return Long.compare(this.getQueueItemId(), o.getQueueItemId());
 			}
 			return new Long(this.getSortableInQueueSince()).compareTo(o.getSortableInQueueSince());
 		}

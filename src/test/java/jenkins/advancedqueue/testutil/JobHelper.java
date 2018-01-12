@@ -66,7 +66,7 @@ public class JobHelper {
 	public List<MatrixProject> createMatrixProjects(int numberOfProjects) throws Exception {
 		List<MatrixProject> projects = new ArrayList<MatrixProject>(numberOfProjects);
 		for (int i = 0; i < numberOfProjects; i++) {
-			MatrixProject project = j.createMatrixProject("Matrix " + i);
+			MatrixProject project = j.createProject(MatrixProject.class, "Matrix " + i);
 			project.getBuildersList().add(new TestBuilder(100));
 	        AxisList axes = new AxisList();
 	        axes.add(new TextAxis(i + "A1", i + "A2", i + "A3"));
