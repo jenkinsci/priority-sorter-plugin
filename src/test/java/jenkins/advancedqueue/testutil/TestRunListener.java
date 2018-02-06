@@ -32,7 +32,7 @@ public class TestRunListener extends RunListener<Run> {
 	public void onStarted(Run r, TaskListener listener) {
 		LOGGER.info("ON STARTED: " + r.getParent().getName());
 		try {
-			ItemInfo item = QueueItemCache.get().getItem(r.getParent().getName());
+			ItemInfo item = QueueItemCache.get().getItem(r.getParent().getFullDisplayName());
 			actual.add(item);
 		} catch (Throwable e) {
 			LOGGER.log(Level.INFO, "###########", e);

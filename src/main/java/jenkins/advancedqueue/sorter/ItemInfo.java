@@ -65,7 +65,7 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	ItemInfo(Item item) {
 		this.itemId = item.id;
 		this.inQueueSince = item.getInQueueSince();
-		this.jobName = item.task.getName();
+		this.jobName = item.task.getFullDisplayName();
 		this.itemStatus = ItemStatus.WAITING;
 	}
 
