@@ -96,17 +96,12 @@ public class AdvancedQueueSorter extends QueueSorter {
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
 			StringBuffer queueStr = new StringBuffer("Queue:\n"
 					+ "+----------------------------------------------------------------------+\n"
-					+ "|   Item Id  |        Job Name       | Priority |        Weight        |\n"
+					+ "|   Item Id  | Priority |        Weight        |         Job Name       \n"
 					+ "+----------------------------------------------------------------------+\n");
 			for (BuildableItem item : items) {
 				ItemInfo itemInfo = QueueItemCache.get().getItem(item.id);
-				String jobName = itemInfo.getJobName();
-				if (jobName.length() > 21) {
-					jobName = jobName.substring(0, 9) + "..."
-							+ jobName.substring(jobName.length() - 9, jobName.length());
-				}
-				queueStr.append(String.format("| %10d | %20s | %8d | %20.5f |\n", item.id, jobName,
-						itemInfo.getPriority(), itemInfo.getWeight()));
+				queueStr.append(String.format("| %10d | %8d | %20.5f | %s \n",
+						item.id, itemInfo.getPriority(), itemInfo.getWeight(), itemInfo.getJobName()));
 
 			}
 			queueStr.append("+----------------------------------------------------------------------+");
