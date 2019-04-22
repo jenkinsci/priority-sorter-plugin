@@ -53,7 +53,7 @@
 												<j:set var="descriptor" value="${instance.descriptor}" />
 												<f:entry title="${descriptor.displayName}">
   													<input type="hidden" name="stapler-class" value="${descriptor.clazz.name}"/>
-													<st:include page="${descriptor.configPage}" />
+													<st:include it="${instance}" page="${descriptor.configPage}" />
 												</f:entry>
 											</j:if>										
 											<f:entry>
