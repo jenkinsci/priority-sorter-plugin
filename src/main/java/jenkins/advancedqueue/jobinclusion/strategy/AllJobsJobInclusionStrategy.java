@@ -26,6 +26,7 @@ package jenkins.advancedqueue.jobinclusion.strategy;
 import hudson.Extension;
 import hudson.model.Job;
 import jenkins.advancedqueue.DecisionLogger;
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -41,7 +42,7 @@ public class AllJobsJobInclusionStrategy extends JobInclusionStrategy {
 			AbstractJobInclusionStrategyDescriptor<AllJobsJobInclusionStrategy> {
 
 		public AllJobsJobInclusionStrategyDescriptor() {
-			super("All Jobs");
+			super(Messages.All_jobs());
 		}
 	};
 
