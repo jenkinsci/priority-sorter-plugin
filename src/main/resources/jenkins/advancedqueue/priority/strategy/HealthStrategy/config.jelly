@@ -1,18 +1,18 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
 	<st:include page="config.jelly" class="jenkins.advancedqueue.priority.strategy.AbstractStaticPriorityStrategy" />
-	<f:entry title="Scope">
+	<f:entry title="${%Scope}">
 		<select name="selection">
-			<f:option value="BETTER" selected="${instance.selection=='BETTER'}">Health is equal or better than</f:option>
-			<f:option value="SAME" selected="${instance.selection=='SAME'}">Health is exactly</f:option>
-			<f:option value="WORSE" selected="${instance.selection=='WORSE'}">Health is equal or worse than</f:option>
+			<f:option value="BETTER" selected="${instance.selection=='BETTER'}">${%Health is equal or better than}</f:option>
+			<f:option value="SAME" selected="${instance.selection=='SAME'}">${%Health is exactly}</f:option>
+			<f:option value="WORSE" selected="${instance.selection=='WORSE'}">${%Health is equal or worse than}</f:option>
 		</select>
 		<select name="health">
 			<!-- Using same naming and conventions as in HealthReport -->
-			<f:option value="HEALTH_OVER_80" selected="${instance.health=='HEALTH_OVER_80'}">No recent builds failed</f:option>
-			<f:option value="HEALTH_61_TO_80" selected="${instance.health=='HEALTH_61_TO_80'}">20%-40% of recent builds failed</f:option>
-			<f:option value="HEALTH_41_TO_60" selected="${instance.health=='HEALTH_41_TO_60'}">40%-60% of recent builds failed</f:option>
-			<f:option value="HEALTH_21_TO_40" selected="${instance.health=='HEALTH_21_TO_40'}">60%-80% of recent builds failed</f:option>
-			<f:option value="HEALTH_0_TO_20" selected="${instance.health=='HEALTH_0_TO_20'}">All recent builds failed</f:option>
+			<f:option value="HEALTH_OVER_80" selected="${instance.health=='HEALTH_OVER_80'}">${%No recent builds failed}</f:option>
+			<f:option value="HEALTH_61_TO_80" selected="${instance.health=='HEALTH_61_TO_80'}">${%HEALTH_61_TO_80}</f:option>
+			<f:option value="HEALTH_41_TO_60" selected="${instance.health=='HEALTH_41_TO_60'}">${%HEALTH_41_TO_60}</f:option>
+			<f:option value="HEALTH_21_TO_40" selected="${instance.health=='HEALTH_21_TO_40'}">${%HEALTH_21_TO_40}</f:option>
+			<f:option value="HEALTH_0_TO_20" selected="${instance.health=='HEALTH_0_TO_20'}">${%All recent builds failed}</f:option>
 		</select>
 	</f:entry>
 	
