@@ -29,6 +29,7 @@ import hudson.Extension;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Run;
 import hudson.util.ListBoxModel;
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
@@ -56,7 +57,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 		@Override
 		public String getDisplayName() {
-			return "Priority from PrioritySorter";
+			return Messages.Priority_from_prioritySorter();
 		}
 
 		public ListBoxModel doFillFromPriorityItems() {

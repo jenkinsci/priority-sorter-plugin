@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
 
@@ -56,7 +57,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 			AbstractJobInclusionStrategyDescriptor<ViewBasedJobInclusionStrategy> {
 
 		public ViewBasedJobInclusionStrategyDescriptor() {
-			super("Jobs included in a View");
+			super(Messages.Jobs_included_in_a_view());
 		}
 
 		public ListBoxModel getListViewItems() {

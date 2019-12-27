@@ -8,7 +8,7 @@
 
 	<j:if test="${descriptor.isUsed(it)}">
 		<f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="Use specific priority for this Job">
-			<f:entry title="Job Priority" field="priority">
+			<f:entry title="${%Job Priority}" field="priority">
 				<select name="priority">
 					<j:forEach var="priority" items="${descriptor.getPriorities()}">
 				    	<j:if test="${priority.value == instance.priority}">

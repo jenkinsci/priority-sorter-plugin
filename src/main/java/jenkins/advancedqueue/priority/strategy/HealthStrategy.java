@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Queue;
 
+import jenkins.advancedqueue.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -39,7 +40,7 @@ public class HealthStrategy extends AbstractStaticPriorityStrategy {
 	public static class HealthStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
 
 		public HealthStrategyDescriptor() {
-			super("Using the Jobs Health");
+			super(Messages.Using_the_jobs_health());
 		}
 
 	}

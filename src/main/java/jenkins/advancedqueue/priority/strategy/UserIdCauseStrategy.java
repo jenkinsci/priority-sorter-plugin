@@ -30,6 +30,7 @@ import hudson.model.Queue;
 
 import java.util.List;
 
+import jenkins.advancedqueue.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -42,7 +43,7 @@ public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 	public static class UserIdCauseStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
 
 		public UserIdCauseStrategyDescriptor() {
-			super("Job Triggered by a User");
+			super(Messages.Job_triggered_by_a_user());
 		}
 
 	}
