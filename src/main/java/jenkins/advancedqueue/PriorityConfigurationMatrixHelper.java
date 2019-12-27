@@ -24,7 +24,7 @@ class PriorityConfigurationMatrixHelper {
 		// lost (was running at restart)
 		if (itemInfo != null) {
 			priorityCallback.addDecisionLog(0, "MatrixProject found in cache, using priority from queue-item ["
-					+ itemInfo.getItemId() + "]");
+					+ itemInfo.getQueueItemId() + "]");
 			return priorityCallback.setPrioritySelection(itemInfo.getPriority(), itemInfo.getJobGroupId(),
 					itemInfo.getPriorityStrategy());
 		}
