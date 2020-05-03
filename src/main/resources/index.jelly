@@ -1,8 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   This view is used to render the plugin list page.
 
   Since we don't really have anything dynamic here, let's just use static HTML. 
 -->
+<?jelly escape-by-default='true'?>
 <div>
   This plugin allows for the build queue to be sorted based on pre-assigned priorities for each job.
 </div>

@@ -78,7 +78,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 		public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
 			int value = DEFAULT_PRIORITY;
 			try {
-				value = Integer.valueOf(strValue);
+				value = Integer.parseInt(strValue);
 			} catch (NumberFormatException e) {
 				// Use default value
 			}

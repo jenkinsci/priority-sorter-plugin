@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 
 /**
@@ -44,8 +43,6 @@ import javax.annotation.CheckForNull;
  */
 public class QueueItemCache {
 
-	private final static Logger LOGGER = Logger.getLogger(QueueItemCache.class.getName());
-
 	static private QueueItemCache queueItemCache = null;
 
 	static {
@@ -57,7 +54,7 @@ public class QueueItemCache {
 	}
 
 	// Keeps track of all items currently in the queue
-	private Map<Integer, ItemInfo> item2info = new HashMap<Integer, ItemInfo>();
+	private Map<Long, ItemInfo> item2info = new HashMap<Long, ItemInfo>();
 	// Keeps track of the last started item of the Job
 	private Map<String, ItemInfo> jobName2info = new HashMap<String, ItemInfo>();
 
@@ -71,7 +68,7 @@ public class QueueItemCache {
 	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
 	 *         queue
 	 */
-	synchronized public ItemInfo getItem(int itemId) {
+	synchronized public ItemInfo getItem(long itemId) {
 		return item2info.get(itemId);
 	}
 
@@ -88,14 +85,14 @@ public class QueueItemCache {
 	}
 
 	synchronized public ItemInfo addItem(ItemInfo itemInfo) {
-		Integer itemId = new Integer(itemInfo.getItemId());
+		Long itemId = Long.valueOf(itemInfo.getItemId());
 		item2info.put(itemId, itemInfo);
 		jobName2info.put(itemInfo.getJobName(), itemInfo);
 		return itemInfo;
 	}
 
         @CheckForNull
-	synchronized public ItemInfo removeItem(int itemId) {
+	synchronized public ItemInfo removeItem(long itemId) {
 		return item2info.remove(itemId);
 	}
 

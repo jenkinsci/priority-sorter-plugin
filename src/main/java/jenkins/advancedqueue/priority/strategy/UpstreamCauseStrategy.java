@@ -23,27 +23,27 @@
  */
 package jenkins.advancedqueue.priority.strategy;
 
-import hudson.Extension;
-import hudson.model.Cause;
-import hudson.model.Cause.UpstreamCause;
-import hudson.model.Queue;
-
 import java.util.List;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+
+import hudson.Extension;
+import hudson.model.Cause;
+import hudson.model.Queue;
+import hudson.model.Cause.UpstreamCause;
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
-import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.advancedqueue.sorter.StartedJobItemCache;
-
-import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
  * @since 2.3
  */
+@Extension
 public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension

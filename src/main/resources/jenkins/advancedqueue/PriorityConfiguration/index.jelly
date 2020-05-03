@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
 	<l:layout norefresh="true">
 	 	<l:side-panel>
@@ -40,16 +42,16 @@
 	    					</f:entry>
 	    					<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use additional rules when assigning a priority to a Job}">
 								<f:entry>
-									<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="${%Priority Strategy}">
+									<f:repeatable var="priorityStrategy" items="${jobGroup.priorityStrategies}" header="${%Priority Strategy}">
 										<table width="75%">
-											<j:if test="${holder == null}">
+											<j:if test="${priorityStrategy == null}">
 												<f:entry title="${%Select Strategy}">
 													<f:dropdownDescriptorSelector
 															descriptors="${it.getPriorityStrategyDescriptors()}"/>
 												</f:entry>
 											</j:if>
-											<j:if test="${holder != null}">
-												<j:set var="instance" value="${holder.priorityStrategy}" />
+											<j:if test="${priorityStrategy != null}">
+												<j:set var="instance" value="${priorityStrategy}" />
 												<j:set var="descriptor" value="${instance.descriptor}" />
 												<f:entry title="${descriptor.displayName}">
   													<input type="hidden" name="stapler-class" value="${descriptor.clazz.name}"/>

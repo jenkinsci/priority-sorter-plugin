@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
 	<f:description>${%Use the same priority as assigned to the Upstream Build that caused this Jobs to start.}</f:description>
 </j:jelly>

@@ -42,6 +42,7 @@ import com.cloudbees.hudson.plugins.folder.Folder;
  * @author Magnus Sandberg
  * @since 3.0
  */
+@Extension
 public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	@Extension(optional = true)
@@ -54,7 +55,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 		public ListBoxModel getListFolderItems() {
 			ListBoxModel items = new ListBoxModel();
-			List<Folder> folders = Jenkins.getInstance().getAllItems(Folder.class);
+			List<Folder> folders = Jenkins.get().getAllItems(Folder.class);
 			for (Folder folder : folders) {
 				items.add(folder.getFullName(), folder.getFullName());
 			}
@@ -64,6 +65,9 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 	};
 
 	private String folderName;
+
+	public FolderBasedJobInclusionStrategy() {
+	}
 
 	@DataBoundConstructor
 	public FolderBasedJobInclusionStrategy(String folderName) {

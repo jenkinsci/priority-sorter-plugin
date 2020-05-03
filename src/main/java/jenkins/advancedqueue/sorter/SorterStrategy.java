@@ -43,7 +43,7 @@ import jenkins.model.Jenkins;
 public abstract class SorterStrategy implements ExtensionPoint, Describable<SorterStrategy> {
 
 	public SorterStrategyDescriptor getDescriptor() {
-		return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+		return (SorterStrategyDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
 	}
 
 	/**
@@ -121,6 +121,6 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
 	 * All registered {@link SorterStrategy}s.
 	 */
 	public static ExtensionList<SorterStrategy> all() {
-		return Jenkins.getInstance().getExtensionList(SorterStrategy.class);
+		return Jenkins.get().getExtensionList(SorterStrategy.class);
 	}
 }
