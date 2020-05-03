@@ -36,3 +36,7 @@ The Sorter Strategies will allow you to select how you want the queue to be sort
 The Priority Strategies will allow you to have different priorities based on how the Job is started. This enables you to give Jobs started directly by a user higher priority than Jobs started by cron or by a commit.
 
 See Jenkins Wiki @ [Priority Sorter Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin) for more information.
+
+## Dependencies
+
+* [job-restrictions](https://plugins.jenkins.io/job-restrictions/)

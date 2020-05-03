@@ -1,15 +1,14 @@
 package jenkins.advancedqueue.test;
 
-import hudson.model.Cause.UserIdCause;
-import jenkins.advancedqueue.sorter.QueueItemCache;
-import jenkins.advancedqueue.testutil.ExpectedItem;
-import jenkins.advancedqueue.testutil.JobHelper;
-import jenkins.advancedqueue.testutil.TestRunListener;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
+
+import hudson.model.Cause.UserIdCause;
+import jenkins.advancedqueue.testutil.ExpectedItem;
+import jenkins.advancedqueue.testutil.JobHelper;
+import jenkins.advancedqueue.testutil.TestRunListener;
 
 public class SimpleTest {
 

@@ -34,6 +34,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.5
  */
+@Extension
 public class HealthStrategy extends AbstractStaticPriorityStrategy {
 
 	@Extension
@@ -48,6 +49,8 @@ public class HealthStrategy extends AbstractStaticPriorityStrategy {
 	private String selection;
 
 	private String health;
+
+	public HealthStrategy() {}
 
 	@DataBoundConstructor                      
 	public HealthStrategy(int priority, String selection, String health) {

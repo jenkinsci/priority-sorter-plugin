@@ -38,6 +38,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 3.0
  */
+@Extension
 public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension

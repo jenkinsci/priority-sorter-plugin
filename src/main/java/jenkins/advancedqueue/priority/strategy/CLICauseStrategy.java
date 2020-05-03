@@ -37,6 +37,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
+@Extension
 public class CLICauseStrategy extends AbstractStaticPriorityStrategy {
 
 	@Extension
@@ -47,6 +48,8 @@ public class CLICauseStrategy extends AbstractStaticPriorityStrategy {
 		}
 
 	}
+
+	public CLICauseStrategy() {}
 
 	@DataBoundConstructor
 	public CLICauseStrategy(int priority) {

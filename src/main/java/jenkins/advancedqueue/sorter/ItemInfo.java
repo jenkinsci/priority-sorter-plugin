@@ -28,6 +28,7 @@ import static jenkins.advancedqueue.ItemTransitionLogger.logBuilableItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import hudson.model.Queue.Item;
 import jenkins.advancedqueue.DecisionLogger;
@@ -42,7 +43,7 @@ import jenkins.advancedqueue.priority.PriorityStrategy;
  */
 public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, SorterStrategyCallback, Comparable<ItemInfo> {
 
-	private int itemId;
+	private long itemId;
 
 	private long inQueueSince;
 	
@@ -63,7 +64,7 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	private List<String> decisionLog = new ArrayList<String>(10);
 
 	ItemInfo(Item item) {
-		this.itemId = item.id;
+		this.itemId = item.getId();
 		this.inQueueSince = item.getInQueueSince();
 		this.jobName = item.task.getName();
 		this.itemStatus = ItemStatus.WAITING;
@@ -109,7 +110,7 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 		logBlockedItem(this);
 	}
 
-	public int getItemId() {
+	public long getItemId() {
 		return itemId;
 	}
 
@@ -151,11 +152,25 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 	public int compareTo(ItemInfo o) {
 		if(this.getWeight() == o.getWeight()) {
 			if(this.getSortableInQueueSince() == o.getSortableInQueueSince()) {
-				return new Integer(this.getItemId()).compareTo(o.getItemId());
+				return Long.compare(this.getItemId(), o.getItemId());
 			}
-			return new Long(this.getSortableInQueueSince()).compareTo(o.getSortableInQueueSince());
+			return Long.compare(this.getSortableInQueueSince(), o.getSortableInQueueSince());
 		}
 		return Float.compare(this.getWeight(), o.getWeight());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ItemInfo) {
+			ItemInfo itemInfo = (ItemInfo) obj;
+			return compareTo(itemInfo) == 0;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(itemId, inQueueSince, sortAsInQueueSince, jobGroupId, priorityStrategy, jobName, weight, priority, itemStatus, decisionLog);
 	}
 
 	@Override
@@ -175,5 +190,4 @@ public class ItemInfo implements PriorityConfigurationCallback, DecisionLogger, 
 		}
 		return buffer.toString();
 	}
-
 }

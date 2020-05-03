@@ -22,6 +22,9 @@
 package jenkins.advancedqueue;
 
 import hudson.Extension;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
+import hudson.model.Items;
 import hudson.model.Job;
 import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
@@ -59,6 +62,12 @@ public class PrioritySorterJobColumn extends ListViewColumn {
 		@Override
 		public boolean shownByDefault() {
 			return false;
+		}
+
+		@Initializer(before = InitMilestone.PLUGINS_STARTED)
+		public static void addAliases() {
+			// moved in 3.0 everything in hudson.* is deprecated
+			Items.XSTREAM2.addCompatibilityAlias("hudson.queueSorter.PrioritySorterJobColumn", PrioritySorterJobColumn.class);		
 		}
 	}
 }
