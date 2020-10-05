@@ -40,19 +40,6 @@
 			</roles>
 			<timezone>CET</timezone>
 		</developer>
-		<!--  Removed not to show on Wiki <developer>
-			<id>emsa23</id>
-			<name>Magnus Sandberg</name>
-			<email>emsa@switchbeat.com</email>
-			<roles>
-				<role>developer</role>
-				<role>maintainer</role>
-			</roles>
-			<timezone>CET</timezone>
-		</developer> -->
-		<!-- Removed not to show on Wiki <developer> <id>bklarson</id> <name>Brad 
-			Larson</name> <email>bklarson@gmail.com</email> <roles> <role>developer</role> 
-			<role>retired maintainer</role> </roles> <timezone>-6</timezone> </developer> -->
 	</developers>
 
 	<dependencyManagement>
@@ -60,7 +47,7 @@
 			<dependency>
 				<groupId>io.jenkins.tools.bom</groupId>
 				<artifactId>bom-2.235.x</artifactId>
-				<version>11</version>
+				<version>12</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
