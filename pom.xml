@@ -29,19 +29,6 @@
 		</license>
 	</licenses>
 
-	<developers>
-		<developer>
-			<id>emsa23</id>
-			<name>Frank Ittermann</name>
-			<email>frank.ittermann@data4life.care</email>
-			<roles>
-				<role>developer</role>
-				<role>maintainer</role>
-			</roles>
-			<timezone>CET</timezone>
-		</developer>
-	</developers>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
