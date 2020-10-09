@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
+[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins%2Fpriority-sorter-plugin%2Fmaster)](https://ci.jenkins.io/job/Plugins/job/priority-sorter-plugin/job/master/)
+
 # Jenkins Priority Sorter Plugin
 
 This plugin adds the ability to assign different priorities to Jobs, the lower priority the job has the sooner the Job will run.
