@@ -43,68 +43,68 @@ import javax.annotation.CheckForNull;
  */
 public class QueueItemCache {
 
-	static private QueueItemCache queueItemCache = null;
+    static private QueueItemCache queueItemCache = null;
 
-	static {
-		queueItemCache = new QueueItemCache();
-	}
+    static {
+        queueItemCache = new QueueItemCache();
+    }
 
-	static public QueueItemCache get() {
-		return queueItemCache;
-	}
+    static public QueueItemCache get() {
+        return queueItemCache;
+    }
 
-	// Keeps track of all items currently in the queue
-	private Map<Long, ItemInfo> item2info = new HashMap<Long, ItemInfo>();
-	// Keeps track of the last started item of the Job
-	private Map<String, ItemInfo> jobName2info = new HashMap<String, ItemInfo>();
+    // Keeps track of all items currently in the queue
+    private Map<Long, ItemInfo> item2info = new HashMap<Long, ItemInfo>();
+    // Keeps track of the last started item of the Job
+    private Map<String, ItemInfo> jobName2info = new HashMap<String, ItemInfo>();
 
-	private QueueItemCache() {
-	}
+    private QueueItemCache() {
+    }
 
-	/**
-	 * Gets the Item for and itemId/queueId
-	 * 
-	 * @param itemId the id of a Job currently in the queue
-	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
-	 *         queue
-	 */
-	synchronized public ItemInfo getItem(long itemId) {
-		return item2info.get(itemId);
-	}
+    /**
+     * Gets the Item for and itemId/queueId
+     *
+     * @param itemId the id of a Job currently in the queue
+     * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
+     *         queue
+     */
+    synchronized public ItemInfo getItem(long itemId) {
+        return item2info.get(itemId);
+    }
 
-	/**
-	 * Get the ItemInfo for the last knows start of this Job Name
-	 * 
-	 * @param jobName a name of a Job
-	 * @return the {@link ItemInfo} for the last know start of the Job.
+    /**
+     * Get the ItemInfo for the last knows start of this Job Name
+     *
+     * @param jobName a name of a Job
+     * @return the {@link ItemInfo} for the last know start of the Job.
          *         Can be {@code null} if job didn't run yet
-	 */
+     */
         @CheckForNull
-	synchronized public ItemInfo getItem(String jobName) {
-		return jobName2info.get(jobName);
-	}
+    synchronized public ItemInfo getItem(String jobName) {
+        return jobName2info.get(jobName);
+    }
 
-	synchronized public ItemInfo addItem(ItemInfo itemInfo) {
-		Long itemId = Long.valueOf(itemInfo.getItemId());
-		item2info.put(itemId, itemInfo);
-		jobName2info.put(itemInfo.getJobName(), itemInfo);
-		return itemInfo;
-	}
+    synchronized public ItemInfo addItem(ItemInfo itemInfo) {
+        Long itemId = Long.valueOf(itemInfo.getItemId());
+        item2info.put(itemId, itemInfo);
+        jobName2info.put(itemInfo.getJobName(), itemInfo);
+        return itemInfo;
+    }
 
         @CheckForNull
-	synchronized public ItemInfo removeItem(long itemId) {
-		return item2info.remove(itemId);
-	}
+    synchronized public ItemInfo removeItem(long itemId) {
+        return item2info.remove(itemId);
+    }
 
-	/**
-	 * This method will return a sorted list of all known and active {@link ItemInfo}s this will
-	 * include Items mapped to {@link BuildableItem}s as well as {@link BlockedItem}s
-	 * 
-	 * @return the sorted list of all {@link ItemInfo}s
-	 */
-	synchronized public List<ItemInfo> getSortedList() {
-		ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
-		Collections.sort(list);
-		return Collections.unmodifiableList(list);
-	}
+    /**
+     * This method will return a sorted list of all known and active {@link ItemInfo}s this will
+     * include Items mapped to {@link BuildableItem}s as well as {@link BlockedItem}s
+     *
+     * @return the sorted list of all {@link ItemInfo}s
+     */
+    synchronized public List<ItemInfo> getSortedList() {
+        ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
+        Collections.sort(list);
+        return Collections.unmodifiableList(list);
+    }
 }

@@ -15,9 +15,9 @@ class PriorityConfigurationPlaceholderTaskHelper {
 
     private static final Logger LOGGER = Logger.getLogger(PriorityConfigurationPlaceholderTaskHelper.class.getName());
     
-	boolean isPlaceholderTask(Queue.Task task) {
-		return isPlaceholderTaskUsed() && task instanceof ExecutorStepExecution.PlaceholderTask;
-	}
+    boolean isPlaceholderTask(Queue.Task task) {
+        return isPlaceholderTaskUsed() && task instanceof ExecutorStepExecution.PlaceholderTask;
+    }
 
     @Nonnull
     PriorityConfigurationCallback getPriority(@Nonnull ExecutorStepExecution.PlaceholderTask task, @Nonnull PriorityConfigurationCallback priorityCallback) {
@@ -41,9 +41,9 @@ class PriorityConfigurationPlaceholderTaskHelper {
         return priorityCallback;
     }
 
-	static boolean isPlaceholderTaskUsed() {
-		Plugin plugin = Jenkins.get().getPlugin("workflow-durable-task-step");
-		return plugin != null && plugin.getWrapper().isActive();
-	}
+    static boolean isPlaceholderTaskUsed() {
+        Plugin plugin = Jenkins.get().getPlugin("workflow-durable-task-step");
+        return plugin != null && plugin.getWrapper().isActive();
+    }
 
 }

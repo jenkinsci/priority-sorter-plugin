@@ -12,19 +12,19 @@ import org.jvnet.hudson.test.recipes.LocalData;
 
 public class NestedViewTest {
 
-	@Rule
-	public JenkinsRule j = new JenkinsRule();
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
 
-	private JobHelper jobHelper = new JobHelper(j);
+    private JobHelper jobHelper = new JobHelper(j);
 
-	@Test
-	@LocalData
-	public void nested_view_test() throws Exception {
-		// Job 0 matches "Nested View A/Nested View B" -> priority is 1
-		// Job 0 matched nothing -> default priority is 9
-		TestRunListener.init(new ExpectedItem("Job 0", 1), new ExpectedItem("Job 1", 9));
-		jobHelper.scheduleProjects(new CLICause(), new CLICause()).go();
-		j.waitUntilNoActivity();
-		TestRunListener.assertStartedItems();
-	}
+    @Test
+    @LocalData
+    public void nested_view_test() throws Exception {
+        // Job 0 matches "Nested View A/Nested View B" -> priority is 1
+        // Job 0 matched nothing -> default priority is 9
+        TestRunListener.init(new ExpectedItem("Job 0", 1), new ExpectedItem("Job 1", 9));
+        jobHelper.scheduleProjects(new CLICause(), new CLICause()).go();
+        j.waitUntilNoActivity();
+        TestRunListener.assertStartedItems();
+    }
 }

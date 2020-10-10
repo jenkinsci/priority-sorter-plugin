@@ -37,56 +37,56 @@ import jenkins.advancedqueue.sorter.SorterStrategyCallback;
  * @since 2.0
  */
 abstract public class FQBaseStrategy extends MultiBucketStrategy {
-	// The equivalent of a packet size for a network scheduler.
-	static final float MIN_STEP_SIZE = 0.00001F;
-	// Keeps track on the last assigned weight for a given priority
-	static final Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
-	static final private float MIN_STARTED_WEIGHT = 1F;
-	// Keeps track on the max weight of started jobs
-	private float maxStartedWeight = MIN_STARTED_WEIGHT;
+    // The equivalent of a packet size for a network scheduler.
+    static final float MIN_STEP_SIZE = 0.00001F;
+    // Keeps track on the last assigned weight for a given priority
+    static final Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
+    static final private float MIN_STARTED_WEIGHT = 1F;
+    // Keeps track on the max weight of started jobs
+    private float maxStartedWeight = MIN_STARTED_WEIGHT;
 
-	public FQBaseStrategy() {
-	}
+    public FQBaseStrategy() {
+    }
 
-	public FQBaseStrategy(int numberOfPriorities, int defaultPriority) {
-		super(numberOfPriorities, defaultPriority);
-	}
+    public FQBaseStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
+    }
 
-	@Override
-	public void onStartedItem(LeftItem item, float weight) {
-		maxStartedWeight = Math.max(maxStartedWeight, weight);
-	}
+    @Override
+    public void onStartedItem(LeftItem item, float weight) {
+        maxStartedWeight = Math.max(maxStartedWeight, weight);
+    }
 
-	public SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback) {
-		int priority = weightCallback.getPriority();
-		float minimumWeightToAssign = getMinimumWeightToAssign(priority);
-		float weightToUse = getWeightToUse(priority, minimumWeightToAssign);
-		prio2weight.put(priority, weightToUse);
-		return weightCallback.setWeightSelection(weightToUse);
-	}
+    public SorterStrategyCallback onNewItem(Queue.Item item, SorterStrategyCallback weightCallback) {
+        int priority = weightCallback.getPriority();
+        float minimumWeightToAssign = getMinimumWeightToAssign(priority);
+        float weightToUse = getWeightToUse(priority, minimumWeightToAssign);
+        prio2weight.put(priority, weightToUse);
+        return weightCallback.setWeightSelection(weightToUse);
+    }
 
-	protected float getMinimumWeightToAssign(int priority) {
-		Float minWeight = prio2weight.get(priority);
-		if (minWeight == null) {
-			return maxStartedWeight;
-		}
-		return Math.max(maxStartedWeight, minWeight);
-	}
+    protected float getMinimumWeightToAssign(int priority) {
+        Float minWeight = prio2weight.get(priority);
+        if (minWeight == null) {
+            return maxStartedWeight;
+        }
+        return Math.max(maxStartedWeight, minWeight);
+    }
 
-	protected float getWeightToUse(int priority, float minimumWeightToAssign) {
-		float weight = minimumWeightToAssign * (1F + getStepSize(priority));
-		// Protect us from values going through the roof if we run for a very
-		// long time
-		// This below might leave some jobs in the queue with very large weight
-		// this probably improbable to happen so let's do it like this for now
-		// ...
-		if (Float.POSITIVE_INFINITY == weight) {
-			maxStartedWeight = MIN_STARTED_WEIGHT;
-			prio2weight.clear();
-			return MIN_STARTED_WEIGHT;
-		}
-		return weight;
-	}
+    protected float getWeightToUse(int priority, float minimumWeightToAssign) {
+        float weight = minimumWeightToAssign * (1F + getStepSize(priority));
+        // Protect us from values going through the roof if we run for a very
+        // long time
+        // This below might leave some jobs in the queue with very large weight
+        // this probably improbable to happen so let's do it like this for now
+        // ...
+        if (Float.POSITIVE_INFINITY == weight) {
+            maxStartedWeight = MIN_STARTED_WEIGHT;
+            prio2weight.clear();
+            return MIN_STARTED_WEIGHT;
+        }
+        return weight;
+    }
 
-	abstract float getStepSize(int priority);
+    abstract float getStepSize(int priority);
 }

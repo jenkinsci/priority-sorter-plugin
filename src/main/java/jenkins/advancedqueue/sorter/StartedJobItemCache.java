@@ -46,110 +46,110 @@ import hudson.model.queue.WorkUnit;
  */
 public class StartedJobItemCache {
 
-	private static final int RETENTION_COUNT = 10000;
-	private static final int RETENTION_TIME_HOURS = 12;
+    private static final int RETENTION_COUNT = 10000;
+    private static final int RETENTION_TIME_HOURS = 12;
 
-	private static StartedJobItemCache startedJobItemCache = null;
+    private static StartedJobItemCache startedJobItemCache = null;
 
-	static {
-		startedJobItemCache = new StartedJobItemCache();
-	}
+    static {
+        startedJobItemCache = new StartedJobItemCache();
+    }
 
-	public static StartedJobItemCache get() {
-		return startedJobItemCache;
-	}
+    public static StartedJobItemCache get() {
+        return startedJobItemCache;
+    }
 
-	private static class PendingItem {
-		final long startTime;
-		final ItemInfo itemInfo;
-		final WorkUnit workUnit;
+    private static class PendingItem {
+        final long startTime;
+        final ItemInfo itemInfo;
+        final WorkUnit workUnit;
 
-		public PendingItem(final ItemInfo itemInfo, final WorkUnit workUnit) {
-			this.startTime = System.currentTimeMillis();
-			this.itemInfo = itemInfo;
-			this.workUnit = workUnit;
-		}
-	}
+        public PendingItem(final ItemInfo itemInfo, final WorkUnit workUnit) {
+            this.startTime = System.currentTimeMillis();
+            this.itemInfo = itemInfo;
+            this.workUnit = workUnit;
+        }
+    }
 
-	private static class StartedItem {
-		final String projectName;
-		final int buildNumber;
+    private static class StartedItem {
+        final String projectName;
+        final int buildNumber;
 
-		public StartedItem(final String projectName, final int buildNumber) {
-			this.projectName = projectName;
-			this.buildNumber = buildNumber;
-		}
+        public StartedItem(final String projectName, final int buildNumber) {
+            this.projectName = projectName;
+            this.buildNumber = buildNumber;
+        }
 
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(projectName, buildNumber);
-		}
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(projectName, buildNumber);
+        }
 
-		@Override
-		public boolean equals(final Object obj) {
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final StartedItem other = (StartedItem) obj;
-			return Objects.equal(this.projectName, other.projectName) && this.buildNumber == other.buildNumber;
-		}
-	}
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            final StartedItem other = (StartedItem) obj;
+            return Objects.equal(this.projectName, other.projectName) && this.buildNumber == other.buildNumber;
+        }
+    }
 
-	private final LinkedList<PendingItem> pendingItems = new LinkedList<PendingItem>();
+    private final LinkedList<PendingItem> pendingItems = new LinkedList<PendingItem>();
 
-	private final Cache<StartedItem, ItemInfo> startedItems = CacheBuilder.newBuilder()
-			.expireAfterWrite(RETENTION_TIME_HOURS, TimeUnit.HOURS).maximumSize(RETENTION_COUNT).build();
+    private final Cache<StartedItem, ItemInfo> startedItems = CacheBuilder.newBuilder()
+            .expireAfterWrite(RETENTION_TIME_HOURS, TimeUnit.HOURS).maximumSize(RETENTION_COUNT).build();
 
-	private StartedJobItemCache() {
-	}
+    private StartedJobItemCache() {
+    }
 
-	/**
-	 * Gets the Item for a started job, already removed from the queue
-	 *
-	 * @param projectName
-	 *            the project name
-	 * @param buildNumber
-	 *            the build number
-	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if
-	 *         projectName/buildNumber combination is unknown
-	 */
-	public synchronized @CheckForNull ItemInfo getStartedItem(final String projectName, final int buildNumber) {
-		maintainCache();
-		return startedItems.getIfPresent(new StartedItem(projectName, buildNumber));
-	}
+    /**
+     * Gets the Item for a started job, already removed from the queue
+     *
+     * @param projectName
+     *            the project name
+     * @param buildNumber
+     *            the build number
+     * @return the {@link ItemInfo} for the provided id or <code>null</code> if
+     *         projectName/buildNumber combination is unknown
+     */
+    public synchronized @CheckForNull ItemInfo getStartedItem(final String projectName, final int buildNumber) {
+        maintainCache();
+        return startedItems.getIfPresent(new StartedItem(projectName, buildNumber));
+    }
 
-	public synchronized void addItem(final ItemInfo itemInfo, final WorkUnit primaryWorkUnit) {
-		pendingItems.addLast(new PendingItem(itemInfo, primaryWorkUnit));
-		maintainCache();
-	}
+    public synchronized void addItem(final ItemInfo itemInfo, final WorkUnit primaryWorkUnit) {
+        pendingItems.addLast(new PendingItem(itemInfo, primaryWorkUnit));
+        maintainCache();
+    }
 
-	private void maintainCache() {
-		// Collect job information from pending items to drop WorkUnit reference
+    private void maintainCache() {
+        // Collect job information from pending items to drop WorkUnit reference
 
-		for (final Iterator<PendingItem> it = pendingItems.iterator(); it.hasNext();) {
-			final PendingItem pi = it.next();
-			final Executable e = pi.workUnit.getExecutable();
+        for (final Iterator<PendingItem> it = pendingItems.iterator(); it.hasNext();) {
+            final PendingItem pi = it.next();
+            final Executable e = pi.workUnit.getExecutable();
 
-			if (e instanceof Run) {
-				startedItems.put(new StartedItem(pi.itemInfo.getJobName(), ((Run<?, ?>) e).getNumber()), pi.itemInfo);
-				it.remove();
-			}
-		}
+            if (e instanceof Run) {
+                startedItems.put(new StartedItem(pi.itemInfo.getJobName(), ((Run<?, ?>) e).getNumber()), pi.itemInfo);
+                it.remove();
+            }
+        }
 
-		// Cleanup pendingItems
+        // Cleanup pendingItems
 
-		if (pendingItems.size() > RETENTION_COUNT) {
-			pendingItems.subList(0, pendingItems.size() - RETENTION_COUNT).clear();
-		}
+        if (pendingItems.size() > RETENTION_COUNT) {
+            pendingItems.subList(0, pendingItems.size() - RETENTION_COUNT).clear();
+        }
 
-		for (final Iterator<PendingItem> it = pendingItems.iterator(); it.hasNext();) {
-			final PendingItem pi = it.next();
-			if (pi.startTime < System.currentTimeMillis() - RETENTION_TIME_HOURS * 60 * 60 * 1000) {
-				it.remove();
-			} else {
-				break;
-			}
-		}
-	}
+        for (final Iterator<PendingItem> it = pendingItems.iterator(); it.hasNext();) {
+            final PendingItem pi = it.next();
+            if (pi.startTime < System.currentTimeMillis() - RETENTION_TIME_HOURS * 60 * 60 * 1000) {
+                it.remove();
+            } else {
+                break;
+            }
+        }
+    }
 }

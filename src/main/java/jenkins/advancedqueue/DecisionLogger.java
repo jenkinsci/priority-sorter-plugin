@@ -29,6 +29,6 @@ package jenkins.advancedqueue;
  */
 public interface DecisionLogger {
 
-	DecisionLogger addDecisionLog(int indent, String log);
+    DecisionLogger addDecisionLog(int indent, String log);
 
 }

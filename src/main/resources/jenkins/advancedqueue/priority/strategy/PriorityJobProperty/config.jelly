@@ -1,27 +1,26 @@
 <?jelly escape-by-default='true'?>
 <j:jelly
-	xmlns:j="jelly:core"
-	xmlns:st="jelly:stapler"
-	xmlns:d="jelly:define"
-	xmlns:l="/lib/layout"
-	xmlns:t="/lib/hudson"
-	xmlns:f="/lib/form">
+    xmlns:j="jelly:core"
+    xmlns:st="jelly:stapler"
+    xmlns:d="jelly:define"
+    xmlns:l="/lib/layout"
+    xmlns:t="/lib/hudson"
+    xmlns:f="/lib/form">
 
-	<j:if test="${descriptor.isUsed(it)}">
-		<f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="Use specific priority for this Job">
-			<f:entry title="${%Job Priority}" field="priority">
-				<select name="priority">
-					<j:forEach var="priority" items="${descriptor.getPriorities()}">
-				    	<j:if test="${priority.value == instance.priority}">
-				        	<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
-				        </j:if>
-				        <j:if test="${priority.value != instance.priority}">
-				        	<f:option value="${priority.value}">${priority.name}</f:option>
-				        </j:if>															
-				    </j:forEach>
-				</select>
-			</f:entry>
-		</f:optionalBlock>
-	</j:if>
-	
+    <j:if test="${descriptor.isUsed(it)}">
+        <f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="Use specific priority for this Job">
+            <f:entry title="${%Job Priority}" field="priority">
+                <select name="priority">
+                    <j:forEach var="priority" items="${descriptor.getPriorities()}">
+                        <j:if test="${priority.value == instance.priority}">
+                            <f:option value="${priority.value}" selected="true">${priority.name}</f:option>
+                        </j:if>
+                        <j:if test="${priority.value != instance.priority}">
+                            <f:option value="${priority.value}">${priority.name}</f:option>
+                        </j:if>
+                    </j:forEach>
+                </select>
+            </f:entry>
+        </f:optionalBlock>
+    </j:if>
 </j:jelly>

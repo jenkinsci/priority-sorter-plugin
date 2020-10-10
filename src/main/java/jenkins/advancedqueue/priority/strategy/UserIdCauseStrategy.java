@@ -40,31 +40,31 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Extension
 public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 
-	@Extension
-	public static class UserIdCauseStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
+    @Extension
+    public static class UserIdCauseStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
 
-		public UserIdCauseStrategyDescriptor() {
-			super(Messages.Job_triggered_by_a_user());
-		}
+        public UserIdCauseStrategyDescriptor() {
+            super(Messages.Job_triggered_by_a_user());
+        }
 
-	}
+    }
 
-	public UserIdCauseStrategy() {}
+    public UserIdCauseStrategy() {}
 
-	@DataBoundConstructor
-	public UserIdCauseStrategy(int priority) {
-		setPriority(priority);
-	}
+    @DataBoundConstructor
+    public UserIdCauseStrategy(int priority) {
+        setPriority(priority);
+    }
 
-	@Override
-	public boolean isApplicable(Queue.Item item) {
-		List<Cause> causes = item.getCauses();
-		for (Cause cause : causes) {
-			if (cause.getClass() == UserIdCause.class) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean isApplicable(Queue.Item item) {
+        List<Cause> causes = item.getCauses();
+        for (Cause cause : causes) {
+            if (cause.getClass() == UserIdCause.class) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

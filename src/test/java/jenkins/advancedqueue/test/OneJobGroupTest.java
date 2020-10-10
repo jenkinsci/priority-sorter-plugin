@@ -19,8 +19,7 @@ public class OneJobGroupTest {
 		private static final long serialVersionUID = -163734048850160596L;
 		private String description;
 		public DummyCause(String description) { this.description = description; }
-		@Override
-		public String getShortDescription() { return description; }
+		@Override public String getShortDescription() { return description; }
 	}
 
 	@Rule

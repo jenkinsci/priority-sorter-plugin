@@ -78,213 +78,212 @@ import net.sf.json.JSONObject;
 @Extension
 public class PriorityConfiguration extends GlobalConfiguration implements RootAction {
 
-	private static final Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
-	transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
-	transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
-	private List<JobGroup> jobGroups;
+    private static final Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
+    transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
+    transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
+    private List<JobGroup> jobGroups;
 
-	@DataBoundConstructor
-	public PriorityConfiguration() {
-		jobGroups = new LinkedList<JobGroup>();
-		load();
-		//
-		Collections.sort(jobGroups, new Comparator<JobGroup>() {
-			public int compare(JobGroup o1, JobGroup o2) {
-				return o1.getId() - o2.getId();
-			}
-		});
+    @DataBoundConstructor
+    public PriorityConfiguration() {
+        jobGroups = new LinkedList<JobGroup>();
+        load();
+        //
+        Collections.sort(jobGroups, new Comparator<JobGroup>() {
+            public int compare(JobGroup o1, JobGroup o2) {
+                return o1.getId() - o2.getId();
+            }
+        });
 
-		Plugin plugin = Jenkins.get().getPlugin("matrix-project");
-		if(plugin == null || !plugin.getWrapper().isEnabled()){
-			LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
-			priorityConfigurationMatrixHelper = null;
-		} else {
-			LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
-			priorityConfigurationMatrixHelper = new PriorityConfigurationMatrixHelper();
-		}
-	}
+        Plugin plugin = Jenkins.get().getPlugin("matrix-project");
+        if(plugin == null || !plugin.getWrapper().isEnabled()){
+            LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
+            priorityConfigurationMatrixHelper = null;
+        } else {
+            LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
+            priorityConfigurationMatrixHelper = new PriorityConfigurationMatrixHelper();
+        }
+    }
 
-	public String getIconFileName() {
-		if (!checkActive()) {
-			return null;
-		}
-		return "/plugin/PrioritySorter/advqueue.png";
-	}
+    public String getIconFileName() {
+        if (!checkActive()) {
+            return null;
+        }
+        return "/plugin/PrioritySorter/advqueue.png";
+    }
 
-	@Override
-	public String getDisplayName() {
-		return Messages.PriorityConfiguration_displayName();
-	}
+    @Override
+    public String getDisplayName() {
+        return Messages.PriorityConfiguration_displayName();
+    }
 
-	public String getUrlName() {
-		if (!checkActive()) {
-			return null;
-		}
-		return "advanced-build-queue";
-	}
+    public String getUrlName() {
+        if (!checkActive()) {
+            return null;
+        }
+        return "advanced-build-queue";
+    }
 
-	private boolean checkActive() {
-		PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
-		if (configuration.getOnlyAdminsMayEditPriorityConfiguration()) {
-			return Jenkins.get().getACL().hasPermission(Jenkins.ADMINISTER);
-		}
-		return true;
-	}
+    private boolean checkActive() {
+        PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
+        if (configuration.getOnlyAdminsMayEditPriorityConfiguration()) {
+            return Jenkins.get().getACL().hasPermission(Jenkins.ADMINISTER);
+        }
+        return true;
+    }
 
-	public List<JobGroup> getJobGroups() {
-		return jobGroups;
-	}
+    public List<JobGroup> getJobGroups() {
+        return jobGroups;
+    }
 
-	public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
-		return PriorityStrategy.all();
-	}
-	
-	public DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> getJobInclusionStrategyDescriptors() {
-		return JobInclusionStrategy.all();
-	}
+    public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
+        return PriorityStrategy.all();
+    }
 
+    public DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> getJobInclusionStrategyDescriptors() {
+        return JobInclusionStrategy.all();
+    }
 
-	public ListBoxModel getPriorities() {
-		ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
-		return items;
-	}
+    public ListBoxModel getPriorities() {
+        ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
+        return items;
+    }
 
-	public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-		jobGroups = new LinkedList<JobGroup>();
-		// id2jobGroup = new HashMap<Integer, JobGroup>();
-		//
-		String parameter = req.getParameter("json");
-		JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
-		JSONArray jsonArray = JSONArray.fromObject(jobGroupsObject.get("jobGroup"));
-		int id = 0;
-		for (Object object : jsonArray) {
-			JSONObject jobGroupObject = JSONObject.fromObject(object);
-			if (jobGroupObject.isEmpty()) {
-				break;
-			}
-			JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
-			jobGroups.add(jobGroup);
-			// id2jobGroup.put(jobGroup.getId(), jobGroup);
-		}
-		save();
-		rsp.sendRedirect(Jenkins.get().getRootUrl());
-	}
+    public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+        jobGroups = new LinkedList<JobGroup>();
+        // id2jobGroup = new HashMap<Integer, JobGroup>();
+        //
+        String parameter = req.getParameter("json");
+        JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
+        JSONArray jsonArray = JSONArray.fromObject(jobGroupsObject.get("jobGroup"));
+        int id = 0;
+        for (Object object : jsonArray) {
+            JSONObject jobGroupObject = JSONObject.fromObject(object);
+            if (jobGroupObject.isEmpty()) {
+                break;
+            }
+            JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
+            jobGroups.add(jobGroup);
+            // id2jobGroup.put(jobGroup.getId(), jobGroup);
+        }
+        save();
+        rsp.sendRedirect(Jenkins.get().getRootUrl());
+    }
 
-	public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {
-		if (value.length() > 0) {
-			try {
-				Pattern.compile(value);
-			} catch (PatternSyntaxException e) {
-				return FormValidation.warning("The expression is not valid, please enter a valid expression.");
-			}
-		}
-		return FormValidation.ok();
-	}
+    public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {
+        if (value.length() > 0) {
+            try {
+                Pattern.compile(value);
+            } catch (PatternSyntaxException e) {
+                return FormValidation.warning("The expression is not valid, please enter a valid expression.");
+            }
+        }
+        return FormValidation.ok();
+    }
 
-	public PriorityConfigurationCallback getPriority(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
-		try (ACLContext ctx = ACL.as(ACL.SYSTEM)) {
-			return getPriorityInternal(item, priorityCallback);
-		}
-	}
+    public PriorityConfigurationCallback getPriority(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
+        try (ACLContext ctx = ACL.as(ACL.SYSTEM)) {
+            return getPriorityInternal(item, priorityCallback);
+        }
+    }
 
-	private PriorityConfigurationCallback getPriorityInternal(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
-		if (placeholderTaskHelper.isPlaceholderTask(item.task)) {
-			return placeholderTaskHelper.getPriority((ExecutorStepExecution.PlaceholderTask) item.task, priorityCallback);
-		}
+    private PriorityConfigurationCallback getPriorityInternal(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
+        if (placeholderTaskHelper.isPlaceholderTask(item.task)) {
+            return placeholderTaskHelper.getPriority((ExecutorStepExecution.PlaceholderTask) item.task, priorityCallback);
+        }
 
-		if (!(item.task instanceof Job)) {
-			// Not a job generally this mean that this is a lightweight task so
-			// priority doesn't really matter - returning default priority
-			priorityCallback.addDecisionLog(0, "Queue.Item is not a Job - Assigning global default priority");
-			return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
-		}
+        if (!(item.task instanceof Job)) {
+            // Not a job generally this mean that this is a lightweight task so
+            // priority doesn't really matter - returning default priority
+            priorityCallback.addDecisionLog(0, "Queue.Item is not a Job - Assigning global default priority");
+            return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+        }
 
-		Job<?, ?> job = (Job<?, ?>) item.task;
-		
-		if (priorityConfigurationMatrixHelper != null && priorityConfigurationMatrixHelper.isMatrixConfiguration(job)) {
-			return priorityConfigurationMatrixHelper.getPriority((MatrixConfiguration) job, priorityCallback);
-		}
+        Job<?, ?> job = (Job<?, ?>) item.task;
 
-		//
-		JobGroup jobGroup = getJobGroup(priorityCallback, job);
-		if (jobGroup != null) {
-			return getPriorityForJobGroup(priorityCallback, jobGroup, item);
-		}
-		//
-		priorityCallback.addDecisionLog(0, "Assigning global default priority");
-		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
-	}
+        if (priorityConfigurationMatrixHelper != null && priorityConfigurationMatrixHelper.isMatrixConfiguration(job)) {
+            return priorityConfigurationMatrixHelper.getPriority((MatrixConfiguration) job, priorityCallback);
+        }
+
+        //
+        JobGroup jobGroup = getJobGroup(priorityCallback, job);
+        if (jobGroup != null) {
+            return getPriorityForJobGroup(priorityCallback, jobGroup, item);
+        }
+        //
+        priorityCallback.addDecisionLog(0, "Assigning global default priority");
+        return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+    }
 
     @CheckForNull
-	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
-		if (!(job instanceof TopLevelItem)) {
-			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
-			return null;
-		}
-		for (JobGroup jobGroup : jobGroups) {
-			priorityCallback.addDecisionLog(0, "Evaluating JobGroup [" + jobGroup.getId() + "] ...");
-			if (jobGroup.getJobGroupStrategy() != null && jobGroup.getJobGroupStrategy().contains(priorityCallback, job)) {
-				return jobGroup;
-			}
-		}
-		return null;
-	}
-	
-	private boolean isJobInView(Job<?, ?> job, View view) {
-		if(view instanceof ViewGroup) {
-			return isJobInViewGroup(job, (ViewGroup) view);
-		} else {
-			return view.contains((TopLevelItem) job); 
-		}
-	}
-	
-	private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
-		Collection<View> views = viewGroup.getViews();
-		for (View view : views) {
-			if(isJobInView(job, view)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private PriorityConfigurationCallback getPriorityForJobGroup(PriorityConfigurationCallback priorityCallback, JobGroup jobGroup, Queue.Item item) {
-		int priority = jobGroup.getPriority();
-		PriorityStrategy reason = null;
-		if (jobGroup.isUsePriorityStrategies()) {
-			priorityCallback.addDecisionLog(2, "Evaluating strategies ...");
-			List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
-			for (PriorityStrategy priorityStrategy : priorityStrategies) {
-				PriorityStrategy strategy = priorityStrategy;
-				priorityCallback.addDecisionLog(3, "Evaluating strategy [" + strategy.getDescriptor().getDisplayName() + "] ...");
-				if (strategy.isApplicable(item)) {
-					priorityCallback.addDecisionLog(4, "Strategy is applicable");
-					int foundPriority = strategy.getPriority(item);
-					if (foundPriority > 0 && foundPriority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
-						priority = foundPriority;
-						reason = strategy;
-						break;
-					}
-				}
-			}
-		}
-		if (reason == null) {
-			priorityCallback.addDecisionLog(2, "No applicable strategy - Using JobGroup default");
-		}
-		if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
-			priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-		}
-		return priorityCallback.setPrioritySelection(priority, jobGroup.getId(), reason);
-	}
+    public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
+        if (!(job instanceof TopLevelItem)) {
+            priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
+            return null;
+        }
+        for (JobGroup jobGroup : jobGroups) {
+            priorityCallback.addDecisionLog(0, "Evaluating JobGroup [" + jobGroup.getId() + "] ...");
+            if (jobGroup.getJobGroupStrategy() != null && jobGroup.getJobGroupStrategy().contains(priorityCallback, job)) {
+                return jobGroup;
+            }
+        }
+        return null;
+    }
 
-	@DataBoundSetter
-	public void setJobGroups(List<JobGroup> jobGroups) {
-		this.jobGroups = jobGroups;
-		save();
-	}
+    private boolean isJobInView(Job<?, ?> job, View view) {
+        if(view instanceof ViewGroup) {
+            return isJobInViewGroup(job, (ViewGroup) view);
+        } else {
+            return view.contains((TopLevelItem) job);
+        }
+    }
+
+    private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
+        Collection<View> views = viewGroup.getViews();
+        for (View view : views) {
+            if(isJobInView(job, view)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private PriorityConfigurationCallback getPriorityForJobGroup(PriorityConfigurationCallback priorityCallback, JobGroup jobGroup, Queue.Item item) {
+        int priority = jobGroup.getPriority();
+        PriorityStrategy reason = null;
+        if (jobGroup.isUsePriorityStrategies()) {
+            priorityCallback.addDecisionLog(2, "Evaluating strategies ...");
+            List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
+            for (PriorityStrategy priorityStrategy : priorityStrategies) {
+                PriorityStrategy strategy = priorityStrategy;
+                priorityCallback.addDecisionLog(3, "Evaluating strategy [" + strategy.getDescriptor().getDisplayName() + "] ...");
+                if (strategy.isApplicable(item)) {
+                    priorityCallback.addDecisionLog(4, "Strategy is applicable");
+                    int foundPriority = strategy.getPriority(item);
+                    if (foundPriority > 0 && foundPriority <= PrioritySorterConfiguration.get().getStrategy().getNumberOfPriorities()) {
+                        priority = foundPriority;
+                        reason = strategy;
+                        break;
+                    }
+                }
+            }
+        }
+        if (reason == null) {
+            priorityCallback.addDecisionLog(2, "No applicable strategy - Using JobGroup default");
+        }
+        if (priority == PriorityCalculationsUtil.getUseDefaultPriorityPriority()) {
+            priority = PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+        }
+        return priorityCallback.setPrioritySelection(priority, jobGroup.getId(), reason);
+    }
+
+    @DataBoundSetter
+    public void setJobGroups(List<JobGroup> jobGroups) {
+        this.jobGroups = jobGroups;
+        save();
+    }
 
 
-	static public PriorityConfiguration get() {
-		return GlobalConfiguration.all().get(PriorityConfiguration.class);
-	}
+    static public PriorityConfiguration get() {
+        return GlobalConfiguration.all().get(PriorityConfiguration.class);
+    }
 }

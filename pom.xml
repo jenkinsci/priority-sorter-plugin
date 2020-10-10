@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
@@ -11,37 +11,37 @@
         <java.level>8</java.level>
     </properties>
     <artifactId>PrioritySorter</artifactId>
-	<version>4.0.1-SNAPSHOT</version>
-	<packaging>hpi</packaging>
-	<name>Jenkins Priority Sorter Plugin</name>
-	<description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin</url>
+    <version>4.0.1-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+    <name>Jenkins Priority Sorter Plugin</name>
+    <description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin</url>
 
-	<licenses>
-		<license>
-			<name>MIT</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-			<comments>
-				Copyright 2020- Frank Ittermann. All rights reserved.
-				Copyright 2013- Magnus Sandberg. All rights reserved.
-				Copyright 2010- Brad Larson. All rights reserved.
-			</comments>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <comments>
+                Copyright 2020- Frank Ittermann. All rights reserved.
+                Copyright 2013- Magnus Sandberg. All rights reserved.
+                Copyright 2010- Brad Larson. All rights reserved.
+            </comments>
+        </license>
+    </licenses>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>io.jenkins.tools.bom</groupId>
-				<artifactId>bom-2.235.x</artifactId>
-				<version>12</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-2.235.x</artifactId>
+                <version>12</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-	<build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -55,76 +55,76 @@
         </plugins>
     </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>matrix-project</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>cloudbees-folder</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
-			<artifactId>job-restrictions</artifactId>
-			<version>0.8</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins.workflow</groupId>
-			<artifactId>workflow-durable-task-step</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>structs</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>script-security</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>sectioned-view</artifactId>
-			<version>1.25</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>nested-view</artifactId>
-			<version>1.17</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>credentials</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>matrix-project</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>cloudbees-folder</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
+            <artifactId>job-restrictions</artifactId>
+            <version>0.8</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-durable-task-step</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>script-security</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>sectioned-view</artifactId>
+            <version>1.25</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>nested-view</artifactId>
+            <version>1.17</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>credentials</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-	<repositories>
-		<repository>
-			<id>repo.jenkins-ci.org</id>
-			<url>https://repo.jenkins-ci.org/public/</url>
-		</repository>
-	</repositories>
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repo.jenkins-ci.org</id>
-			<url>https://repo.jenkins-ci.org/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-	<scm>
-		<connection>scm:git:git://github.com/jenkinsci/priority-sorter-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/priority-sorter-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
-		<tag>HEAD</tag>
-	</scm>
+    <scm>
+        <connection>scm:git:git://github.com/jenkinsci/priority-sorter-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/priority-sorter-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/priority-sorter-plugin</url>
+        <tag>HEAD</tag>
+    </scm>
 
 </project>

@@ -41,40 +41,40 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Extension
 public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 
-	@Extension
-	public static class UserIdCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+    @Extension
+    public static class UserIdCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
-		public UserIdCauseStrategyDescriptor() {
-			super(Messages.Take_the_priority_from_property_on_the_job());
-		}
+        public UserIdCauseStrategyDescriptor() {
+            super(Messages.Take_the_priority_from_property_on_the_job());
+        }
 
-	}
+    }
 
-	@DataBoundConstructor
-	public JobPropertyStrategy() {
-	}
-	
-	@CheckForNull
-	private Integer getPriorityInternal(Queue.Item item) {
-		if(item.task instanceof Job<?, ?>) {
-			Job<?, ?> job = (Job<?, ?>) item.task;
-			PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
-			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
-				return priorityProperty.priority;
-			}
-		} 
-		return null;
-	}
+    @DataBoundConstructor
+    public JobPropertyStrategy() {
+    }
 
-	@Override
-	public boolean isApplicable(Queue.Item item) {
-		return getPriorityInternal(item) != null;
-	}
+    @CheckForNull
+    private Integer getPriorityInternal(Queue.Item item) {
+        if(item.task instanceof Job<?, ?>) {
+            Job<?, ?> job = (Job<?, ?>) item.task;
+            PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
+            if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
+                return priorityProperty.priority;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public int getPriority(Item item) {
-		final Integer p = getPriorityInternal(item);
-		return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-	}
+    @Override
+    public boolean isApplicable(Queue.Item item) {
+        return getPriorityInternal(item) != null;
+    }
+
+    @Override
+    public int getPriority(Item item) {
+        final Integer p = getPriorityInternal(item);
+        return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+    }
 
 }

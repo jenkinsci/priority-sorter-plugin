@@ -1,15 +1,15 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout">
-	<f:entry title="${%Priority}">
-		<select name="priority">
-			<j:forEach var="priority" items="${descriptor.priorities}">
-				<j:if test="${priority.value == instance.priority}">
-					<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
-				</j:if>
-				<j:if test="${priority.value != instance.priority}">
-					<f:option value="${priority.value}">${priority.name}</f:option>
-				</j:if>															
-			</j:forEach>
-		</select>
-	</f:entry>
+    <f:entry title="${%Priority}">
+        <select name="priority">
+            <j:forEach var="priority" items="${descriptor.priorities}">
+                <j:if test="${priority.value == instance.priority}">
+                    <f:option value="${priority.value}" selected="true">${priority.name}</f:option>
+                </j:if>
+                <j:if test="${priority.value != instance.priority}">
+                    <f:option value="${priority.value}">${priority.name}</f:option>
+                </j:if>
+            </j:forEach>
+        </select>
+    </f:entry>
 </j:jelly>

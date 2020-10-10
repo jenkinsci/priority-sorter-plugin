@@ -6,5 +6,5 @@
         <f:entry title="${%Only Admins can edit Job Priorities}" description="${%Check if only Administrators should be allowed to view and edit the Job Priorities}" field="onlyAdminsMayEditPriorityConfiguration">
             <f:checkbox name="onlyAdminsMayEditPriorityConfiguration" checked="${onlyAdminsMayEditPriorityConfiguration}"/>
         </f:entry>
-	</f:section>
+    </f:section>
 </j:jelly>

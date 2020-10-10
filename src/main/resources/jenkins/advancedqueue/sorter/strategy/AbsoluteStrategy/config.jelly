@@ -23,6 +23,6 @@
  -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-	<f:description><b>Absolute</b> <i>Lower</i> priority is scheduled before <i>higher</i> priority.</f:description>
-	<st:include page="config.jelly" class="jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy" />
+    <f:description><b>Absolute</b> <i>Lower</i> priority is scheduled before <i>higher</i> priority.</f:description>
+    <st:include page="config.jelly" class="jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy" />
 </j:jelly>

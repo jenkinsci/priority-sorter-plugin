@@ -55,120 +55,120 @@ import jenkins.model.Jenkins;
 @Extension
 public class PrioritySorterConfiguration extends GlobalConfiguration {
 
-	private final static Logger LOGGER = Logger.getLogger(PrioritySorterConfiguration.class.getName());
-	private final static SorterStrategy DEFAULT_STRATEGY = new AbsoluteStrategy(
-			MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
+    private final static Logger LOGGER = Logger.getLogger(PrioritySorterConfiguration.class.getName());
+    private final static SorterStrategy DEFAULT_STRATEGY = new AbsoluteStrategy(
+            MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
 
-	private boolean onlyAdminsMayEditPriorityConfiguration = false;
+    private boolean onlyAdminsMayEditPriorityConfiguration = false;
 
-	private SorterStrategy strategy = DEFAULT_STRATEGY;
+    private SorterStrategy strategy = DEFAULT_STRATEGY;
 
-	public PrioritySorterConfiguration() {
-		load();
-	}
+    public PrioritySorterConfiguration() {
+        load();
+    }
 
-	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
-		return onlyAdminsMayEditPriorityConfiguration;
-	}
+    public boolean getOnlyAdminsMayEditPriorityConfiguration() {
+        return onlyAdminsMayEditPriorityConfiguration;
+    }
 
-	public SorterStrategy getStrategy() {
-		return strategy;
-	}
+    public SorterStrategy getStrategy() {
+        return strategy;
+    }
 
-	public ListBoxModel doFillStrategyItems() {
-		ListBoxModel strategies = new ListBoxModel();
-		List<SorterStrategyDescriptor> values = SorterStrategy.getAllSorterStrategies();
-		for (SorterStrategyDescriptor sorterStrategy : values) {
-			strategies.add(sorterStrategy.getDisplayName(), sorterStrategy.getKey());
-		}
-		return strategies;
-	}
+    public ListBoxModel doFillStrategyItems() {
+        ListBoxModel strategies = new ListBoxModel();
+        List<SorterStrategyDescriptor> values = SorterStrategy.getAllSorterStrategies();
+        for (SorterStrategyDescriptor sorterStrategy : values) {
+            strategies.add(sorterStrategy.getDisplayName(), sorterStrategy.getKey());
+        }
+        return strategies;
+    }
 
-	public ListBoxModel doGetPriorityItems() {
-		ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
-		items.add(
-				0,
-				new ListBoxModel.Option("-- use default priority --", String.valueOf(PriorityCalculationsUtil
-						.getUseDefaultPriorityPriority())));
-		return items;
-	}
+    public ListBoxModel doGetPriorityItems() {
+        ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
+        items.add(
+                0,
+                new ListBoxModel.Option("-- use default priority --", String.valueOf(PriorityCalculationsUtil
+                        .getUseDefaultPriorityPriority())));
+        return items;
+    }
 
-	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
-		if (value.length() == 0) {
-			return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
-		}
-		try {
-			int intValue = Integer.parseInt(value);
-			if (intValue <= 0) {
-				return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
-			}
-		} catch (NumberFormatException e) {
-			return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
-		}
-		return FormValidation.ok();
-	}
+    public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
+        if (value.length() == 0) {
+            return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+        }
+        try {
+            int intValue = Integer.parseInt(value);
+            if (intValue <= 0) {
+                return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+            }
+        } catch (NumberFormatException e) {
+            return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+        }
+        return FormValidation.ok();
+    }
 
-	private void updatePriorities(int prevNumberOfPriorities) {
-		// Shouldn't really by a permission problem when getting here but
-		// to be on the safe side
-		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
-		try {
-			@SuppressWarnings("rawtypes")
-			List<Job> allJobs = Jenkins.get().getAllItems(Job.class);
-			for (Job<?, ?> job : allJobs) {
-				try {
-					// Scale any priority on the Job
-					PriorityJobProperty priorityProperty = job
-							.getProperty(PriorityJobProperty.class);
-					if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
-						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
-								strategy.getNumberOfPriorities(), priorityProperty.priority);
+    private void updatePriorities(int prevNumberOfPriorities) {
+        // Shouldn't really by a permission problem when getting here but
+        // to be on the safe side
+        SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
+        try {
+            @SuppressWarnings("rawtypes")
+            List<Job> allJobs = Jenkins.get().getAllItems(Job.class);
+            for (Job<?, ?> job : allJobs) {
+                try {
+                    // Scale any priority on the Job
+                    PriorityJobProperty priorityProperty = job
+                            .getProperty(PriorityJobProperty.class);
+                    if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
+                        int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
+                                strategy.getNumberOfPriorities(), priorityProperty.priority);
                         if (newPriority != priorityProperty.getPriority()) {
                             job.removeProperty(priorityProperty);
                             job.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(),
                                     newPriority));
                             job.save();
                         }
-					}
-				} catch (IOException e) {
-					LOGGER.log(Level.WARNING, "Failed to update Advanced Job Priority To {0}", job.getName());
-				}
-			}
-			//
-			List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
-			for (JobGroup jobGroup : jobGroups) {
-				jobGroup.setPriority(PriorityCalculationsUtil.scale(prevNumberOfPriorities,
-						strategy.getNumberOfPriorities(), jobGroup.getPriority()));
-				List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
-				for (PriorityStrategy priorityStrategyHolder : priorityStrategies) {
-					priorityStrategyHolder.numberPrioritiesUpdates(prevNumberOfPriorities,
-							strategy.getNumberOfPriorities());
-				}
-			}
-			PriorityConfiguration.get().save();
-		} finally {
-			SecurityContextHolder.setContext(saveCtx);
-		}
-	}
+                    }
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Failed to update Advanced Job Priority To {0}", job.getName());
+                }
+            }
+            //
+            List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
+            for (JobGroup jobGroup : jobGroups) {
+                jobGroup.setPriority(PriorityCalculationsUtil.scale(prevNumberOfPriorities,
+                        strategy.getNumberOfPriorities(), jobGroup.getPriority()));
+                List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
+                for (PriorityStrategy priorityStrategyHolder : priorityStrategies) {
+                    priorityStrategyHolder.numberPrioritiesUpdates(prevNumberOfPriorities,
+                            strategy.getNumberOfPriorities());
+                }
+            }
+            PriorityConfiguration.get().save();
+        } finally {
+            SecurityContextHolder.setContext(saveCtx);
+        }
+    }
 
-	public boolean isOnlyAdminsMayEditPriorityConfiguration() {
-		return this.onlyAdminsMayEditPriorityConfiguration;
-	}
-	
-	@DataBoundSetter
-	public void setOnlyAdminsMayEditPriorityConfiguration(boolean onlyAdminsMayEditPriorityConfiguration) {
-		this.onlyAdminsMayEditPriorityConfiguration = onlyAdminsMayEditPriorityConfiguration;
-		save();
-	}
-	
-	@DataBoundSetter
-	public void setStrategy(SorterStrategy strategy) {
-		updatePriorities(strategy.getNumberOfPriorities());
-		this.strategy = strategy;
-		save();
-	}
+    public boolean isOnlyAdminsMayEditPriorityConfiguration() {
+        return this.onlyAdminsMayEditPriorityConfiguration;
+    }
 
-	public static PrioritySorterConfiguration get() {
-		return GlobalConfiguration.all().get(PrioritySorterConfiguration.class);
-	}
+    @DataBoundSetter
+    public void setOnlyAdminsMayEditPriorityConfiguration(boolean onlyAdminsMayEditPriorityConfiguration) {
+        this.onlyAdminsMayEditPriorityConfiguration = onlyAdminsMayEditPriorityConfiguration;
+        save();
+    }
+
+    @DataBoundSetter
+    public void setStrategy(SorterStrategy strategy) {
+        updatePriorities(strategy.getNumberOfPriorities());
+        this.strategy = strategy;
+        save();
+    }
+
+    public static PrioritySorterConfiguration get() {
+        return GlobalConfiguration.all().get(PrioritySorterConfiguration.class);
+    }
 }

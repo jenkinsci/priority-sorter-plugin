@@ -34,35 +34,35 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Extension
 public class WFQStrategy extends FQBaseStrategy {
 
-	public WFQStrategy() {
-	}
+    public WFQStrategy() {
+    }
 
-	@DataBoundConstructor
-	public WFQStrategy(int numberOfPriorities, int defaultPriority) {
-		super(numberOfPriorities, defaultPriority);
-	}
+    @DataBoundConstructor
+    public WFQStrategy(int numberOfPriorities, int defaultPriority) {
+        super(numberOfPriorities, defaultPriority);
+    }
 
-	@Override
-	float getStepSize(int priority) {
-		// If WFQ a lower priority is more important than a higher priority
-		// so we must step higher priorities faster than lower ones
-		//
-		// The step-size for the priority is dependent on its priority
-		float stepSize = MIN_STEP_SIZE * (float) priority;
-		return stepSize;
-	}
+    @Override
+    float getStepSize(int priority) {
+        // If WFQ a lower priority is more important than a higher priority
+        // so we must step higher priorities faster than lower ones
+        //
+        // The step-size for the priority is dependent on its priority
+        float stepSize = MIN_STEP_SIZE * (float) priority;
+        return stepSize;
+    }
 
-	@Extension
-	public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
+    @Extension
+    public static class DescriptorImpl extends MultiBucketStrategyDescriptor {
 
-		@Override
-		public String getDisplayName() {
-			return Messages.SorterStrategy_WFQ_displayName();
-		}
+        @Override
+        public String getDisplayName() {
+            return Messages.SorterStrategy_WFQ_displayName();
+        }
 
-		@Override
-		public String getShortName() {
-			return Messages.SorterStrategy_WFQ_shortName();
-		}
-	}
+        @Override
+        public String getShortName() {
+            return Messages.SorterStrategy_WFQ_shortName();
+        }
+    }
 }

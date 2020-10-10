@@ -46,84 +46,84 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Extension
 public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 
-	@Extension
-	static public class PropertyBasedJobInclusionStrategyDescriptor extends Descriptor<JobInclusionStrategy> {
+    @Extension
+    static public class PropertyBasedJobInclusionStrategyDescriptor extends Descriptor<JobInclusionStrategy> {
 
-		private boolean cloudbeesFolders = true;
+        private boolean cloudbeesFolders = true;
 
-		@Override
-		public String getDisplayName() {
-			if (cloudbeesFolders) {
-				return "Jobs and Folders marked for inclusion";
-			} else {
-				return "Jobs marked for inclusion";
-			}
-		}
+        @Override
+        public String getDisplayName() {
+            if (cloudbeesFolders) {
+                return "Jobs and Folders marked for inclusion";
+            } else {
+                return "Jobs marked for inclusion";
+            }
+        }
 
-		public PropertyBasedJobInclusionStrategyDescriptor() {
-			Plugin plugin = Jenkins.get().getPlugin("cloudbees-folder");
-			if(plugin == null || !plugin.getWrapper().isEnabled()){
-				cloudbeesFolders = false;
-			}
-		}
+        public PropertyBasedJobInclusionStrategyDescriptor() {
+            Plugin plugin = Jenkins.get().getPlugin("cloudbees-folder");
+            if(plugin == null || !plugin.getWrapper().isEnabled()){
+                cloudbeesFolders = false;
+            }
+        }
 
-	};
+    };
 
-	private String name;
+    private String name;
 
-	public PropertyBasedJobInclusionStrategy() {}
+    public PropertyBasedJobInclusionStrategy() {}
 
-	@DataBoundConstructor
-	public PropertyBasedJobInclusionStrategy(String name) {
-		this.name = name;
-	}
+    @DataBoundConstructor
+    public PropertyBasedJobInclusionStrategy(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		JobInclusionJobProperty property = job.getProperty(JobInclusionJobProperty.class);
-		decisionLogger.addDecisionLog(2, "Checking for Job Property inclusion for [" + name + "]...");
-		if (property != null && property.isUseJobGroup()) {
-			decisionLogger.addDecisionLog(3, "JobGroup is enabled on job, with JobGroup [" + property.getJobGroupName()
-					+ "] ...");
-			boolean match = name.equals(property.getJobGroupName());
-			if (match) {
-				decisionLogger.addDecisionLog(3, "Job is included in JobGroup ...");
-			} else {
-				decisionLogger.addDecisionLog(3, "Job is not included in JobGroup ...");
-			}
-			return match;
-		}
-		if (((PropertyBasedJobInclusionStrategyDescriptor) getDescriptor()).cloudbeesFolders) {
-			String jobViewName = FolderPropertyLoader.getJobGroupName(decisionLogger, job);
-			if (jobViewName == null) {
-				return false;
-			}
-			boolean match = name.equals(jobViewName);
-			if (match) {
-				decisionLogger.addDecisionLog(4, "Job is included in JobGroup ...");
-			} else {
-				decisionLogger.addDecisionLog(4, "Job is not included in JobGroup ...");
-			}
-			return match;
-		} else {
-			return false;
-		}
-	}
+    @Override
+    public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+        JobInclusionJobProperty property = job.getProperty(JobInclusionJobProperty.class);
+        decisionLogger.addDecisionLog(2, "Checking for Job Property inclusion for [" + name + "]...");
+        if (property != null && property.isUseJobGroup()) {
+            decisionLogger.addDecisionLog(3, "JobGroup is enabled on job, with JobGroup [" + property.getJobGroupName()
+                    + "] ...");
+            boolean match = name.equals(property.getJobGroupName());
+            if (match) {
+                decisionLogger.addDecisionLog(3, "Job is included in JobGroup ...");
+            } else {
+                decisionLogger.addDecisionLog(3, "Job is not included in JobGroup ...");
+            }
+            return match;
+        }
+        if (((PropertyBasedJobInclusionStrategyDescriptor) getDescriptor()).cloudbeesFolders) {
+            String jobViewName = FolderPropertyLoader.getJobGroupName(decisionLogger, job);
+            if (jobViewName == null) {
+                return false;
+            }
+            boolean match = name.equals(jobViewName);
+            if (match) {
+                decisionLogger.addDecisionLog(4, "Job is included in JobGroup ...");
+            } else {
+                decisionLogger.addDecisionLog(4, "Job is not included in JobGroup ...");
+            }
+            return match;
+        } else {
+            return false;
+        }
+    }
 
-	public static ListBoxModel getPropertyBasesJobGroups() {
-		List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
-		ListBoxModel strategies = new ListBoxModel();
-		for (JobGroup jobGroup : jobGroups) {
-			JobInclusionStrategy inclusionStrategy = jobGroup.getJobGroupStrategy();
-			if (inclusionStrategy instanceof PropertyBasedJobInclusionStrategy) {
-				strategies.add(((PropertyBasedJobInclusionStrategy) inclusionStrategy).getName());
-			}
-		}
-		return strategies;
-	}
+    public static ListBoxModel getPropertyBasesJobGroups() {
+        List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
+        ListBoxModel strategies = new ListBoxModel();
+        for (JobGroup jobGroup : jobGroups) {
+            JobInclusionStrategy inclusionStrategy = jobGroup.getJobGroupStrategy();
+            if (inclusionStrategy instanceof PropertyBasedJobInclusionStrategy) {
+                strategies.add(((PropertyBasedJobInclusionStrategy) inclusionStrategy).getName());
+            }
+        }
+        return strategies;
+    }
 
 }

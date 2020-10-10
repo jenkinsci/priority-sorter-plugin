@@ -51,73 +51,73 @@ import jenkins.advancedqueue.Messages;
  */
 @Extension
 public class PrioritySorterRestriction extends JobRestriction {
-	
-	private static final long serialVersionUID = -9006082445139117284L;
 
-	private final static Logger LOGGER = Logger.getLogger(PrioritySorterRestriction.class.getName());
+    private static final long serialVersionUID = -9006082445139117284L;
 
-	private int fromPriority, toPriority;
+    private final static Logger LOGGER = Logger.getLogger(PrioritySorterRestriction.class.getName());
 
-	public int getFromPriority() {
-		return fromPriority;
-	}
+    private int fromPriority, toPriority;
 
-	public int getToPriority() {
-		return toPriority;
-	}
+    public PrioritySorterRestriction() {
+    }
 
-	public PrioritySorterRestriction() {
-	}
+    @DataBoundConstructor
+    public PrioritySorterRestriction(int fromPriority, int toPriority) {
+        this.fromPriority = fromPriority;
+        this.toPriority = toPriority;
+    }
 
-	@DataBoundConstructor
-	public PrioritySorterRestriction(int fromPriority, int toPriority) {
-		this.fromPriority = fromPriority;
-		this.toPriority = toPriority;
-	}
+    @Override
+    public boolean canTake(BuildableItem buildableItem) {
+        ItemInfo item = QueueItemCache.get().getItem(buildableItem.getId());
+        if (item == null) {
+            LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
+            return true;
+        }
+        int priority = item.getPriority();
+        return priority >= fromPriority && priority <= toPriority;
+    }
 
-	@Override
-	public boolean canTake(BuildableItem buildableItem) {
-		ItemInfo item = QueueItemCache.get().getItem(buildableItem.getId());
-		if (item == null) {
-			LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
-			return true;
-		}
-		int priority = item.getPriority();
-		return priority >= fromPriority && priority <= toPriority;
-	}
+    @Override
+    @SuppressWarnings("rawtypes")
+    public boolean canTake(Run run) {
+        return true;
+    }
 
-	@Override
-	@SuppressWarnings("rawtypes")
-	public boolean canTake(Run run) {
-		return true;
-	}
+    public int getFromPriority() {
+        return fromPriority;
+    }
 
-	@Extension(optional = true)
-	public static class DescriptorImpl extends JobRestrictionDescriptor {
+    public int getToPriority() {
+        return toPriority;
+    }
 
-		@Override
-		public String getDisplayName() { return Messages.Priority_from_prioritySorter(); }
+    @Extension(optional = true)
+    public static class DescriptorImpl extends JobRestrictionDescriptor {
 
-		public ListBoxModel doFillFromPriorityItems() {
-			return PrioritySorterUtil.fillPriorityItems(PrioritySorterConfiguration.get().getStrategy()
-					.getNumberOfPriorities());
-		}
+        @Override
+        public String getDisplayName() { return Messages.Priority_from_prioritySorter(); }
 
-		public ListBoxModel doFillToPriorityItems() {
-			return PrioritySorterUtil.fillPriorityItems(PrioritySorterConfiguration.get().getStrategy()
-					.getNumberOfPriorities());
-		}
+        public ListBoxModel doFillFromPriorityItems() {
+            return PrioritySorterUtil.fillPriorityItems(PrioritySorterConfiguration.get().getStrategy()
+                    .getNumberOfPriorities());
+        }
 
-		public ListBoxModel doUpdateFromPriorityItems(@QueryParameter("value") String strValue) {
-			int value = 1;
-			try {
-				value = Integer.parseInt(strValue);
-			} catch (NumberFormatException e) {
-				// Use default value
-			}
-			ListBoxModel items = PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
-					.getStrategy().getNumberOfPriorities());
-			return items;
-		}
-	}
+        public ListBoxModel doFillToPriorityItems() {
+            return PrioritySorterUtil.fillPriorityItems(PrioritySorterConfiguration.get().getStrategy()
+                    .getNumberOfPriorities());
+        }
+
+        public ListBoxModel doUpdateFromPriorityItems(@QueryParameter("value") String strValue) {
+            int value = 1;
+            try {
+                value = Integer.parseInt(strValue);
+            } catch (NumberFormatException e) {
+                // Use default value
+            }
+            ListBoxModel items = PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
+                    .getStrategy().getNumberOfPriorities());
+            return items;
+        }
+    }
 }

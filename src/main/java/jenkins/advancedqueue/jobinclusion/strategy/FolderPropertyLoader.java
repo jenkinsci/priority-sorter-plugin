@@ -41,34 +41,34 @@ import jenkins.advancedqueue.DecisionLogger;
  */
 public class FolderPropertyLoader {
 
-	@CheckForNull    
-	static public String getJobGroupName(DecisionLogger decisionLogger, Job<?, ?> job) {
-		ItemGroup<?> parent = job.getParent();
-		decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");
-		while(parent != null) {
-			if(parent instanceof AbstractFolder) {
-				AbstractFolder<?> folder = (AbstractFolder<?>) parent;
-				decisionLogger.addDecisionLog(3, "Evaluating Folder [" + folder.getFullName() + "] ...");
-				DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = folder.getProperties();
-				for(AbstractFolderProperty<?> property : properties) {
-					if(property instanceof JobInclusionFolderProperty) {
-						JobInclusionFolderProperty incProperty = (JobInclusionFolderProperty) property;
-						if(incProperty.isUseJobGroup()) {
-							String name = incProperty.getJobGroupName();
-							decisionLogger.addDecisionLog(4, "JobGroup is enabled, with JobGroup [" + name + "] ...");
-							return name;
-						}
-					}
-				}
-			}
-			if(parent instanceof TopLevelItem) {
-				parent = ((TopLevelItem) parent).getParent();				
-			} else {
-				parent = null;
-			}
-		}
-		decisionLogger.addDecisionLog(2, "No match ...");
-		return null;
-	}
+    @CheckForNull
+    static public String getJobGroupName(DecisionLogger decisionLogger, Job<?, ?> job) {
+        ItemGroup<?> parent = job.getParent();
+        decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");
+        while(parent != null) {
+            if(parent instanceof AbstractFolder) {
+                AbstractFolder<?> folder = (AbstractFolder<?>) parent;
+                decisionLogger.addDecisionLog(3, "Evaluating Folder [" + folder.getFullName() + "] ...");
+                DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = folder.getProperties();
+                for(AbstractFolderProperty<?> property : properties) {
+                    if(property instanceof JobInclusionFolderProperty) {
+                        JobInclusionFolderProperty incProperty = (JobInclusionFolderProperty) property;
+                        if(incProperty.isUseJobGroup()) {
+                            String name = incProperty.getJobGroupName();
+                            decisionLogger.addDecisionLog(4, "JobGroup is enabled, with JobGroup [" + name + "] ...");
+                            return name;
+                        }
+                    }
+                }
+            }
+            if(parent instanceof TopLevelItem) {
+                parent = ((TopLevelItem) parent).getParent();
+            } else {
+                parent = null;
+            }
+        }
+        decisionLogger.addDecisionLog(2, "No match ...");
+        return null;
+    }
 
 }

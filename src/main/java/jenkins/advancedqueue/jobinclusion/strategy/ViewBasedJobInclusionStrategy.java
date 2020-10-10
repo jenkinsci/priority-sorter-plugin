@@ -51,37 +51,36 @@ import org.kohsuke.stapler.QueryParameter;
 @Extension
 public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
-	private final static Logger LOGGER = Logger.getLogger(ViewBasedJobInclusionStrategy.class.getName());
-	
-	@Extension
-	static public class ViewBasedJobInclusionStrategyDescriptor extends
-			AbstractJobInclusionStrategyDescriptor<ViewBasedJobInclusionStrategy> {
+    private final static Logger LOGGER = Logger.getLogger(ViewBasedJobInclusionStrategy.class.getName());
 
-		public ViewBasedJobInclusionStrategyDescriptor() {
-			super(Messages.Jobs_included_in_a_view());
-		}
+    @Extension
+    static public class ViewBasedJobInclusionStrategyDescriptor extends
+            AbstractJobInclusionStrategyDescriptor<ViewBasedJobInclusionStrategy> {
 
-		public ListBoxModel getListViewItems() {
-			ListBoxModel items = new ListBoxModel();
-			Collection<View> views = Jenkins.get().getViews();
-			addViews("", items, views);
-			return items;
-		}
-		
-		
-		private void addViews(String parent, ListBoxModel items, Collection<View> views) {
-			for (View view : views) {
-				items.add(parent + view.getDisplayName(), parent + view.getViewName());
-				if(view instanceof ViewGroup) {
-					addViews(parent + view.getDisplayName() + "/", items, ((ViewGroup) view).getViews());
-				}
-			}			
-		}
-		
-		public FormValidation doCheckJobPattern(@QueryParameter String jobPattern) {
-			if(jobPattern.isEmpty()) {
-				return FormValidation.ok("Empty pattern matches all Jobs.");
-			}
+        public ViewBasedJobInclusionStrategyDescriptor() {
+            super(Messages.Jobs_included_in_a_view());
+        }
+
+        public ListBoxModel getListViewItems() {
+            ListBoxModel items = new ListBoxModel();
+            Collection<View> views = Jenkins.get().getViews();
+            addViews("", items, views);
+            return items;
+        }
+
+        private void addViews(String parent, ListBoxModel items, Collection<View> views) {
+            for (View view : views) {
+                items.add(parent + view.getDisplayName(), parent + view.getViewName());
+                if(view instanceof ViewGroup) {
+                    addViews(parent + view.getDisplayName() + "/", items, ((ViewGroup) view).getViews());
+                }
+            }
+        }
+
+        public FormValidation doCheckJobPattern(@QueryParameter String jobPattern) {
+            if(jobPattern.isEmpty()) {
+                return FormValidation.ok("Empty pattern matches all Jobs.");
+            }
             try {
                 Pattern.compile(jobPattern);
             } catch (PatternSyntaxException exception) {
@@ -89,118 +88,117 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
             }
             return FormValidation.ok("Pattern is valid.");
         }
-		
-	};
+    };
 
-	static public class JobPattern {
-		private String jobPattern;
+    static public class JobPattern {
+        private String jobPattern;
 
-		@DataBoundConstructor
-		public JobPattern(String jobPattern) {
-			this.jobPattern = jobPattern;
-		}
+        @DataBoundConstructor
+        public JobPattern(String jobPattern) {
+            this.jobPattern = jobPattern;
+        }
 
-	}
+    }
 
-	private String viewName;
-	
-	private boolean useJobFilter = false;
+    private String viewName;
 
-	private String jobPattern = ".*";
+    private boolean useJobFilter = false;
 
-	public ViewBasedJobInclusionStrategy() {}
+    private String jobPattern = ".*";
 
-	@DataBoundConstructor
-	public ViewBasedJobInclusionStrategy(String viewName, JobPattern jobFilter) {
-		this.viewName = viewName;
-		this.useJobFilter = (jobFilter != null);
-		if (this.useJobFilter) {
-			this.jobPattern = jobFilter.jobPattern;
-		}
-	}
+    public ViewBasedJobInclusionStrategy() {}
 
-	public String getViewName() {
-		return viewName;
-	}
+    @DataBoundConstructor
+    public ViewBasedJobInclusionStrategy(String viewName, JobPattern jobFilter) {
+        this.viewName = viewName;
+        this.useJobFilter = (jobFilter != null);
+        if (this.useJobFilter) {
+            this.jobPattern = jobFilter.jobPattern;
+        }
+    }
 
-	public boolean isUseJobFilter() {
-		return useJobFilter;
-	}
+    public String getViewName() {
+        return viewName;
+    }
 
-	public String getJobPattern() {
-		return jobPattern;
-	}
+    public boolean isUseJobFilter() {
+        return useJobFilter;
+    }
 
-	private View getView() {
-		String[] nestedViewNames = this.viewName.split("/");
-		View view = Jenkins.get().getView(nestedViewNames[0]);
-		if(null == view) {
-			LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
-			return Jenkins.get().getPrimaryView();
-		}
-		for(int i = 1; i < nestedViewNames.length; i++) {
-			view = ((ViewGroup) view).getView(nestedViewNames[i]);
-			if(null == view) {
-				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
-				return Jenkins.get().getPrimaryView();
-			}
-		}
-		return view;
-	}
-	
-	@Override
-	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		if (isJobInView(job, getView())) {
-			if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
-				decisionLogger.addDecisionLog(2, "Not using filter ...");
-				return true;
-			} else {
-				decisionLogger.addDecisionLog(2, "Using filter ...");
-				// So filtering is on - use the priority if there's
-				// a match
-				try {
-					if (job.getName().matches(getJobPattern())) {
-						decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
-						return true;
-					} else {
-						decisionLogger.addDecisionLog(3, "Job is not matching the filter ...");
-						return false;
-					}
-				} catch (PatternSyntaxException e) {
-					// If the pattern is broken treat this a non
-					// match
-					decisionLogger.addDecisionLog(3, "Filter has syntax error");
-					return false;
-				}
-			}
-		}
-		return false;
-	}
-	
-	private boolean isJobInView(Job<?, ?> job, View view) {
-		// First do a simple test using contains
-		if(view.contains((TopLevelItem) job)) {
-			return true;
-		}
-		// Then try to get the Items (Sectioned View)
-		if(view.getItems().contains(job)) {
-			return true;
-		}
-		// Then try to iterate over the ViewGroup (Nested View)
-		if(view instanceof ViewGroup) {
-			return isJobInViewGroup(job, (ViewGroup) view);
-		} 
-		return false;
-	}
-	
-	private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
-		Collection<View> views = viewGroup.getViews();
-		for (View view : views) {
-			if(isJobInView(job, view)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public String getJobPattern() {
+        return jobPattern;
+    }
+
+    private View getView() {
+        String[] nestedViewNames = this.viewName.split("/");
+        View view = Jenkins.get().getView(nestedViewNames[0]);
+        if(null == view) {
+            LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
+            return Jenkins.get().getPrimaryView();
+        }
+        for(int i = 1; i < nestedViewNames.length; i++) {
+            view = ((ViewGroup) view).getView(nestedViewNames[i]);
+            if(null == view) {
+                LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
+                return Jenkins.get().getPrimaryView();
+            }
+        }
+        return view;
+    }
+
+    @Override
+    public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+        if (isJobInView(job, getView())) {
+            if (!isUseJobFilter() || getJobPattern().trim().isEmpty()) {
+                decisionLogger.addDecisionLog(2, "Not using filter ...");
+                return true;
+            } else {
+                decisionLogger.addDecisionLog(2, "Using filter ...");
+                // So filtering is on - use the priority if there's
+                // a match
+                try {
+                    if (job.getName().matches(getJobPattern())) {
+                        decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
+                        return true;
+                    } else {
+                        decisionLogger.addDecisionLog(3, "Job is not matching the filter ...");
+                        return false;
+                    }
+                } catch (PatternSyntaxException e) {
+                    // If the pattern is broken treat this a non
+                    // match
+                    decisionLogger.addDecisionLog(3, "Filter has syntax error");
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isJobInView(Job<?, ?> job, View view) {
+        // First do a simple test using contains
+        if(view.contains((TopLevelItem) job)) {
+            return true;
+        }
+        // Then try to get the Items (Sectioned View)
+        if(view.getItems().contains(job)) {
+            return true;
+        }
+        // Then try to iterate over the ViewGroup (Nested View)
+        if(view instanceof ViewGroup) {
+            return isJobInViewGroup(job, (ViewGroup) view);
+        }
+        return false;
+    }
+
+    private boolean isJobInViewGroup(Job<?, ?> job, ViewGroup viewGroup) {
+        Collection<View> views = viewGroup.getViews();
+        for (View view : views) {
+            if(isJobInView(job, view)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

@@ -38,21 +38,21 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Extension
 public class AllJobsJobInclusionStrategy extends JobInclusionStrategy {
 
-	@Extension
-	static public class AllJobsJobInclusionStrategyDescriptor extends
-			AbstractJobInclusionStrategyDescriptor<AllJobsJobInclusionStrategy> {
+    @Extension
+    static public class AllJobsJobInclusionStrategyDescriptor extends
+            AbstractJobInclusionStrategyDescriptor<AllJobsJobInclusionStrategy> {
 
-		public AllJobsJobInclusionStrategyDescriptor() {
-			super(Messages.All_jobs());
-		}
-	};
+        public AllJobsJobInclusionStrategyDescriptor() {
+            super(Messages.All_jobs());
+        }
+    };
 
-	@DataBoundConstructor
-	public AllJobsJobInclusionStrategy() {
-	}
+    @DataBoundConstructor
+    public AllJobsJobInclusionStrategy() {
+    }
 
-	@Override
-	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		return true;
-	}
+    @Override
+    public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+        return true;
+    }
 }

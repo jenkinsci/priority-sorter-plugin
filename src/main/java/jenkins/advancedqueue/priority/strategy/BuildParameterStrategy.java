@@ -44,56 +44,56 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Extension
 public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 
-	@Extension
-	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+    @Extension
+    static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
-		public BuildParameterStrategyDescriptor() {
-			super(Messages.Use_Priority_from_Build_Parameter());
-		}
-	};
+        public BuildParameterStrategyDescriptor() {
+            super(Messages.Use_Priority_from_Build_Parameter());
+        }
+    };
 
-	private String parameterName;
+    private String parameterName;
 
-	public BuildParameterStrategy() {}
+    public BuildParameterStrategy() {}
 
-	@DataBoundConstructor
-	public BuildParameterStrategy(String parameterName) {
-		this.parameterName = parameterName;
-	}
+    @DataBoundConstructor
+    public BuildParameterStrategy(String parameterName) {
+        this.parameterName = parameterName;
+    }
 
-	public String getParameterName() {
-		return parameterName;
-	}
+    public String getParameterName() {
+        return parameterName;
+    }
 
-	@CheckForNull
-	private Integer getPriorityInternal(@Nonnull Queue.Item item) {
-		List<ParametersAction> actions = item.getActions(ParametersAction.class);
-		for (ParametersAction action : actions) {
-			StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
-			if (parameterValue != null) {
-				String value = parameterValue.getValue();
-				try {
-					return Integer.parseInt(value);
-				} catch (NumberFormatException e) {
-					// continue
-				}
-			}
-		}
-		return null;
-	}
+    @CheckForNull
+    private Integer getPriorityInternal(@Nonnull Queue.Item item) {
+        List<ParametersAction> actions = item.getActions(ParametersAction.class);
+        for (ParametersAction action : actions) {
+            StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
+            if (parameterValue != null) {
+                String value = parameterValue.getValue();
+                try {
+                    return Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    // continue
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Gets priority of the queue item.
-	 * @param item Queue item
-	 * @return Priority if it can be determined. Default priority otherwise
-	 */
-	public int getPriority(@Nonnull Queue.Item item) {
-		final Integer p = getPriorityInternal(item);
-		return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-	}
+    /**
+     * Gets priority of the queue item.
+     * @param item Queue item
+     * @return Priority if it can be determined. Default priority otherwise
+     */
+    public int getPriority(@Nonnull Queue.Item item) {
+        final Integer p = getPriorityInternal(item);
+        return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+    }
 
-	@Override
-	public boolean isApplicable(@Nonnull Queue.Item item) {
-		return getPriorityInternal(item) != null;
-	}
+    @Override
+    public boolean isApplicable(@Nonnull Queue.Item item) {
+        return getPriorityInternal(item) != null;
+    }
 }

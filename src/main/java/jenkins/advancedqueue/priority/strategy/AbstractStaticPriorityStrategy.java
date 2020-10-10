@@ -10,50 +10,50 @@ import jenkins.model.Jenkins;
 
 abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 
-	static public class AbstractStaticPriorityStrategyDescriptor extends Descriptor<PriorityStrategy> {
+    static public class AbstractStaticPriorityStrategyDescriptor extends Descriptor<PriorityStrategy> {
 
-		private final String displayName;
+        private final String displayName;
 
-		protected AbstractStaticPriorityStrategyDescriptor(String displayName) {
-			this.displayName = displayName;
-		}
+        protected AbstractStaticPriorityStrategyDescriptor(String displayName) {
+            this.displayName = displayName;
+        }
 
-		public ListBoxModel getPriorities() {
-			ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
-			return items;
-		}
+        public ListBoxModel getPriorities() {
+            ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
+            return items;
+        }
 
-		@Override
-		public String getDisplayName() {
-			return displayName;
-		}
+        @Override
+        public String getDisplayName() {
+            return displayName;
+        }
 
-	};
+    };
 
-	@SuppressWarnings("unchecked")
-	public Descriptor<PriorityStrategy> getDescriptor() {
-		return Jenkins.get().getDescriptor(this.getClass());
-	}
+    @SuppressWarnings("unchecked")
+    public Descriptor<PriorityStrategy> getDescriptor() {
+        return Jenkins.get().getDescriptor(this.getClass());
+    }
 
-	private int priority;
+    private int priority;
 
-	@Override
-	public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities) {
-		priority = PriorityCalculationsUtil.scale(oldNumberOfPriorities, newNumberOfPriorities, priority);
+    @Override
+    public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities) {
+        priority = PriorityCalculationsUtil.scale(oldNumberOfPriorities, newNumberOfPriorities, priority);
 
-	}
+    }
 
-	public int getPriority() {
-		return priority;
-	}
+    public int getPriority() {
+        return priority;
+    }
 
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
-	@Override
-	public int getPriority(Queue.Item item) {
-		return priority;
-	}
+    @Override
+    public int getPriority(Queue.Item item) {
+        return priority;
+    }
 
 }

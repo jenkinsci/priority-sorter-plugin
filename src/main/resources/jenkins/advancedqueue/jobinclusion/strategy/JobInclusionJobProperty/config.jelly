@@ -1,22 +1,21 @@
 <?jelly escape-by-default='true'?>
 <j:jelly
-	xmlns:j="jelly:core"
-	xmlns:st="jelly:stapler"
-	xmlns:d="jelly:define"
-	xmlns:l="/lib/layout"
-	xmlns:t="/lib/hudson"
-	xmlns:f="/lib/form">
+    xmlns:j="jelly:core"
+    xmlns:st="jelly:stapler"
+    xmlns:d="jelly:define"
+    xmlns:l="/lib/layout"
+    xmlns:t="/lib/hudson"
+    xmlns:f="/lib/form">
 
-	<j:if test="${descriptor.isUsed()}">
-		<f:optionalBlock name="useJobGroup" inline="true" checked="${instance.useJobGroup}" title="${%Include this Job in a Job Group}">
-			<f:entry title="${%Job Group}" field="jobGroupName">
-				<select name="jobGroupName">
-					<j:forEach var="jobGroup" items="${descriptor.getJobGroups()}">
-						<f:option value="${jobGroup.value}" selected="${jobGroup.value == instance.jobGroupName}">${jobGroup.name}</f:option>
-					</j:forEach>
-				</select>
-			</f:entry>
-		</f:optionalBlock>
-	</j:if>
-	
+    <j:if test="${descriptor.isUsed()}">
+        <f:optionalBlock name="useJobGroup" inline="true" checked="${instance.useJobGroup}" title="${%Include this Job in a Job Group}">
+            <f:entry title="${%Job Group}" field="jobGroupName">
+                <select name="jobGroupName">
+                    <j:forEach var="jobGroup" items="${descriptor.getJobGroups()}">
+                        <f:option value="${jobGroup.value}" selected="${jobGroup.value == instance.jobGroupName}">${jobGroup.name}</f:option>
+                    </j:forEach>
+                </select>
+            </f:entry>
+        </f:optionalBlock>
+    </j:if>
 </j:jelly>

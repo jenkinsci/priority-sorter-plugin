@@ -42,85 +42,85 @@ import jenkins.model.Jenkins;
  */
 public abstract class SorterStrategy implements ExtensionPoint, Describable<SorterStrategy> {
 
-	public SorterStrategyDescriptor getDescriptor() {
-		return (SorterStrategyDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
-	}
+    public SorterStrategyDescriptor getDescriptor() {
+        return (SorterStrategyDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
+    }
 
-	/**
-	 * Called when a new {@link hudson.model.Item} enters the queue.
-	 * 
-	 * @param item the {@link hudson.model.WaitingItem} or {@link hudson.model.BuildableItem} that
-	 *            enters the queue
-	 * @param weightCallback the callback holds the priority to use anded the called method must set
-	 *            the weight before returning
-	 * @return the {@link SorterStrategyCallback} provided to the call must be returned
-	 */
-	public abstract SorterStrategyCallback onNewItem(@Nonnull Queue.Item item, SorterStrategyCallback weightCallback);
+    /**
+     * Called when a new {@link hudson.model.Item} enters the queue.
+     *
+     * @param item the {@link hudson.model.WaitingItem} or {@link hudson.model.BuildableItem} that
+     *            enters the queue
+     * @param weightCallback the callback holds the priority to use anded the called method must set
+     *            the weight before returning
+     * @return the {@link SorterStrategyCallback} provided to the call must be returned
+     */
+    public abstract SorterStrategyCallback onNewItem(@Nonnull Queue.Item item, SorterStrategyCallback weightCallback);
 
-	/**
-	 * Called when a {@link hudson.model.Item} leaves the queue and it is started.
-	 * 
-	 * @param item the {@link hudson.model.LeftItem}
-	 * @param weight the weight assigned when the item entered the queue
-	 */
-	public void onStartedItem(@Nonnull LeftItem item, float weight) {
-	}
+    /**
+     * Called when a {@link hudson.model.Item} leaves the queue and it is started.
+     *
+     * @param item the {@link hudson.model.LeftItem}
+     * @param weight the weight assigned when the item entered the queue
+     */
+    public void onStartedItem(@Nonnull LeftItem item, float weight) {
+    }
 
-	/**
-	 * Called when a {@link hudson.model.Item} leaves the queue and it is canceled.
-	 */
-	public void onCanceledItem(@Nonnull LeftItem item) {
-	};
+    /**
+     * Called when a {@link hudson.model.Item} leaves the queue and it is canceled.
+     */
+    public void onCanceledItem(@Nonnull LeftItem item) {
+    };
 
-	/**
-	 * Gets number of priority buckets to be used.
-	 * 
-	 * @return
-	 */
-	public abstract int getNumberOfPriorities();
+    /**
+     * Gets number of priority buckets to be used.
+     *
+     * @return
+     */
+    public abstract int getNumberOfPriorities();
 
-	/**
-	 * Gets a default priority bucket to be used.
-	 * 
-	 * @return
-	 */
-	public abstract int getDefaultPriority();
+    /**
+     * Gets a default priority bucket to be used.
+     *
+     * @return
+     */
+    public abstract int getDefaultPriority();
 
-	public static List<SorterStrategyDescriptor> getAllSorterStrategies() {
-		ExtensionList<SorterStrategy> all = all();
-		ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(all.size());
-		for (SorterStrategy prioritySorterStrategy : all) {
-			strategies.add(prioritySorterStrategy.getDescriptor());
-		}
-		return strategies;
-	}
+    public static List<SorterStrategyDescriptor> getAllSorterStrategies() {
+        ExtensionList<SorterStrategy> all = all();
+        ArrayList<SorterStrategyDescriptor> strategies = new ArrayList<SorterStrategyDescriptor>(all.size());
+        for (SorterStrategy prioritySorterStrategy : all) {
+            strategies.add(prioritySorterStrategy.getDescriptor());
+        }
+        return strategies;
+    }
 
-	@CheckForNull
-	public static SorterStrategyDescriptor getSorterStrategy(String key) {
-		List<SorterStrategyDescriptor> allSorterStrategies = getAllSorterStrategies();
-		for (SorterStrategyDescriptor sorterStrategy : allSorterStrategies) {
-			if (key.equals(sorterStrategy.getKey())) {
-				return sorterStrategy;
-			}
-		}
-		return null;
-	}
+    @CheckForNull
+    public static SorterStrategyDescriptor getSorterStrategy(String key) {
+        List<SorterStrategyDescriptor> allSorterStrategies = getAllSorterStrategies();
+        for (SorterStrategyDescriptor sorterStrategy : allSorterStrategies) {
+            if (key.equals(sorterStrategy.getKey())) {
+                return sorterStrategy;
+            }
+        }
+        return null;
+    }
 
-	@CheckForNull
-	public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
-		ExtensionList<SorterStrategy> all = all();
-		for (SorterStrategy prioritySorterStrategy : all) {
-			if (prioritySorterStrategy.getDescriptor().getKey().equals(sorterStrategy.getKey())) {
-				return prioritySorterStrategy;
-			}
-		}
-		return null;
-	}
+    @CheckForNull
+    public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
+        ExtensionList<SorterStrategy> all = all();
+        for (SorterStrategy prioritySorterStrategy : all) {
+            if (prioritySorterStrategy.getDescriptor().getKey().equals(sorterStrategy.getKey())) {
+                return prioritySorterStrategy;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * All registered {@link SorterStrategy}s.
-	 */
-	public static ExtensionList<SorterStrategy> all() {
-		return Jenkins.get().getExtensionList(SorterStrategy.class);
-	}
+    /**
+     * All registered {@link SorterStrategy}s.
+     */
+    public static ExtensionList<SorterStrategy> all() {
+        return Jenkins.get().getExtensionList(SorterStrategy.class);
+    }
 }

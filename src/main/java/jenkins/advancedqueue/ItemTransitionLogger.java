@@ -36,30 +36,30 @@ import jenkins.advancedqueue.sorter.ItemInfo;
  */
 public class ItemTransitionLogger {
 
-	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
+    private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
 
-	static public void logNewItem(@Nonnull ItemInfo info) {
-		if (LOGGER.isLoggable(Level.FINER)) {
-			LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
-		} else {
-			LOGGER.fine("New Item: " + info.toString());
-		}
-	}
+    static public void logNewItem(@Nonnull ItemInfo info) {
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
+        } else {
+            LOGGER.fine("New Item: " + info.toString());
+        }
+    }
 
-	static public void logBlockedItem(@Nonnull ItemInfo info) {
-		LOGGER.fine("Blocking: " + info.toString());
-	}
+    static public void logBlockedItem(@Nonnull ItemInfo info) {
+        LOGGER.fine("Blocking: " + info.toString());
+    }
 
-	static public void logBuilableItem(@Nonnull ItemInfo info) {
-		LOGGER.fine("Buildable: " + info.toString());
-	}
+    static public void logBuilableItem(@Nonnull ItemInfo info) {
+        LOGGER.fine("Buildable: " + info.toString());
+    }
 
-	static public void logStartedItem(@Nonnull ItemInfo info) {
-		LOGGER.fine("Starting: " + info.toString());
-	}
+    static public void logStartedItem(@Nonnull ItemInfo info) {
+        LOGGER.fine("Starting: " + info.toString());
+    }
 
-	static public void logCanceledItem(@Nonnull ItemInfo info) {
-		LOGGER.fine("Canceling: " + info.toString());
-	}
+    static public void logCanceledItem(@Nonnull ItemInfo info) {
+        LOGGER.fine("Canceling: " + info.toString());
+    }
 
 }

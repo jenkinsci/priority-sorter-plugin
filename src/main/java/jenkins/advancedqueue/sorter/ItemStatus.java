@@ -31,7 +31,7 @@ package jenkins.advancedqueue.sorter;
  */
 public enum ItemStatus {
 
-	WAITING,
-	BUILDABLE,
-	BLOCKED
+    WAITING,
+    BUILDABLE,
+    BLOCKED
 }

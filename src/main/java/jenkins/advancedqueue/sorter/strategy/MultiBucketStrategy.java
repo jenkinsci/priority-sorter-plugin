@@ -43,93 +43,93 @@ import org.kohsuke.stapler.QueryParameter;
  * @since 2.0
  */
 public abstract class MultiBucketStrategy extends SorterStrategy {
-	public static final int DEFAULT_PRIORITIES_NUMBER = 5;
-	public static final int DEFAULT_PRIORITY = 3;
+    public static final int DEFAULT_PRIORITIES_NUMBER = 5;
+    public static final int DEFAULT_PRIORITY = 3;
 
-	private final int numberOfPriorities;
-	private final int defaultPriority;
+    private final int numberOfPriorities;
+    private final int defaultPriority;
 
-	public MultiBucketStrategy() {
-		this(DEFAULT_PRIORITIES_NUMBER, DEFAULT_PRIORITY);
-	}
+    public MultiBucketStrategy() {
+        this(DEFAULT_PRIORITIES_NUMBER, DEFAULT_PRIORITY);
+    }
 
-	public MultiBucketStrategy(int numberOfPriorities, int defaultPriority) {
-		this.numberOfPriorities = numberOfPriorities;
-		this.defaultPriority = defaultPriority;
-	}
+    public MultiBucketStrategy(int numberOfPriorities, int defaultPriority) {
+        this.numberOfPriorities = numberOfPriorities;
+        this.defaultPriority = defaultPriority;
+    }
 
-	@Override
-	public final int getNumberOfPriorities() {
-		return numberOfPriorities;
-	}
+    @Override
+    public final int getNumberOfPriorities() {
+        return numberOfPriorities;
+    }
 
-	@Override
-	public final int getDefaultPriority() {
-		return defaultPriority;
-	}
+    @Override
+    public final int getDefaultPriority() {
+        return defaultPriority;
+    }
 
-	public ListBoxModel doFillDefaultPriorityItems() {
-		// TODO: replace by dynamic retrieval
-		throw new RuntimeException();
-	}
+    public ListBoxModel doFillDefaultPriorityItems() {
+        // TODO: replace by dynamic retrieval
+        throw new RuntimeException();
+    }
 
-	public abstract static class MultiBucketStrategyDescriptor extends SorterStrategyDescriptor {
+    public abstract static class MultiBucketStrategyDescriptor extends SorterStrategyDescriptor {
 
-		public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
-			int value = DEFAULT_PRIORITY;
-			try {
-				value = Integer.parseInt(strValue);
-			} catch (NumberFormatException e) {
-				// Use default value
-			}
-			ListBoxModel items = internalFillDefaultPriorityItems(value);
-			return items;
-		}
+        public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
+            int value = DEFAULT_PRIORITY;
+            try {
+                value = Integer.parseInt(strValue);
+            } catch (NumberFormatException e) {
+                // Use default value
+            }
+            ListBoxModel items = internalFillDefaultPriorityItems(value);
+            return items;
+        }
 
-		public ListBoxModel doDefaultPriority(@QueryParameter("value") String value) throws IOException,
-				ServletException {
-			return doUpdateDefaultPriorityItems(value);
-		}
+        public ListBoxModel doDefaultPriority(@QueryParameter("value") String value) throws IOException,
+                ServletException {
+            return doUpdateDefaultPriorityItems(value);
+        }
 
-		private ListBoxModel internalFillDefaultPriorityItems(int value) {
-			ListBoxModel items = new ListBoxModel();
-			for (int i = 1; i <= value; i++) {
-				items.add(String.valueOf(i));
-			}
-			return items;
-		}
+        private ListBoxModel internalFillDefaultPriorityItems(int value) {
+            ListBoxModel items = new ListBoxModel();
+            for (int i = 1; i <= value; i++) {
+                items.add(String.valueOf(i));
+            }
+            return items;
+        }
 
-		@CheckForNull
-		private MultiBucketStrategy getStrategy() {
-			SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
-			if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {
-				return null;
-			}
-			return (MultiBucketStrategy) strategy;
-		}
+        @CheckForNull
+        private MultiBucketStrategy getStrategy() {
+            SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
+            if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {
+                return null;
+            }
+            return (MultiBucketStrategy) strategy;
+        }
 
-		public ListBoxModel doFillDefaultPriorityItems() {
-			MultiBucketStrategy strategy = getStrategy();
-			if (strategy == null) {
-				return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
-			}
-			return internalFillDefaultPriorityItems(strategy.getNumberOfPriorities());
-		}
+        public ListBoxModel doFillDefaultPriorityItems() {
+            MultiBucketStrategy strategy = getStrategy();
+            if (strategy == null) {
+                return internalFillDefaultPriorityItems(DEFAULT_PRIORITIES_NUMBER);
+            }
+            return internalFillDefaultPriorityItems(strategy.getNumberOfPriorities());
+        }
 
-		public int getDefaultPrioritiesNumber() {
-			MultiBucketStrategy strategy = getStrategy();
-			if (strategy == null) {
-				return DEFAULT_PRIORITIES_NUMBER;
-			}
-			return strategy.getNumberOfPriorities();
-		}
+        public int getDefaultPrioritiesNumber() {
+            MultiBucketStrategy strategy = getStrategy();
+            if (strategy == null) {
+                return DEFAULT_PRIORITIES_NUMBER;
+            }
+            return strategy.getNumberOfPriorities();
+        }
 
-		public int getDefaultPriority() {
-			MultiBucketStrategy strategy = getStrategy();
-			if (strategy == null) {
-				return DEFAULT_PRIORITY;
-			}
-			return strategy.getDefaultPriority();
-		}
-	}
+        public int getDefaultPriority() {
+            MultiBucketStrategy strategy = getStrategy();
+            if (strategy == null) {
+                return DEFAULT_PRIORITY;
+            }
+            return strategy.getDefaultPriority();
+        }
+    }
 }
