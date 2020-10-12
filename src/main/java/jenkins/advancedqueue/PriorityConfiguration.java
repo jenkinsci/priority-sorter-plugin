@@ -38,8 +38,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -67,7 +65,6 @@ import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
-import jenkins.security.NotReallyRoleSensitiveCallable;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -81,13 +78,11 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
     private static final Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
     transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
     transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
-    private List<JobGroup> jobGroups;
+    private List<JobGroup> jobGroups = new LinkedList<JobGroup>();
 
     @DataBoundConstructor
     public PriorityConfiguration() {
-        jobGroups = new LinkedList<JobGroup>();
         load();
-        //
         Collections.sort(jobGroups, new Comparator<JobGroup>() {
             public int compare(JobGroup o1, JobGroup o2) {
                 return o1.getId() - o2.getId();
@@ -99,7 +94,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
             LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
             priorityConfigurationMatrixHelper = null;
         } else {
-            LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
+            LOGGER.log(Level.FINE, "The matrix-project plugin is installed and enable.");
             priorityConfigurationMatrixHelper = new PriorityConfigurationMatrixHelper();
         }
     }
@@ -150,8 +145,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 
     public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         jobGroups = new LinkedList<JobGroup>();
-        // id2jobGroup = new HashMap<Integer, JobGroup>();
-        //
+
         String parameter = req.getParameter("json");
         JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
         JSONArray jsonArray = JSONArray.fromObject(jobGroupsObject.get("jobGroup"));
@@ -163,7 +157,6 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
             }
             JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
             jobGroups.add(jobGroup);
-            // id2jobGroup.put(jobGroup.getId(), jobGroup);
         }
         save();
         rsp.sendRedirect(Jenkins.get().getRootUrl());
