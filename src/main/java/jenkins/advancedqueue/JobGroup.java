@@ -127,35 +127,6 @@ public class JobGroup {
     private List<PriorityStrategy> priorityStrategies = new ArrayList<PriorityStrategy>();
 
     @DataBoundConstructor
-    public JobGroup(int id, String description, int priority, JobInclusionStrategy jobGroupStrategy, boolean runExclusive, boolean usePriorityStrategies, List<? extends PriorityStrategy> priorityStrategies) {
-        this.id = id;
-        this.description = description;
-        this.priority = priority;
-        this.jobGroupStrategy = jobGroupStrategy;
-        this.runExclusive = runExclusive;
-        this.usePriorityStrategies = usePriorityStrategies;
-        /*
-        jobGroup.setUseJobFilter(jobGroupObject.has("useJobFilter"));
-        if (jobGroup.isUseJobFilter()) {
-            JSONObject jsonObject = jobGroupObject.getJSONObject("useJobFilter");
-            jobGroup.setJobPattern(jsonObject.getString("jobPattern"));
-            // Disable the filter if the pattern is invalid
-            try {
-                Pattern.compile(jobGroup.getJobPattern());
-            } catch (PatternSyntaxException e) {
-                jobGroup.setUseJobFilter(false);
-            }
-        }
-        */
-        //
-        if (usePriorityStrategies) {
-            setPriorityStrategies(priorityStrategies);
-            if (priorityStrategies.isEmpty()) {
-                this.usePriorityStrategies = false;
-            }
-        }
-    }
-
     public JobGroup() {
     }
 
