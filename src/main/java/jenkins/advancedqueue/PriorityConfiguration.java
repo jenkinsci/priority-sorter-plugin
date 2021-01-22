@@ -23,68 +23,72 @@
  */
 package jenkins.advancedqueue;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.matrix.MatrixConfiguration;
+import hudson.matrix.MatrixProject;
+import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.RootAction;
 import hudson.model.TopLevelItem;
-import hudson.model.View;
 import hudson.model.ViewGroup;
+import hudson.model.View;
 import hudson.security.ACL;
-import hudson.security.ACLContext;
+import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
+import javax.servlet.ServletException;
+
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
-import jenkins.model.GlobalConfiguration;
+import jenkins.advancedqueue.sorter.ItemInfo;
+import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.model.Jenkins;
-import jenkins.security.NotReallyRoleSensitiveCallable;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
 @Extension
-public class PriorityConfiguration extends GlobalConfiguration implements RootAction {
+public class PriorityConfiguration extends Descriptor<PriorityConfiguration> implements RootAction, Describable<PriorityConfiguration> {
 
-	private static final Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
+
+	transient private Map<Integer, JobGroup> id2jobGroup;
 	transient private PriorityConfigurationMatrixHelper priorityConfigurationMatrixHelper;
 	transient private PriorityConfigurationPlaceholderTaskHelper placeholderTaskHelper = new PriorityConfigurationPlaceholderTaskHelper();
 	private List<JobGroup> jobGroups;
 
-	@DataBoundConstructor
 	public PriorityConfiguration() {
+		super(PriorityConfiguration.class);
 		jobGroups = new LinkedList<JobGroup>();
 		load();
 		//
@@ -93,13 +97,21 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 				return o1.getId() - o2.getId();
 			}
 		});
-
-		Plugin plugin = Jenkins.get().getPlugin("matrix-project");
+		//
+		id2jobGroup = new HashMap<Integer, JobGroup>();
+		for (JobGroup jobGroup : jobGroups) {
+			id2jobGroup.put(jobGroup.getId(), jobGroup);
+			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategyHolder>() {
+				public int compare(JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) {
+					return o1.getId() - o2.getId();
+				}
+			});
+		}
+		//
+		Plugin plugin = Jenkins.getInstance().getPlugin("matrix-project");
 		if(plugin == null || !plugin.getWrapper().isEnabled()){
-			LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
 			priorityConfigurationMatrixHelper = null;
 		} else {
-			LOGGER.log(Level.FINE, "The matrix-project plugin is not installed or enable.");
 			priorityConfigurationMatrixHelper = new PriorityConfigurationMatrixHelper();
 		}
 	}
@@ -126,13 +138,17 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 	private boolean checkActive() {
 		PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
 		if (configuration.getOnlyAdminsMayEditPriorityConfiguration()) {
-			return Jenkins.get().getACL().hasPermission(Jenkins.ADMINISTER);
+			return Jenkins.getInstance().getACL().hasPermission(Jenkins.ADMINISTER);
 		}
 		return true;
 	}
 
 	public List<JobGroup> getJobGroups() {
 		return jobGroups;
+	}
+
+	public JobGroup getJobGroup(int id) {
+		return id2jobGroup.get(id);
 	}
 
 	public ExtensionList<Descriptor<PriorityStrategy>> getPriorityStrategyDescriptors() {
@@ -151,7 +167,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 
 	public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
 		jobGroups = new LinkedList<JobGroup>();
-		// id2jobGroup = new HashMap<Integer, JobGroup>();
+		id2jobGroup = new HashMap<Integer, JobGroup>();
 		//
 		String parameter = req.getParameter("json");
 		JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
@@ -164,10 +180,14 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 			}
 			JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
 			jobGroups.add(jobGroup);
-			// id2jobGroup.put(jobGroup.getId(), jobGroup);
+			id2jobGroup.put(jobGroup.getId(), jobGroup);
 		}
 		save();
-		rsp.sendRedirect(Jenkins.get().getRootUrl());
+		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
+	}
+
+	public Descriptor<PriorityConfiguration> getDescriptor() {
+		return this;
 	}
 
 	public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {
@@ -182,8 +202,11 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 	}
 
 	public PriorityConfigurationCallback getPriority(Queue.Item item, PriorityConfigurationCallback priorityCallback) {
-		try (ACLContext ctx = ACL.as(ACL.SYSTEM)) {
+		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
+		try {
 			return getPriorityInternal(item, priorityCallback);
+		} finally {
+			SecurityContextHolder.setContext(saveCtx);
 		}
 	}
 
@@ -215,7 +238,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
-    @CheckForNull
+        @CheckForNull
 	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
 		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
@@ -223,7 +246,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 		}
 		for (JobGroup jobGroup : jobGroups) {
 			priorityCallback.addDecisionLog(0, "Evaluating JobGroup [" + jobGroup.getId() + "] ...");
-			if (jobGroup.getJobGroupStrategy() != null && jobGroup.getJobGroupStrategy().contains(priorityCallback, job)) {
+			if (jobGroup.getJobGroupStrategy().contains(priorityCallback, job)) {
 				return jobGroup;
 			}
 		}
@@ -253,9 +276,9 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 		PriorityStrategy reason = null;
 		if (jobGroup.isUsePriorityStrategies()) {
 			priorityCallback.addDecisionLog(2, "Evaluating strategies ...");
-			List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
-			for (PriorityStrategy priorityStrategy : priorityStrategies) {
-				PriorityStrategy strategy = priorityStrategy;
+			List<JobGroup.PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+			for (JobGroup.PriorityStrategyHolder priorityStrategy : priorityStrategies) {
+				PriorityStrategy strategy = priorityStrategy.getPriorityStrategy();
 				priorityCallback.addDecisionLog(3, "Evaluating strategy [" + strategy.getDescriptor().getDisplayName() + "] ...");
 				if (strategy.isApplicable(item)) {
 					priorityCallback.addDecisionLog(4, "Strategy is applicable");
@@ -277,14 +300,8 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 		return priorityCallback.setPrioritySelection(priority, jobGroup.getId(), reason);
 	}
 
-	@DataBoundSetter
-	public void setJobGroups(List<JobGroup> jobGroups) {
-		this.jobGroups = jobGroups;
-		save();
-	}
-
-
 	static public PriorityConfiguration get() {
-		return GlobalConfiguration.all().get(PriorityConfiguration.class);
+		return (PriorityConfiguration) Jenkins.getInstance().getDescriptor(PriorityConfiguration.class);
 	}
+
 }

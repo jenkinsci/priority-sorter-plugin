@@ -31,7 +31,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class WFQStrategy extends FQBaseStrategy {
 
 	public WFQStrategy() {

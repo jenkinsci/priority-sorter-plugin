@@ -1,4 +1,3 @@
-<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core">
     <th>${%Job Priority}</th>
 </j:jelly>

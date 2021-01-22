@@ -1,4 +1,3 @@
-<?jelly escape-by-default='true'?>
 <div>
   ${%Column showing the priority of a job.}
 </div>

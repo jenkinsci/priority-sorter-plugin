@@ -62,6 +62,7 @@ public abstract class PriorityStrategy implements ExtensionPoint, Describable<Pr
 	abstract public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities);
 
 	public static DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> all() {
-		return Jenkins.get().getDescriptorList(PriorityStrategy.class);
+		return Jenkins.getInstance().getDescriptorList(PriorityStrategy.class);
 	}
+
 }

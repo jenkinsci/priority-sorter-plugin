@@ -43,7 +43,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 3.0
  */
-@Extension
 public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	@Extension
@@ -61,7 +60,7 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 		}
 
 		public PropertyBasedJobInclusionStrategyDescriptor() {
-			Plugin plugin = Jenkins.get().getPlugin("cloudbees-folder");
+			Plugin plugin = Jenkins.getInstance().getPlugin("cloudbees-folder");
 			if(plugin == null || !plugin.getWrapper().isEnabled()){
 				cloudbeesFolders = false;
 			}
@@ -70,8 +69,6 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 	};
 
 	private String name;
-
-	public PropertyBasedJobInclusionStrategy() {}
 
 	@DataBoundConstructor
 	public PropertyBasedJobInclusionStrategy(String name) {

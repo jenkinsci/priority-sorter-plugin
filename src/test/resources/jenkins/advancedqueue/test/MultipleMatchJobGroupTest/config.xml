@@ -3,7 +3,7 @@
   <disabledAdministrativeMonitors>
     <string>OldData</string>
   </disabledAdministrativeMonitors>
-  <version>2.222.1</version>
+  <version>1.520</version>
   <numExecutors>0</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>

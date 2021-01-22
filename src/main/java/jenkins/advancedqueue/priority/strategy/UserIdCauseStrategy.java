@@ -37,7 +37,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 
 	@Extension
@@ -48,8 +47,6 @@ public class UserIdCauseStrategy extends AbstractStaticPriorityStrategy {
 		}
 
 	}
-
-	public UserIdCauseStrategy() {}
 
 	@DataBoundConstructor
 	public UserIdCauseStrategy(int priority) {

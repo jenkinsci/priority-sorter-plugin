@@ -38,12 +38,12 @@ import jenkins.advancedqueue.sorter.SorterStrategyCallback;
  */
 abstract public class FQBaseStrategy extends MultiBucketStrategy {
 	// The equivalent of a packet size for a network scheduler.
-	static final float MIN_STEP_SIZE = 0.00001F;
+	static final protected float MIN_STEP_SIZE = 0.00001F;
 	// Keeps track on the last assigned weight for a given priority
-	static final Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
+	static final protected Map<Integer, Float> prio2weight = new HashMap<Integer, Float>();
 	static final private float MIN_STARTED_WEIGHT = 1F;
 	// Keeps track on the max weight of started jobs
-	private float maxStartedWeight = MIN_STARTED_WEIGHT;
+	static protected float maxStartedWeight = MIN_STARTED_WEIGHT;
 
 	public FQBaseStrategy() {
 	}

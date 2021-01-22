@@ -54,13 +54,13 @@ public abstract class JobInclusionStrategy implements ExtensionPoint, Describabl
 
 	@SuppressWarnings("unchecked")
 	public Descriptor<JobInclusionStrategy> getDescriptor() {
-		return Jenkins.get().getDescriptor(this.getClass());
+		return Jenkins.getInstance().getDescriptor(this.getClass());
 	}
 
 	abstract public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job);
 
 	public static DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> all() {
-		return Jenkins.get().getDescriptorList(JobInclusionStrategy.class);
+		return Jenkins.getInstance().getDescriptorList(JobInclusionStrategy.class);
 	}
 
 }

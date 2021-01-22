@@ -23,21 +23,19 @@
  */
 package jenkins.advancedqueue.priority.strategy;
 
-import java.util.List;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-
 import hudson.Extension;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
-import hudson.model.Items;
+import hudson.model.AbstractProject;
+import hudson.model.Descriptor.FormException;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
-import hudson.model.Descriptor.FormException;
 import hudson.util.ListBoxModel;
+
+import java.util.List;
+import java.util.logging.Logger;
+
 import jenkins.advancedqueue.JobGroup;
+import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PriorityConfigurationCallback;
@@ -45,11 +43,16 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONObject;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
+
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
 public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
+
+	private final static Logger LOGGER = Logger.getLogger(PriorityJobProperty.class.getName());
 
 	public final boolean useJobPriority;
 	public final int priority;
@@ -119,20 +122,14 @@ public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
 			PriorityConfiguration configuration = PriorityConfiguration.get();
 			JobGroup jobGroup = configuration.getJobGroup(dummyCallback, owner);
 			if(jobGroup != null && jobGroup.isUsePriorityStrategies()) {
-				List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
-				for (PriorityStrategy priorityStrategy : priorityStrategies) {
-					if(priorityStrategy instanceof JobPropertyStrategy) {
+				List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+				for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+					if(priorityStrategyHolder.getPriorityStrategy() instanceof JobPropertyStrategy) {
 						return true;
 					}
 				}
 			}
 			return false;
-		}
-
-		@Initializer(before = InitMilestone.PLUGINS_STARTED)
-		public static void addAliases() {
-			// Moved in 3.0 when JobPropertyStrategy was added
-			Items.XSTREAM2.addCompatibilityAlias("jenkins.advancedqueue.AdvancedQueueSorterJobProperty", PriorityJobProperty.class);
 		}
 	}
 }

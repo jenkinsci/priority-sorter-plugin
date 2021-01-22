@@ -41,7 +41,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Magnus Sandberg
  * @since 2.0
  */
-@Extension
 public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Extension
@@ -52,9 +51,7 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 		}
 	};
 
-	private String parameterName;
-
-	public BuildParameterStrategy() {}
+	private final String parameterName;
 
 	@DataBoundConstructor
 	public BuildParameterStrategy(String parameterName) {
@@ -71,7 +68,7 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 		for (ParametersAction action : actions) {
 			StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
 			if (parameterValue != null) {
-				String value = parameterValue.getValue();
+				String value = parameterValue.value;
 				try {
 					return Integer.parseInt(value);
 				} catch (NumberFormatException e) {

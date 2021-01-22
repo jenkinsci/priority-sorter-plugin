@@ -48,7 +48,6 @@ import org.kohsuke.stapler.QueryParameter;
  * @author Magnus Sandberg
  * @since 3.0
  */
-@Extension
 public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	private final static Logger LOGGER = Logger.getLogger(ViewBasedJobInclusionStrategy.class.getName());
@@ -63,7 +62,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 		public ListBoxModel getListViewItems() {
 			ListBoxModel items = new ListBoxModel();
-			Collection<View> views = Jenkins.get().getViews();
+			Collection<View> views = Jenkins.getInstance().getViews();
 			addViews("", items, views);
 			return items;
 		}
@@ -108,8 +107,6 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	private String jobPattern = ".*";
 
-	public ViewBasedJobInclusionStrategy() {}
-
 	@DataBoundConstructor
 	public ViewBasedJobInclusionStrategy(String viewName, JobPattern jobFilter) {
 		this.viewName = viewName;
@@ -133,16 +130,16 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	private View getView() {
 		String[] nestedViewNames = this.viewName.split("/");
-		View view = Jenkins.get().getView(nestedViewNames[0]);
+		View view = Jenkins.getInstance().getView(nestedViewNames[0]);
 		if(null == view) {
 			LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
-			return Jenkins.get().getPrimaryView();
+			return Jenkins.getInstance().getPrimaryView();
 		}
 		for(int i = 1; i < nestedViewNames.length; i++) {
 			view = ((ViewGroup) view).getView(nestedViewNames[i]);
 			if(null == view) {
 				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
-				return Jenkins.get().getPrimaryView();
+				return Jenkins.getInstance().getPrimaryView();
 			}
 		}
 		return view;

@@ -23,22 +23,18 @@
  */
 package jenkins.advancedqueue;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
-
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import jenkins.advancedqueue.priority.PriorityStrategy;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
@@ -47,6 +43,12 @@ import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import jenkins.advancedqueue.util.PrioritySorterUtil;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
+
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * @author Magnus Sandberg
@@ -59,12 +61,45 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private final static SorterStrategy DEFAULT_STRATEGY = new AbsoluteStrategy(
 			MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
 
+	/**
+	 * @deprecated used in 2.x - replaces with XXX
+	 */
+	@Deprecated
+	private boolean allowPriorityOnJobs;
+
 	private boolean onlyAdminsMayEditPriorityConfiguration = false;
 
-	private SorterStrategy strategy = DEFAULT_STRATEGY;
+	private SorterStrategy strategy;
 
 	public PrioritySorterConfiguration() {
-		load();
+	}
+
+	public static void init() {
+		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
+		// Make sure default is good for updating from legacy
+		prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
+		prioritySorterConfiguration.allowPriorityOnJobs = false;
+		prioritySorterConfiguration.load();
+	}
+
+	@Override
+	public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+
+		int prevNumberOfPriorities = strategy.getNumberOfPriorities();
+		strategy = req.bindJSON(SorterStrategy.class, json.getJSONObject("strategy"));
+		int newNumberOfPriorities = strategy.getNumberOfPriorities();
+
+		FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String.valueOf(newNumberOfPriorities));
+		if (numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
+			throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
+		}
+		//
+		onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
+		//
+		updatePriorities(prevNumberOfPriorities);
+		//
+		save();
+		return true;
 	}
 
 	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
@@ -114,7 +149,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
 		try {
 			@SuppressWarnings("rawtypes")
-			List<Job> allJobs = Jenkins.get().getAllItems(Job.class);
+			List<Job> allJobs = Jenkins.getInstance().getAllItems(Job.class);
 			for (Job<?, ?> job : allJobs) {
 				try {
 					// Scale any priority on the Job
@@ -139,9 +174,9 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 			for (JobGroup jobGroup : jobGroups) {
 				jobGroup.setPriority(PriorityCalculationsUtil.scale(prevNumberOfPriorities,
 						strategy.getNumberOfPriorities(), jobGroup.getPriority()));
-				List<PriorityStrategy> priorityStrategies = jobGroup.getPriorityStrategies();
-				for (PriorityStrategy priorityStrategyHolder : priorityStrategies) {
-					priorityStrategyHolder.numberPrioritiesUpdates(prevNumberOfPriorities,
+				List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+				for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+					priorityStrategyHolder.getPriorityStrategy().numberPrioritiesUpdates(prevNumberOfPriorities,
 							strategy.getNumberOfPriorities());
 				}
 			}
@@ -151,24 +186,8 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 	}
 
-	public boolean isOnlyAdminsMayEditPriorityConfiguration() {
-		return this.onlyAdminsMayEditPriorityConfiguration;
-	}
-	
-	@DataBoundSetter
-	public void setOnlyAdminsMayEditPriorityConfiguration(boolean onlyAdminsMayEditPriorityConfiguration) {
-		this.onlyAdminsMayEditPriorityConfiguration = onlyAdminsMayEditPriorityConfiguration;
-		save();
-	}
-	
-	@DataBoundSetter
-	public void setStrategy(SorterStrategy strategy) {
-		updatePriorities(strategy.getNumberOfPriorities());
-		this.strategy = strategy;
-		save();
+	static public PrioritySorterConfiguration get() {
+		return (PrioritySorterConfiguration) Jenkins.getInstance().getDescriptor(PrioritySorterConfiguration.class);
 	}
 
-	public static PrioritySorterConfiguration get() {
-		return GlobalConfiguration.all().get(PrioritySorterConfiguration.class);
-	}
 }

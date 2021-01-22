@@ -32,7 +32,7 @@ abstract public class AbstractStaticPriorityStrategy extends PriorityStrategy {
 
 	@SuppressWarnings("unchecked")
 	public Descriptor<PriorityStrategy> getDescriptor() {
-		return Jenkins.get().getDescriptor(this.getClass());
+		return Jenkins.getInstance().getDescriptor(this.getClass());
 	}
 
 	private int priority;

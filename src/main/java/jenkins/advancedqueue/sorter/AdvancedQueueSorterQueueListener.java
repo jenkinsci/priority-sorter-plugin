@@ -53,24 +53,24 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
 
 	@Override
 	public void onEnterBuildable(BuildableItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.getId());
+		ItemInfo item = QueueItemCache.get().getItem(bi.id);
 		// Null at startup - onEnterWaiting not called during startup (?)
 		if (item == null) {
 			LOGGER.warning("onEnterBuilding() called without prior call to onEnterWaiting() for '" + bi.task.getDisplayName() + "'"); 
 			AdvancedQueueSorter.get().onNewItem(bi);
 		}
-		QueueItemCache.get().getItem(bi.getId()).setBuildable();
+		QueueItemCache.get().getItem(bi.id).setBuildable();
 	}
 
 	@Override
 	public void onEnterBlocked(BlockedItem bi) {
-		ItemInfo item = QueueItemCache.get().getItem(bi.getId());
+		ItemInfo item = QueueItemCache.get().getItem(bi.id);
 		// Null at startup - onEnterWaiting not called during startup (?)
 		if (item == null) {
 			LOGGER.warning("onEnterBlocked() called without prior call to onEnterWaiting() for '" + bi.task.getDisplayName() + "'"); 
 			AdvancedQueueSorter.get().onNewItem(bi);
 		}
-		QueueItemCache.get().getItem(bi.getId()).setBlocked();
+		QueueItemCache.get().getItem(bi.id).setBlocked();
 	}
 
 }

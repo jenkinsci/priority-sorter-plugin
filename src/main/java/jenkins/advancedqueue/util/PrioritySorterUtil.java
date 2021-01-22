@@ -9,7 +9,7 @@ public class PrioritySorterUtil {
 	}
 
 	static public ListBoxModel fillPriorityItems(int from, int to) {
-		ListBoxModel items = new ListBoxModel(to - from);
+		ListBoxModel items = new ListBoxModel();
 		for (int i = from; i <= to; i++) {
 			items.add(String.valueOf(i));
 		}
