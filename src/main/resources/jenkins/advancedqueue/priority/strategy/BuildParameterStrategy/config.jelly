@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout">
 	<f:entry title="${%Build Parameter Name}" field="parameterName">
 		<f:textbox value="${instance.parameterName}" default="BuildPriority"/>
