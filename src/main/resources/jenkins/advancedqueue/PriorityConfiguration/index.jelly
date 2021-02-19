@@ -1,4 +1,4 @@
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:p="/lib/prioritysorter">
 	<l:layout norefresh="true">
 	 	<l:side-panel>
             <l:tasks>
@@ -15,7 +15,7 @@
 			<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
  				<f:entry>
 					<f:repeatable var="jobGroup" items="${it.jobGroups}" header="JobGroup">
-						<table width="75%">
+						<p:blockWrapper>
                            <f:entry title="${%Description}">
                                     <f:textarea name="description" value="${jobGroup.description}"/>
                             </f:entry>
@@ -41,7 +41,7 @@
 	    					<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use additional rules when assigning a priority to a Job}">
 								<f:entry>
 									<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="${%Priority Strategy}">
-										<table width="75%">
+										<p:blockWrapper>
 											<j:if test="${holder == null}">
 												<f:entry title="${%Select Strategy}">
 													<f:dropdownDescriptorSelector
@@ -61,7 +61,7 @@
 			        	    						<f:repeatableDeleteButton />
 		    	        						</div>
 		    	        					</f:entry>	
-		            					</table>						
+		            					</p:blockWrapper>						
 									</f:repeatable>
 								</f:entry>
 	    					</f:optionalBlock>
@@ -70,7 +70,7 @@
 	            					<f:repeatableDeleteButton />
 	            				</div>
 	            			</f:entry>
-	            		</table>
+	            		</p:blockWrapper>
 					</f:repeatable>
 					<br/>
 					<br/>
