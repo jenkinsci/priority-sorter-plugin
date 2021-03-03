@@ -73,13 +73,12 @@ public class PrioritySorterRestriction extends JobRestriction {
 		public ListBoxModel doUpdateFromPriorityItems(@QueryParameter("value") String strValue) {
 			int value = 1;
 			try {
-				value = Integer.valueOf(strValue);
+				value = Integer.parseInt(strValue);
 			} catch (NumberFormatException e) {
 				// Use default value
 			}
-			ListBoxModel items = PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
+			return PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
 					.getStrategy().getNumberOfPriorities());
-			return items;
 		}
 
 	}
@@ -104,7 +103,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 	@Override
 	public boolean canTake(BuildableItem buildableItem) {
-		ItemInfo item = QueueItemCache.get().getItem(buildableItem.id);
+		ItemInfo item = QueueItemCache.get().getItem(buildableItem.getId());
 		if(item == null) {
 			LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
 			return true;
