@@ -34,7 +34,7 @@ class PriorityConfigurationPlaceholderTaskHelper {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Cannot determine priority of the Pipeline Placeholder Task {0}. Its owner task {1} is not a Job (type is {2}). " +
                         "Custom priority will not be set",
-                        new Object[] {task, ownerTask, ownerTask != null ? ownerTask.getClass() : "null"});
+                        new Object[] {task, ownerTask, ownerTask.getClass()});
             }
             priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
         }
