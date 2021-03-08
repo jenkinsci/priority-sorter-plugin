@@ -168,3 +168,8 @@ To get logging on when the *Queue Sorter* is active log, use:
     ***FINE***.
     -   To see all items sorted (the queue) by the Queue Sorter, set the
         log level to ***FINER*.**
+
+## Release Notes
+
+* For recent versions, see [GitHub Releases](https://github.com/jenkinsci/priority-sorter-plugin/releases)
+* For versions 3.6 and older, see the [changelog](./CHANGELOG.md)
