@@ -94,7 +94,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		}
 		//
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
-			StringBuffer queueStr = new StringBuffer("Queue:\n"
+			StringBuilder queueStr = new StringBuilder("Queue:\n"
 					+ "+----------------------------------------------------------------------+\n"
 					+ "|   Item Id  |        Job Name       | Priority |        Weight        |\n"
 					+ "+----------------------------------------------------------------------+\n");

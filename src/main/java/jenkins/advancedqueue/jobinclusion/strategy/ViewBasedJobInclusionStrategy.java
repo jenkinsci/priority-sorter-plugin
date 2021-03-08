@@ -62,7 +62,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 		public ListBoxModel getListViewItems() {
 			ListBoxModel items = new ListBoxModel();
-			Collection<View> views = Jenkins.getInstance().getViews();
+			Collection<View> views = Jenkins.get().getViews();
 			addViews("", items, views);
 			return items;
 		}
@@ -130,16 +130,17 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	private View getView() {
 		String[] nestedViewNames = this.viewName.split("/");
-		View view = Jenkins.getInstance().getView(nestedViewNames[0]);
+		final Jenkins jenkins = Jenkins.get();
+		View view = jenkins.getView(nestedViewNames[0]);
 		if(null == view) {
 			LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
-			return Jenkins.getInstance().getPrimaryView();
+			return jenkins.getPrimaryView();
 		}
 		for(int i = 1; i < nestedViewNames.length; i++) {
 			view = ((ViewGroup) view).getView(nestedViewNames[i]);
 			if(null == view) {
 				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
-				return Jenkins.getInstance().getPrimaryView();
+				return jenkins.getPrimaryView();
 			}
 		}
 		return view;
