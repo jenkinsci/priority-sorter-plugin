@@ -1,5 +1,9 @@
 # Changelog
 
+## Newer releases
+
+- See [GitHub Releases](https://github.com/jenkinsci/priority-sorter-plugin/releases)
+
 ## Version 3.6.0 (2018-01-12)
 
 -   [PR
