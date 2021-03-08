@@ -30,6 +30,7 @@ import hudson.util.ListBoxModel;
 import java.util.List;
 
 import jenkins.advancedqueue.DecisionLogger;
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
 
@@ -48,7 +49,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 			AbstractJobInclusionStrategyDescriptor<FolderBasedJobInclusionStrategy> {
 
 		public FolderBasedJobInclusionStrategyDescriptor() {
-			super("Jobs included in Folder");
+			super(Messages.Jobs_included_in_folder());
 		}
 
 		public ListBoxModel getListFolderItems() {

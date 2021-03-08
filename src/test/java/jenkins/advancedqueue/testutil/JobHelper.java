@@ -2,7 +2,10 @@ package jenkins.advancedqueue.testutil;
 
 import hudson.Launcher;
 import hudson.matrix.AxisList;
+import hudson.matrix.DefaultMatrixExecutionStrategyImpl;
+import hudson.matrix.MatrixExecutionStrategy;
 import hudson.matrix.MatrixProject;
+import hudson.matrix.NoopMatrixConfigurationSorter;
 import hudson.matrix.TextAxis;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
@@ -23,6 +26,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 public class JobHelper {
 
 	private final static Logger LOGGER = Logger.getLogger(JobHelper.class.getName());
+	private final static int DEFAULT_QUIET_PERIOD = 0;
 
 	public JenkinsRule j;
 
@@ -63,14 +67,22 @@ public class JobHelper {
 		return projects;
 	}
 
+	private MatrixProject createMatrixProject(String name) throws IOException {
+		MatrixProject p = j.createProject(MatrixProject.class, name);
+		return p;
+	}
+
 	public List<MatrixProject> createMatrixProjects(int numberOfProjects) throws Exception {
 		List<MatrixProject> projects = new ArrayList<MatrixProject>(numberOfProjects);
 		for (int i = 0; i < numberOfProjects; i++) {
-			MatrixProject project = j.createMatrixProject("Matrix " + i);
+			MatrixProject project = createMatrixProject("Matrix " + i);
 			project.getBuildersList().add(new TestBuilder(100));
 	        AxisList axes = new AxisList();
 	        axes.add(new TextAxis(i + "A1", i + "A2", i + "A3"));
 	        project.setAxes(axes);
+			DefaultMatrixExecutionStrategyImpl executionStrategy = (DefaultMatrixExecutionStrategyImpl) project.getExecutionStrategy();
+			executionStrategy.setSorter(new NoopMatrixConfigurationSorter());
+			project.setExecutionStrategy(executionStrategy);
 			projects.add(project);
 		}
 		return projects;
@@ -80,7 +92,7 @@ public class JobHelper {
 		List<MatrixProject> projects = createMatrixProjects(causes.length);
 		// Scheduling executors is zero
 		for (int i = 0; i < causes.length; i++) {
-			projects.get(i).scheduleBuild(0, causes[i]);
+			projects.get(i).scheduleBuild(DEFAULT_QUIET_PERIOD, causes[i]);
 			Thread.sleep(100);
 		}
 		return this;
@@ -89,16 +101,20 @@ public class JobHelper {
 	public JobHelper scheduleProject(String name, Cause cause) throws Exception {
 		FreeStyleProject project = createProject(name);
 		// Scheduling executors is zero
-		project.scheduleBuild(0, cause);
+		project.scheduleBuild(DEFAULT_QUIET_PERIOD, cause);
 		Thread.sleep(100);
 		return this;
 	}
 
 	public JobHelper scheduleProjects(Cause... causes) throws Exception {
+		return scheduleProjects(DEFAULT_QUIET_PERIOD, causes);
+	}
+
+	public JobHelper scheduleProjects(int quietPeriod, Cause... causes) throws Exception {
 		List<FreeStyleProject> projects = createProjects(causes.length);
 		// Scheduling executors is zero
 		for (int i = 0; i < causes.length; i++) {
-			projects.get(i).scheduleBuild(0, causes[i]);
+			projects.get(i).scheduleBuild(quietPeriod, causes[i]);
 			Thread.sleep(100);
 		}
 		return this;
@@ -106,9 +122,7 @@ public class JobHelper {
 
 	public void go() throws Exception {
 		// Set the executors to one and restart
-		Jenkins.getInstance().setNumExecutors(1);
-		// TODO: is there any other way to make the 1 take effect than a reload?
-		Jenkins.getInstance().reload();
+		Jenkins.get().setNumExecutors(1);
 	}
 
 }

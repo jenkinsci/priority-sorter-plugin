@@ -29,6 +29,7 @@ import hudson.Extension;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Run;
 import hudson.util.ListBoxModel;
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
@@ -56,7 +57,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 		@Override
 		public String getDisplayName() {
-			return "Priority from PrioritySorter";
+			return Messages.Priority_from_prioritySorter();
 		}
 
 		public ListBoxModel doFillFromPriorityItems() {
@@ -72,13 +73,12 @@ public class PrioritySorterRestriction extends JobRestriction {
 		public ListBoxModel doUpdateFromPriorityItems(@QueryParameter("value") String strValue) {
 			int value = 1;
 			try {
-				value = Integer.valueOf(strValue);
+				value = Integer.parseInt(strValue);
 			} catch (NumberFormatException e) {
 				// Use default value
 			}
-			ListBoxModel items = PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
+			return PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
 					.getStrategy().getNumberOfPriorities());
-			return items;
 		}
 
 	}
@@ -103,7 +103,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 	@Override
 	public boolean canTake(BuildableItem buildableItem) {
-		ItemInfo item = QueueItemCache.get().getItem(buildableItem.id);
+		ItemInfo item = QueueItemCache.get().getItem(buildableItem.getId());
 		if(item == null) {
 			LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
 			return true;

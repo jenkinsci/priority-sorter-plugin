@@ -32,6 +32,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
@@ -48,7 +49,7 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 	@Extension
 	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 		public BuildParameterStrategyDescriptor() {
-			super("Job Triggered by a Upstream Build");
+			super(Messages.Job_triggered_by_a_upstream_build());
 		}
 	};
 

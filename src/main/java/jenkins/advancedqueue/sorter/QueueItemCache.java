@@ -57,11 +57,15 @@ public class QueueItemCache {
 	}
 
 	// Keeps track of all items currently in the queue
-	private Map<Integer, ItemInfo> item2info = new HashMap<Integer, ItemInfo>();
+	private Map<Long, ItemInfo> item2info = new HashMap<>();
 	// Keeps track of the last started item of the Job
-	private Map<String, ItemInfo> jobName2info = new HashMap<String, ItemInfo>();
+	private Map<String, ItemInfo> jobName2info = new HashMap<>();
 
 	private QueueItemCache() {
+	}
+
+	public synchronized ItemInfo getItem(long itemId) {
+		return item2info.get(itemId);
 	}
 
 	/**
@@ -71,8 +75,9 @@ public class QueueItemCache {
 	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
 	 *         queue
 	 */
-	synchronized public ItemInfo getItem(int itemId) {
-		return item2info.get(itemId);
+	@Deprecated
+	synchronized public ItemInfo getItem(Integer itemId) {
+		return item2info.get(itemId.longValue());
 	}
 
 	/**
@@ -88,14 +93,20 @@ public class QueueItemCache {
 	}
 
 	synchronized public ItemInfo addItem(ItemInfo itemInfo) {
-		Integer itemId = new Integer(itemInfo.getItemId());
+		long itemId = itemInfo.getItemId();
 		item2info.put(itemId, itemInfo);
 		jobName2info.put(itemInfo.getJobName(), itemInfo);
 		return itemInfo;
 	}
 
         @CheckForNull
-	synchronized public ItemInfo removeItem(int itemId) {
+		@Deprecated
+	synchronized public ItemInfo removeItem(Integer itemId) {
+		return item2info.remove(itemId.longValue());
+	}
+
+	@CheckForNull
+	public synchronized ItemInfo removeItem(long itemId) {
 		return item2info.remove(itemId);
 	}
 

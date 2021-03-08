@@ -39,7 +39,6 @@ import org.kohsuke.stapler.QueryParameter;
 /**
  * Implements a strategy with multiple buckets.
  * 
- * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
  * @since 2.0
  */
 public abstract class MultiBucketStrategy extends SorterStrategy {
@@ -78,7 +77,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 		public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
 			int value = DEFAULT_PRIORITY;
 			try {
-				value = Integer.valueOf(strValue);
+				value = Integer.parseInt(strValue);
 			} catch (NumberFormatException e) {
 				// Use default value
 			}

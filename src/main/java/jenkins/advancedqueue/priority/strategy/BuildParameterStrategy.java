@@ -31,6 +31,8 @@ import hudson.model.StringParameterValue;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -45,7 +47,7 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
 		public BuildParameterStrategyDescriptor() {
-			super("Use Priority from Build Parameter");
+			super(Messages.Use_Priority_from_Build_Parameter());
 		}
 	};
 
@@ -66,7 +68,7 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 		for (ParametersAction action : actions) {
 			StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
 			if (parameterValue != null) {
-				String value = parameterValue.value;
+				String value = parameterValue.getValue();
 				try {
 					return Integer.parseInt(value);
 				} catch (NumberFormatException e) {
