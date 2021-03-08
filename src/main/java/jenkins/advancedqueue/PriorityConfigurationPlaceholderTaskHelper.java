@@ -42,7 +42,7 @@ class PriorityConfigurationPlaceholderTaskHelper {
     }
 
 	static boolean isPlaceholderTaskUsed() {
-		Plugin plugin = Jenkins.getInstance().getPlugin("workflow-durable-task-step");
+		Plugin plugin = Jenkins.get().getPlugin("workflow-durable-task-step");
 		return plugin != null && plugin.getWrapper().isActive();
 	}
 

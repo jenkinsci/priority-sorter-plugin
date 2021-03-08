@@ -26,6 +26,7 @@ package jenkins.advancedqueue;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -146,10 +147,9 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 	private void updatePriorities(int prevNumberOfPriorities) {
 		// Shouldn't really by a permission problem when getting here but
 		// to be on the safe side
-		SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
-		try {
+		try(ACLContext saveCtx = ACL.as(ACL.SYSTEM)) {
 			@SuppressWarnings("rawtypes")
-			List<Job> allJobs = Jenkins.getInstance().getAllItems(Job.class);
+			List<Job> allJobs = Jenkins.get().getAllItems(Job.class);
 			for (Job<?, ?> job : allJobs) {
 				try {
 					// Scale any priority on the Job
@@ -181,13 +181,11 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 				}
 			}
 			PriorityConfiguration.get().save();
-		} finally {
-			SecurityContextHolder.setContext(saveCtx);
 		}
 	}
 
 	static public PrioritySorterConfiguration get() {
-		return (PrioritySorterConfiguration) Jenkins.getInstance().getDescriptor(PrioritySorterConfiguration.class);
+		return (PrioritySorterConfiguration) Jenkins.get().getDescriptor(PrioritySorterConfiguration.class);
 	}
 
 }

@@ -23,7 +23,7 @@ abstract public class AbstractDynamicPriorityStrategy extends PriorityStrategy {
 
 	@SuppressWarnings("unchecked")
 	public Descriptor<PriorityStrategy> getDescriptor() {
-		return Jenkins.getInstance().getDescriptor(this.getClass());
+		return Jenkins.get().getDescriptor(this.getClass());
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 		public ListBoxModel getListFolderItems() {
 			ListBoxModel items = new ListBoxModel();
-			List<Folder> folders = Jenkins.getInstance().getAllItems(Folder.class);
+			List<Folder> folders = Jenkins.get().getAllItems(Folder.class);
 			for (Folder folder : folders) {
 				items.add(folder.getFullName(), folder.getFullName());
 			}
