@@ -172,4 +172,4 @@ To get logging on when the *Queue Sorter* is active log, use:
 ## Release Notes
 
 * For recent versions, see [GitHub Releases](https://github.com/jenkinsci/priority-sorter-plugin/releases)
-* For versions 3.6 and older, see the [changelog](./CHANGELOG.md)
+* For versions 3.6 and older, see the [changelog archive](./docs/CHANGELOG.old.md)
