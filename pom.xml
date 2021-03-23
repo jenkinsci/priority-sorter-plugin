@@ -114,6 +114,11 @@
 			<artifactId>credentials</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.jenkins</groupId>
+			<artifactId>configuration-as-code</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>

@@ -164,10 +164,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		}
 	}
 
-	static public PrioritySorterConfiguration get() {
-		return (PrioritySorterConfiguration) Jenkins.get().getDescriptor(PrioritySorterConfiguration.class);
-	}
-
 	@DataBoundSetter
 	public void setOnlyAdminsMayEditPriorityConfiguration(boolean onlyAdminsMayEditPriorityConfiguration) {
 		this.onlyAdminsMayEditPriorityConfiguration = onlyAdminsMayEditPriorityConfiguration;
@@ -181,4 +177,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		save();
 	}
 
+	public static PrioritySorterConfiguration get() {
+		return GlobalConfiguration.all().get(PrioritySorterConfiguration.class);
+	}
 }

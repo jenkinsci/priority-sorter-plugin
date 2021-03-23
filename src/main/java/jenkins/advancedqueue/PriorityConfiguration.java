@@ -62,6 +62,7 @@ import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
+import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -78,7 +79,7 @@ import org.kohsuke.stapler.StaplerResponse;
  * @since 2.0
  */
 @Extension
-public class PriorityConfiguration extends Descriptor<PriorityConfiguration> implements RootAction, Describable<PriorityConfiguration> {
+public class PriorityConfiguration extends GlobalConfiguration implements RootAction {
 
 	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
 
@@ -88,7 +89,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	private List<JobGroup> jobGroups;
 
 	public PriorityConfiguration() {
-		super(PriorityConfiguration.class);
+		super();
 		jobGroups = new LinkedList<JobGroup>();
 		load();
 		//
@@ -147,6 +148,11 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return jobGroups;
 	}
 
+	public void setJobGroups(List<JobGroup> jobGroups) {
+		this.jobGroups = jobGroups;
+		save();
+	}
+
 	public JobGroup getJobGroup(int id) {
 		return id2jobGroup.get(id);
 	}
@@ -184,10 +190,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 		save();
 		rsp.sendRedirect(Jenkins.get().getRootUrl());
-	}
-
-	public Descriptor<PriorityConfiguration> getDescriptor() {
-		return this;
 	}
 
 	public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {
@@ -238,7 +240,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
-        @CheckForNull
+	@CheckForNull
 	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
 		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
@@ -301,7 +303,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	static public PriorityConfiguration get() {
-		return (PriorityConfiguration) Jenkins.get().getDescriptor(PriorityConfiguration.class);
+		return GlobalConfiguration.all().get(PriorityConfiguration.class);
 	}
 
 }
