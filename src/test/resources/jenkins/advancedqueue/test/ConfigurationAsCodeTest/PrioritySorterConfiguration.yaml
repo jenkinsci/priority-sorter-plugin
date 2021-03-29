@@ -1,0 +1,8 @@
+---
+unclassified:
+  prioritySorterConfiguration:
+    onlyAdminsMayEditPriorityConfiguration: true
+    strategy:
+      absoluteStrategy:
+        defaultPriority: 3
+        numberOfPriorities: 5
