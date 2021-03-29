@@ -18,6 +18,10 @@ unclassified:
           - jobPropertyStrategy
           - buildParameterStrategy:
               parameterName: priority
+          - healthStrategy:
+              priority: 2
+              health: HEALTH_0_TO_20
+              selection: BETTER
         jobGroupStrategy:
           folderBased:
             folderName: "Jenkins"
