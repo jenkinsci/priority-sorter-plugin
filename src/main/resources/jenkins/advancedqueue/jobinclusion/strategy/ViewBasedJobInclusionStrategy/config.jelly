@@ -5,11 +5,11 @@
 			<j:forEach var="view" items="${descriptor.listViewItems}">
 				<f:option value="${view.value}" selected="${view.value==instance.viewName}">${view.name}</f:option>
 			</j:forEach>
-			<f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="${%Use a regular expression to only include a subset of the included Jobs}">
-				<f:entry title="${%Regular Expression}">
-					<f:textbox name="jobPattern" field="jobPattern" value="${instance.jobPattern}" />
-				</f:entry>           					
-	    	</f:optionalBlock>			
 		</select>
+        <f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="${%Use a regular expression to only include a subset of the included Jobs}">
+            <f:entry title="${%Regular Expression}">
+                <f:textbox name="jobPattern" field="jobPattern" value="${instance.jobPattern}" />
+            </f:entry>
+        </f:optionalBlock>
 	</f:entry>
 </j:jelly>
