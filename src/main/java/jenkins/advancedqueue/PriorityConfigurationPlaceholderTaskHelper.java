@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
+import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 
@@ -28,7 +29,11 @@ class PriorityConfigurationPlaceholderTaskHelper {
             if (itemInfo != null) {
                 priorityCallback.setPrioritySelection(itemInfo.getPriority());
             } else {
-                priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+                if (PrioritySorterConfiguration.get() != null && PrioritySorterConfiguration.get().getStrategy() != null) {
+		   priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+		} else {
+		   priorityCallback.setPrioritySelection(MultiBucketStrategy.DEFAULT_PRIORITY);
+		}
             }
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
