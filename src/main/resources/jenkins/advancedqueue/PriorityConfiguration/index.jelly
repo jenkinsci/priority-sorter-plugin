@@ -41,7 +41,7 @@
 									<f:dropdownDescriptorSelector title="${%Jobs to include}" field="jobGroupStrategy" descriptors="${it.jobInclusionStrategyDescriptors}"/>
 								</f:entry>
 								<f:entry title="Priority">
-									<select name="priority" class="setting-input dropdownList">
+									<select name="priority">
 										<j:forEach var="priority" items="${it.priorities}">
 											<j:if test="${priority.value == jobGroup.priority}">
 												<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
