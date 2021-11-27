@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.15</version>
+        <version>4.31</version>
         <relativePath />
     </parent>
     <properties>
@@ -37,7 +37,7 @@
 			<dependency>
 				<groupId>io.jenkins.tools.bom</groupId>
 				<artifactId>bom-2.235.x</artifactId>
-				<version>25</version>
+				<version>918.vae501d2cdc99</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>nested-view</artifactId>
-			<version>1.17</version>
+			<version>1.22</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
