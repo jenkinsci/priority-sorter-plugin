@@ -14,7 +14,7 @@
         <java.level>8</java.level>
     </properties>
     <artifactId>PrioritySorter</artifactId>
-	<version>${revision}${changelist}</version>
+	<version>4.0.1</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Priority Sorter Plugin</name>
 	<description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
@@ -146,7 +146,7 @@
 		<connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/${gitHubRepo}.git</developerConnection>
 		<url>https://github.com/${gitHubRepo}</url>
-		<tag>${scmTag}</tag>
+		<tag>PrioritySorter-4.0.1</tag>
 	</scm>
 
 </project>
