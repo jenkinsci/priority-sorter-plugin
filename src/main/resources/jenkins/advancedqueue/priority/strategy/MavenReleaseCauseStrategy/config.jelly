@@ -1,5 +1,6 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-	<f:description>Requires the <a href="http://wiki.jenkins-ci.org/display/JENKINS/M2+Release+Plugin">Maven Release Plug-in</a> to be installed.</f:description>
+	<f:description>Requires the <a href="https://plugins.jenkins.io/m2release/">Maven Release Plug-in</a> to be installed.</f:description>
 
 	<st:include page="config.jelly" class="jenkins.advancedqueue.priority.strategy.AbstractStaticPriorityStrategy" />
 </j:jelly>
