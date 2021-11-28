@@ -1,13 +1,15 @@
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.Plugin;
 import hudson.model.Job;
 import hudson.model.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
+import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 
@@ -19,8 +21,8 @@ class PriorityConfigurationPlaceholderTaskHelper {
 		return isPlaceholderTaskUsed() && task instanceof ExecutorStepExecution.PlaceholderTask;
 	}
 
-    @Nonnull
-    PriorityConfigurationCallback getPriority(@Nonnull ExecutorStepExecution.PlaceholderTask task, @Nonnull PriorityConfigurationCallback priorityCallback) {
+    @NonNull
+    PriorityConfigurationCallback getPriority(@NonNull ExecutorStepExecution.PlaceholderTask task, @NonNull PriorityConfigurationCallback priorityCallback) {
         Queue.Task ownerTask = task.getOwnerTask();
         if (ownerTask instanceof Job<?, ?>) {
             Job<?, ?> job = (Job<?, ?>) ownerTask;
@@ -28,7 +30,11 @@ class PriorityConfigurationPlaceholderTaskHelper {
             if (itemInfo != null) {
                 priorityCallback.setPrioritySelection(itemInfo.getPriority());
             } else {
-                priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+                if (PrioritySorterConfiguration.get() != null && PrioritySorterConfiguration.get().getStrategy() != null) {
+		   priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
+		} else {
+		   priorityCallback.setPrioritySelection(MultiBucketStrategy.DEFAULT_PRIORITY);
+		}
             }
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {

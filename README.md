@@ -25,20 +25,20 @@ corresponding weight in the queue. The queue is, then, sorted based on
 the assigned weight.
 
 With the *Priority* Sorter, you will need to group your jobs into *Job
-Groups*. A *Job Group*'s *Job Inclusion* Strategy devides whether a
+Groups*. A *Job Group*'s *Job Inclusion* Strategy decides whether a
 specific job should be included in the group.
 
 The priority of the job is then set by the *Priority Strategy*, and each
-*Job Group* can have any number priority strategies.
+*Job Group* can have any number of priority strategies.
 
 When a new job is queued, the following will happen:
 
--   The *Priority Sorter* will go though the configured *Job Groups*
+-   The *Priority Sorter* will go through the configured *Job Groups*
     from top to bottom.
     -   When it finds a Job Group where the job is to be included, it
-        will look though the *Priority Strategies* from top to bottom
+        will look through the *Priority Strategies* from top to bottom
         -   When it finds a *Priority Strategy* that matches its
-            criteria, it will use this strategy to assign a priority the
+            criteria, it will use this strategy to assign a priority to
             the Job.
 -   The *Priority Sorter* will then consult the *Queue Strategy* to
     translate the priority to a weight, i.e. a position in the queue.
@@ -77,10 +77,10 @@ than the default "top-down" approach of the other strategies.
 ## Priority Strategies
 
 It is possible to assign the priority, based on different *Priority
-Strategies.*
+Strategies*.
 
 This setting describes what priority a job should have, and is self
-explanatory. It is worth mentioning the the "Take the Priority from
+explanatory. It is worth mentioning the "Take the Priority from
 Property on the Job" setting. When selected, a drop-down - where you can
 select a priority - appears on all projects that would generate jobs to
 be included in this group.
@@ -96,39 +96,39 @@ you would like to use, as well as a default priority to use where no
 other priority could be assigned.
 
 ![(warning)](docs/images/warning.svg)
-** Please note that lower number means higher priority! See details on
-the screen, for the specifics on each strategy. **
+**Please note that lower number means higher priority! See details on
+the screen regarding the specifics on each strategy.**
 
-### *Assigning Priorities*
+### Assigning Priorities
 
 On the main menu, you will find the link to a page where you can assign
 priorities to each Job
 
-![](docs/images/JobPriorities.png)
+![Job Priorities link](docs/images/JobPriorities.png)
 
 On this page you will be able to assign jobs to groups, and priorities
 to jobs.
 
-*![(warning)](docs/images/warning.svg)*
-** Please note that all matching is done top to bottom by first match**
+![(warning)](docs/images/warning.svg)
+**Please note that all matching is done top to bottom by first match!**
 
 You can limit access to this functionality to administrators, by
 checking the appropriate check-box on the main configuration page.
 
-### *Run Exclusive*
+### Run Exclusive
 
 If a job from a *Run Exclusive* job group gets started, jobs from other
 groups will remain blocked, and will not get executed until all jobs
 from the *Run Exclusive* job group are complete, regardless of priority.
 
-## *Using the View Column*
+## Using the View Column
 
 Since a job can get a different priority each time it is started, the
 view column cannot show the "correct" priority for the Job.
 
 The column will show the priority used the last time the job was
 launched, and, if the job has not been started yet, the column will show
-*Pending.*
+*Pending*.
 
 ## Notable changes and upgrading
 
@@ -158,18 +158,22 @@ certain priority, you can turn on some extra logging.
 -   Logger: ***PrioritySorter.Queue.Items***
     -   To get more info on the assigned priorities, and state
         transition of the items in the queue, set the log level to
-        ***FINE*.**
+        ***FINE***.
     -   To get more info on how the jobs are matched to job groups, and
-        rules to get the priority, set the log level to ***FINER*.**
+        rules to get the priority, set the log level to ***FINER***.
 
-To get logging on when the *Queue Sorter* is active log, use:
+To get logging on when the *Queue Sorter* is active, use:
 
--   Logger: ***PrioritySorter.Queue.Sorter****,* with the level set to
+-   Logger: ***PrioritySorter.Queue.Sorter***, with the level set to
     ***FINE***.
     -   To see all items sorted (the queue) by the Queue Sorter, set the
-        log level to ***FINER*.**
+        log level to ***FINER***.
 
 ## Release Notes
 
 * For recent versions, see [GitHub Releases](https://github.com/jenkinsci/priority-sorter-plugin/releases)
 * For versions 3.6 and older, see the [changelog archive](./docs/CHANGELOG.old.md)
+
+## Report an Issue
+
+Please report issues and enhancements through the [Jenkins issue tracker](https://www.jenkins.io/participate/report-issue/redirect/#15771).
