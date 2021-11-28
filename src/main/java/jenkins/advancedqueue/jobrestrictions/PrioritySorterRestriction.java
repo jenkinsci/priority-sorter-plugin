@@ -23,12 +23,15 @@
  */
 package jenkins.advancedqueue.jobrestrictions;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.logging.Logger;
 
 import hudson.Extension;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Run;
 import hudson.util.ListBoxModel;
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
@@ -47,6 +50,8 @@ import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestri
  * @author Magnus Sandberg
  * @since 3.3
  */
+@SuppressFBWarnings(value="SE_NO_SERIALVERSIONID",
+                    justification="Common usage in Jenkins to not include SE_NO_SERIALVERSIONID")
 public class PrioritySorterRestriction extends JobRestriction {
 	
 	private final static Logger LOGGER = Logger.getLogger(PrioritySorterRestriction.class.getName());
@@ -56,7 +61,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 		@Override
 		public String getDisplayName() {
-			return "Priority from PrioritySorter";
+			return Messages.Priority_from_prioritySorter();
 		}
 
 		public ListBoxModel doFillFromPriorityItems() {
@@ -72,13 +77,12 @@ public class PrioritySorterRestriction extends JobRestriction {
 		public ListBoxModel doUpdateFromPriorityItems(@QueryParameter("value") String strValue) {
 			int value = 1;
 			try {
-				value = Integer.valueOf(strValue);
+				value = Integer.parseInt(strValue);
 			} catch (NumberFormatException e) {
 				// Use default value
 			}
-			ListBoxModel items = PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
+			return PrioritySorterUtil.fillPriorityItems(value, PrioritySorterConfiguration.get()
 					.getStrategy().getNumberOfPriorities());
-			return items;
 		}
 
 	}
@@ -103,7 +107,7 @@ public class PrioritySorterRestriction extends JobRestriction {
 
 	@Override
 	public boolean canTake(BuildableItem buildableItem) {
-		ItemInfo item = QueueItemCache.get().getItem(buildableItem.id);
+		ItemInfo item = QueueItemCache.get().getItem(buildableItem.getId());
 		if(item == null) {
 			LOGGER.warning("Missing ItemInfo for [" + buildableItem.task.getDisplayName() + "] allowing execution.");
 			return true;

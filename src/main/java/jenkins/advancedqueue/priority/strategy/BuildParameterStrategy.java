@@ -23,14 +23,17 @@
  */
 package jenkins.advancedqueue.priority.strategy;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.Extension;
 import hudson.model.ParametersAction;
 import hudson.model.Queue;
 import hudson.model.StringParameterValue;
 
 import java.util.List;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+
+import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -45,7 +48,7 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
 		public BuildParameterStrategyDescriptor() {
-			super("Use Priority from Build Parameter");
+			super(Messages.Use_Priority_from_Build_Parameter());
 		}
 	};
 
@@ -61,12 +64,16 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 	}
 
 	@CheckForNull
-	private Integer getPriorityInternal(@Nonnull Queue.Item item) {
+	private Integer getPriorityInternal(@NonNull Queue.Item item) {
 		List<ParametersAction> actions = item.getActions(ParametersAction.class);
 		for (ParametersAction action : actions) {
 			StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
 			if (parameterValue != null) {
-				String value = parameterValue.value;
+				String value = parameterValue.getValue();
+				if (value == null) {
+					// continue since we cannot take this value
+					continue;
+				}
 				try {
 					return Integer.parseInt(value);
 				} catch (NumberFormatException e) {
@@ -82,13 +89,13 @@ public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 	 * @param item Queue item
 	 * @return Priority if it can be determined. Default priority otherwise
 	 */
-	public int getPriority(@Nonnull Queue.Item item) {
+	public int getPriority(@NonNull Queue.Item item) {
 		final Integer p = getPriorityInternal(item);
 		return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 	}
 
 	@Override
-	public boolean isApplicable(@Nonnull Queue.Item item) {
+	public boolean isApplicable(@NonNull Queue.Item item) {
 		return getPriorityInternal(item) != null;
 	}
 }

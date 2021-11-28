@@ -60,7 +60,7 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 		}
 
 		public PropertyBasedJobInclusionStrategyDescriptor() {
-			Plugin plugin = Jenkins.getInstance().getPlugin("cloudbees-folder");
+			Plugin plugin = Jenkins.get().getPlugin("cloudbees-folder");
 			if(plugin == null || !plugin.getWrapper().isEnabled()){
 				cloudbeesFolders = false;
 			}

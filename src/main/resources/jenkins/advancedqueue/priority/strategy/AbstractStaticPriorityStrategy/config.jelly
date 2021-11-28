@@ -1,5 +1,6 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout">
-	<f:entry title="Priority">
+	<f:entry title="${%Priority}">
 		<select name="priority">
 			<j:forEach var="priority" items="${descriptor.priorities}">
 				<j:if test="${priority.value == instance.priority}">
