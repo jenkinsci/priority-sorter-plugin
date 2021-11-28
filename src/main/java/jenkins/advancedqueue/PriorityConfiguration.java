@@ -89,20 +89,12 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		jobGroups = new LinkedList<JobGroup>();
 		load();
 		//
-		Collections.sort(jobGroups, new Comparator<JobGroup>() {
-			public int compare(JobGroup o1, JobGroup o2) {
-				return o1.getId() - o2.getId();
-			}
-		});
+		Collections.sort(jobGroups, (JobGroup o1, JobGroup o2) -> o1.getId() - o2.getId());
 		//
 		id2jobGroup = new HashMap<Integer, JobGroup>();
 		for (JobGroup jobGroup : jobGroups) {
 			id2jobGroup.put(jobGroup.getId(), jobGroup);
-			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategyHolder>() {
-				public int compare(JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) {
-					return o1.getId() - o2.getId();
-				}
-			});
+			Collections.sort(jobGroup.getPriorityStrategies(), (JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) -> o1.getId() - o2.getId());
 		}
 		//
 		Plugin plugin = Jenkins.get().getPlugin("matrix-project");
