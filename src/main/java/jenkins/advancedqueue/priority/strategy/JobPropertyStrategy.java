@@ -27,6 +27,10 @@ import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Queue.Item;
+import javax.annotation.CheckForNull;
+
+import jenkins.advancedqueue.Messages;
+import jenkins.advancedqueue.PrioritySorterConfiguration;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -40,7 +44,7 @@ public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 	public static class UserIdCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
 		public UserIdCauseStrategyDescriptor() {
-			super("Take the priority from Property on the Job");
+			super(Messages.Take_the_priority_from_property_on_the_job());
 		}
 
 	}
@@ -49,7 +53,7 @@ public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 	public JobPropertyStrategy() {
 	}
 	
-
+	@CheckForNull
 	private Integer getPriorityInternal(Queue.Item item) {
 		if(item.task instanceof Job<?, ?>) {
 			Job<?, ?> job = (Job<?, ?>) item.task;
@@ -68,7 +72,8 @@ public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 
 	@Override
 	public int getPriority(Item item) {
-		return getPriorityInternal(item);
+		final Integer p = getPriorityInternal(item);
+		return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
 	}
 
 }

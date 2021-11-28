@@ -1,22 +1,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.jenkins-ci.plugins</groupId>
-		<artifactId>plugin</artifactId>
-		<version>1.580</version>
-	</parent>
-	<artifactId>PrioritySorter</artifactId>
-	<version>3.5.2-SNAPSHOT</version>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>4.31</version>
+        <relativePath />
+    </parent>
+    <properties>
+        <revision>4.0.2</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
+        <jenkins.version>2.235.4</jenkins.version>
+        <java.level>8</java.level>
+    </properties>
+    <artifactId>PrioritySorter</artifactId>
+	<version>${revision}${changelist}</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Priority Sorter Plugin</name>
 	<description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin</url>
+	<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
 
 	<licenses>
 		<license>
 			<name>MIT</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<url>https://opensource.org/licenses/MIT</url>
 			<comments>
+				Copyright 2020- Frank Ittermann. All rights reserved.
 				Copyright 2013- Magnus Sandberg. All rights reserved.
 				Copyright 2010- Brad Larson. All rights reserved.
 			</comments>
@@ -25,85 +34,96 @@
 
 	<developers>
 		<developer>
-			<id>emsa23</id>
-			<name>Magnus Sandberg</name>
-			<email>emsa@switchbeat.com</email>
+			<id>markewaite</id>
+			<name>Mark Waite</name>
+			<email>mark.earl.waite@gmail.com</email>
 			<roles>
-				<role>developer</role>
 				<role>maintainer</role>
 			</roles>
-			<timezone>CET</timezone>
+			<timezone>America/Denver</timezone>
 		</developer>
-		<!-- Removed not to show on Wiki <developer> <id>bklarson</id> <name>Brad 
-			Larson</name> <email>bklarson@gmail.com</email> <roles> <role>developer</role> 
-			<role>retired maintainer</role> </roles> <timezone>-6</timezone> </developer> -->
 	</developers>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.jenkins.tools.bom</groupId>
+				<artifactId>bom-2.235.x</artifactId>
+				<version>918.vae501d2cdc99</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.jenkins-ci.tools</groupId>
-				<artifactId>maven-hpi-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<compatibleSinceVersion>3.1</compatibleSinceVersion>
-				</configuration>
-			</plugin>
-			<!-- http://stackoverflow.com/questions/15166781/mvn-releaseprepare-not-committing-changes-to-pom-xml -->
-			<plugin>
-				<artifactId>maven-release-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.scm</groupId>
-						<artifactId>maven-scm-provider-gitexe</artifactId>
-						<version>1.8.1</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-		</plugins>
-	</build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                    <allowSnapshots>false</allowSnapshots>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>matrix-project</artifactId>
-			<version>1.4</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>cloudbees-folder</artifactId>
-			<version>5.0</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
 			<artifactId>job-restrictions</artifactId>
-			<version>0.4</version>
+			<version>0.8</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
 			<artifactId>workflow-durable-task-step</artifactId>
-			<version>2.4</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>structs</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>script-security</artifactId>
+			<optional>true</optional>
+			<!-- TODO remove after https://github.com/jenkinsci/script-security-plugin/pull/323 is released -->
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.errorprone</groupId>
+					<artifactId>error_prone_annotations</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>sectioned-view</artifactId>
-			<version>1.18</version>
+			<version>1.25</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>nested-view</artifactId>
-			<version>1.14</version>
+			<version>1.22</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>credentials</artifactId>
-			<version>1.22</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -121,25 +141,12 @@
 			<url>https://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
-  
-  <!--TODO: temporary hack, remove after the upgrade of Parent POM-->
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>maven.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>maven.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/jenkinsci/priority-sorter-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/priority-sorter-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
-		<tag>HEAD</tag>
+		<connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/${gitHubRepo}.git</developerConnection>
+		<url>https://github.com/${gitHubRepo}</url>
+		<tag>${scmTag}</tag>
 	</scm>
 
 </project>

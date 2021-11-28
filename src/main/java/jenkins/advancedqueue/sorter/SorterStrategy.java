@@ -24,32 +24,32 @@
 package jenkins.advancedqueue.sorter;
 
 import hudson.ExtensionList;
+import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Queue;
 import hudson.model.Queue.LeftItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
-
-import org.apache.tools.ant.ExtensionPoint;
 
 /**
  * @author Magnus Sandberg
  * @since 2.0
  */
-public abstract class SorterStrategy extends ExtensionPoint implements Describable<SorterStrategy> {
+public abstract class SorterStrategy implements ExtensionPoint, Describable<SorterStrategy> {
 
 	public SorterStrategyDescriptor getDescriptor() {
-		return (SorterStrategyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+		return (SorterStrategyDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
 	}
 
 	/**
 	 * Called when a new {@link hudson.model.Item} enters the queue.
 	 * 
-	 * @param item the {@link hudson.model.WaitingItem} or {@link hudson.model.BuildableItem} that
+	 * @param item the {@link hudson.model.Queue.WaitingItem} or {@link hudson.model.BuildableItem} that
 	 *            enters the queue
 	 * @param weightCallback the callback holds the priority to use anded the called method must set
 	 *            the weight before returning
@@ -60,7 +60,7 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 	/**
 	 * Called when a {@link hudson.model.Item} leaves the queue and it is started.
 	 * 
-	 * @param item the {@link hudson.model.LeftItem}
+	 * @param item the {@link hudson.model.Queue.LeftItem}
 	 * @param weight the weight assigned when the item entered the queue
 	 */
 	public void onStartedItem(@Nonnull LeftItem item, float weight) {
@@ -75,14 +75,12 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 	/**
 	 * Gets number of priority buckets to be used.
 	 * 
-	 * @return
 	 */
 	public abstract int getNumberOfPriorities();
 
 	/**
 	 * Gets a default priority bucket to be used.
 	 * 
-	 * @return
 	 */
 	public abstract int getDefaultPriority();
 
@@ -95,6 +93,7 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 		return strategies;
 	}
 
+	@CheckForNull
 	public static SorterStrategyDescriptor getSorterStrategy(String key) {
 		List<SorterStrategyDescriptor> allSorterStrategies = getAllSorterStrategies();
 		for (SorterStrategyDescriptor sorterStrategy : allSorterStrategies) {
@@ -105,6 +104,7 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 		return null;
 	}
 
+	@CheckForNull
 	public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
 		ExtensionList<SorterStrategy> all = all();
 		for (SorterStrategy prioritySorterStrategy : all) {
@@ -119,6 +119,6 @@ public abstract class SorterStrategy extends ExtensionPoint implements Describab
 	 * All registered {@link SorterStrategy}s.
 	 */
 	public static ExtensionList<SorterStrategy> all() {
-		return Jenkins.getInstance().getExtensionList(SorterStrategy.class);
+		return Jenkins.get().getExtensionList(SorterStrategy.class);
 	}
 }

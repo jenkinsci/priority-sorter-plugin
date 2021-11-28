@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * Copyright 2013 Oleg Nenashev, Synopsys Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package jenkins.advancedqueue.sorter.strategy;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
+import javax.annotation.CheckForNull;
 
 import javax.servlet.ServletException;
 
@@ -38,7 +39,7 @@ import org.kohsuke.stapler.QueryParameter;
 /**
  * Implements a strategy with multiple buckets.
  * 
- * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 2.0
  */
 public abstract class MultiBucketStrategy extends SorterStrategy {
@@ -77,7 +78,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 		public ListBoxModel doUpdateDefaultPriorityItems(@QueryParameter("value") String strValue) {
 			int value = DEFAULT_PRIORITY;
 			try {
-				value = Integer.valueOf(strValue);
+				value = Integer.parseInt(strValue);
 			} catch (NumberFormatException e) {
 				// Use default value
 			}
@@ -98,6 +99,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
 			return items;
 		}
 
+		@CheckForNull
 		private MultiBucketStrategy getStrategy() {
 			SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
 			if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {

@@ -1,5 +1,6 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-	<f:entry title="Apply to Jobs in Folder">
+	<f:entry title="${%Apply to Jobs in Folder}">
 		<select name="folderName">
 			<j:forEach var="folder" items="${descriptor.listFolderItems}">
 				<f:option value="${folder.value}" selected="${folder.value==instance.folderName}">${folder.name}</f:option>

@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import javax.servlet.ServletException;
 
@@ -106,7 +108,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			});
 		}
 		//
-		Plugin plugin = Jenkins.getInstance().getPlugin("matrix-project");
+		Plugin plugin = Jenkins.get().getPlugin("matrix-project");
 		if(plugin == null || !plugin.getWrapper().isEnabled()){
 			priorityConfigurationMatrixHelper = null;
 		} else {
@@ -136,7 +138,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	private boolean checkActive() {
 		PrioritySorterConfiguration configuration = PrioritySorterConfiguration.get();
 		if (configuration.getOnlyAdminsMayEditPriorityConfiguration()) {
-			return Jenkins.getInstance().getACL().hasPermission(Jenkins.ADMINISTER);
+			return Jenkins.get().getACL().hasPermission(Jenkins.ADMINISTER);
 		}
 		return true;
 	}
@@ -181,7 +183,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 			id2jobGroup.put(jobGroup.getId(), jobGroup);
 		}
 		save();
-		rsp.sendRedirect(Jenkins.getInstance().getRootUrl());
+		rsp.sendRedirect(Jenkins.get().getRootUrl());
 	}
 
 	public Descriptor<PriorityConfiguration> getDescriptor() {
@@ -236,7 +238,8 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		return priorityCallback.setPrioritySelection(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority());
 	}
 
-	public JobGroup getJobGroup(PriorityConfigurationCallback priorityCallback, Job<?, ?> job) {
+        @CheckForNull
+	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
 		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
 			return null;
@@ -298,7 +301,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
 	static public PriorityConfiguration get() {
-		return (PriorityConfiguration) Jenkins.getInstance().getDescriptor(PriorityConfiguration.class);
+		return (PriorityConfiguration) Jenkins.get().getDescriptor(PriorityConfiguration.class);
 	}
 
 }
