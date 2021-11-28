@@ -134,7 +134,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		final Jenkins jenkins = Jenkins.get();
 		View view = jenkins.getView(nestedViewNames[0]);
 		if(null == view) {
-			LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
+			LOGGER.log(Level.SEVERE, "Configured View does not exist ''{0}'' using primary view", viewName);
 			return jenkins.getPrimaryView();
 		}
 		for(int i = 1; i < nestedViewNames.length; i++) {
@@ -144,7 +144,7 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
                         }
 			view = ((ViewGroup) view).getView(nestedViewNames[i]);
 			if(null == view) {
-				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
+				LOGGER.log(Level.SEVERE, "Configured View does not exist ''{0}'' using primary view", viewName);
 				return jenkins.getPrimaryView();
 			}
 		}
