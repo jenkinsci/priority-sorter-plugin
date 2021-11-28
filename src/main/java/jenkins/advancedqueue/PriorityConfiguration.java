@@ -23,6 +23,9 @@
  */
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionList;
@@ -51,8 +54,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 import javax.servlet.ServletException;
 
@@ -235,7 +236,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 	}
 
         @CheckForNull
-	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
+	public JobGroup getJobGroup(@NonNull PriorityConfigurationCallback priorityCallback, @NonNull Job<?, ?> job) {
 		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
 			return null;
