@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
@@ -35,7 +37,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
 
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
@@ -112,7 +113,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		}
 	}
 
-	public void onNewItem(@Nonnull Item item) {
+	public void onNewItem(@NonNull Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
 		ItemInfo itemInfo = new ItemInfo(item);
 		PriorityConfiguration.get().getPriority(item, itemInfo);
@@ -121,7 +122,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		logNewItem(itemInfo);
 	}
 
-	public void onLeft(@Nonnull LeftItem li) {
+	public void onLeft(@NonNull LeftItem li) {
 		ItemInfo itemInfo = QueueItemCache.get().removeItem(li.getId());
                 if (itemInfo == null) {
                     LOGGER.log(Level.WARNING, "Received the onLeft() notification for the item from outside the QueueItemCache: {0}. " +

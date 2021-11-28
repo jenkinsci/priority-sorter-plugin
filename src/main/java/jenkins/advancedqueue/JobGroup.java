@@ -23,13 +23,14 @@
  */
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.CheckForNull;
 
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
-import javax.annotation.Nonnull;
 
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONArray;
@@ -119,7 +120,7 @@ public class JobGroup {
 		this.id = id;
 	}
 
-    public @Nonnull String getDescription() {
+    public @NonNull String getDescription() {
         return hudson.Util.fixNull(description);
     }
 
