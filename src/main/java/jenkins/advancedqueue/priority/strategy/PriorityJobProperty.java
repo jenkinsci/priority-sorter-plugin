@@ -87,18 +87,22 @@ public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
 		@SuppressFBWarnings(value="SIC_INNER_SHOULD_BE_STATIC_ANON", justification="Commont pattern in Jenkins")
 		private PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
 			
+                        @Override
 			public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
 				return this;
 			}
 			
+                        @Override
 			public PriorityConfigurationCallback setPrioritySelection(int priority) {
 				return this;
 			}
 			
+                        @Override
 			public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
 				return this;
 			}
 
+                        @Override
 			public PriorityConfigurationCallback setPrioritySelection(int priority, long sortAsInQueueSince,
 					int jobGroupId, PriorityStrategy reason) {
 				return this;
