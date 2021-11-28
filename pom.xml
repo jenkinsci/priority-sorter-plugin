@@ -7,7 +7,7 @@
         <relativePath />
     </parent>
     <properties>
-        <revision>4.0.2</revision>
+        <revision>4.1.0</revision>
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
         <jenkins.version>2.277.1</jenkins.version>
