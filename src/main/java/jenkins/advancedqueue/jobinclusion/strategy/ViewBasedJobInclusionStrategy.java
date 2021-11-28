@@ -113,7 +113,11 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		this.viewName = viewName;
 		this.useJobFilter = (jobFilter != null);
 		if (this.useJobFilter) {
-			this.jobPattern = jobFilter.jobPattern;
+			if (jobFilter != null) {
+				this.jobPattern = jobFilter.jobPattern;
+			} else {
+				LOGGER.log(Level.SEVERE, "Ignoring null job filter for view ''{0}''", viewName);
+			}
 		}
 	}
 
