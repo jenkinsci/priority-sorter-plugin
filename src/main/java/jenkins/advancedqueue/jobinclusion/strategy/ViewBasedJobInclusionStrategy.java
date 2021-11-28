@@ -32,6 +32,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -137,6 +138,10 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 			return jenkins.getPrimaryView();
 		}
 		for(int i = 1; i < nestedViewNames.length; i++) {
+			if (!(view instanceof ViewGroup)) {
+				LOGGER.log(Level.SEVERE, "View is not a ViewGroup ''{0}'', using primary view", viewName);
+				return jenkins.getPrimaryView();
+                        }
 			view = ((ViewGroup) view).getView(nestedViewNames[i]);
 			if(null == view) {
 				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
