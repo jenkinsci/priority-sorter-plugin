@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>org.jenkins-ci.plugins.m2release</groupId>
 			<artifactId>m2release</artifactId>
-			<version>0.14.0</version>
+			<version>0.16.2</version>
 			<scope>test</scope>
 			<optional>true</optional>
 		</dependency>
