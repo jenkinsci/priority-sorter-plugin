@@ -28,7 +28,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.matrix.MatrixConfiguration;
-import hudson.matrix.MatrixProject;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
@@ -38,7 +37,6 @@ import hudson.model.TopLevelItem;
 import hudson.model.ViewGroup;
 import hudson.model.View;
 import hudson.security.ACL;
-import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
@@ -60,8 +58,6 @@ import javax.servlet.ServletException;
 
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
-import jenkins.advancedqueue.sorter.ItemInfo;
-import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
