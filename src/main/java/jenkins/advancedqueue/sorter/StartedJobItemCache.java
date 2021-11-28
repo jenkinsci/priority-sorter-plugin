@@ -23,11 +23,11 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.CheckForNull;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;

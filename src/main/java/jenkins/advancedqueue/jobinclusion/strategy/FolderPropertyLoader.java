@@ -32,8 +32,7 @@ import hudson.model.TopLevelItem;
 import hudson.util.DescribableList;
 import jenkins.advancedqueue.DecisionLogger;
 
-import com.cloudbees.hudson.plugins.folder.Folder;
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author Magnus Sandberg

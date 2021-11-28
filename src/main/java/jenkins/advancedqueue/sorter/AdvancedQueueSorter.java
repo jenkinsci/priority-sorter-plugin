@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
@@ -35,7 +37,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
 
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
@@ -74,17 +75,15 @@ public class AdvancedQueueSorter extends QueueSorter {
 	@Override
 	public void sortBuildableItems(List<BuildableItem> items) {
 
-		Collections.sort(items, new Comparator<BuildableItem>() {
-			public int compare(BuildableItem o1, BuildableItem o2) {
-				ItemInfo item1 = QueueItemCache.get().getItem(o1.getId());
-				ItemInfo item2 = QueueItemCache.get().getItem(o2.getId());
-				if(item1 == null || item2 == null) {
-					LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
-					return Long.compare(o1.getInQueueSince(), o2.getInQueueSince());
-				}
-				return item1.compareTo(item2);
-			}
-		});
+		Collections.sort(items, (BuildableItem o1, BuildableItem o2) -> {
+                    ItemInfo item1 = QueueItemCache.get().getItem(o1.getId());
+                    ItemInfo item2 = QueueItemCache.get().getItem(o2.getId());
+                    if(item1 == null || item2 == null) {
+                        LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
+                        return Long.compare(o1.getInQueueSince(), o2.getInQueueSince());
+                    }
+                    return item1.compareTo(item2);
+                });
 		//
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINE)) {
 			float minWeight = QueueItemCache.get().getItem(items.get(0).getId()).getWeight();
@@ -114,24 +113,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		}
 	}
 
-	/**
-	 * Returned the calculated, cached, weight or calculates the weight if missing. Should only be
-	 * called when the value should already be there, if the item is new {@link #onNewItem(Item)} is
-	 * the method to call.
-	 *
-	 * @param item the item to get the weight for
-	 * @return the calculated weight
-	 */
-	private float getCalculatedWeight(BuildableItem item) {
-		try {
-			return QueueItemCache.get().getItem(item.getId()).getWeight();
-		} catch (NullPointerException e) {
-			onNewItem(item);
-			return QueueItemCache.get().getItem(item.getId()).getWeight();
-		}
-	}
-
-	public void onNewItem(@Nonnull Item item) {
+	public void onNewItem(@NonNull Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
 		ItemInfo itemInfo = new ItemInfo(item);
 		PriorityConfiguration.get().getPriority(item, itemInfo);
@@ -140,7 +122,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 		logNewItem(itemInfo);
 	}
 
-	public void onLeft(@Nonnull LeftItem li) {
+	public void onLeft(@NonNull LeftItem li) {
 		ItemInfo itemInfo = QueueItemCache.get().removeItem(li.getId());
                 if (itemInfo == null) {
                     LOGGER.log(Level.WARNING, "Received the onLeft() notification for the item from outside the QueueItemCache: {0}. " +

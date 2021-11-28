@@ -23,6 +23,9 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
@@ -31,8 +34,6 @@ import hudson.model.Queue.LeftItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
 
@@ -55,7 +56,7 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
 	 *            the weight before returning
 	 * @return the {@link SorterStrategyCallback} provided to the call must be returned
 	 */
-	public abstract SorterStrategyCallback onNewItem(@Nonnull Queue.Item item, SorterStrategyCallback weightCallback);
+	public abstract SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback);
 
 	/**
 	 * Called when a {@link hudson.model.Item} leaves the queue and it is started.
@@ -63,13 +64,13 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
 	 * @param item the {@link hudson.model.Queue.LeftItem}
 	 * @param weight the weight assigned when the item entered the queue
 	 */
-	public void onStartedItem(@Nonnull LeftItem item, float weight) {
+	public void onStartedItem(@NonNull LeftItem item, float weight) {
 	}
 
 	/**
 	 * Called when a {@link hudson.model.Item} leaves the queue and it is canceled.
 	 */
-	public void onCanceledItem(@Nonnull LeftItem item) {
+	public void onCanceledItem(@NonNull LeftItem item) {
 	};
 
 	/**

@@ -1,11 +1,12 @@
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.Plugin;
 import hudson.model.Job;
 import hudson.model.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
@@ -20,8 +21,8 @@ class PriorityConfigurationPlaceholderTaskHelper {
 		return isPlaceholderTaskUsed() && task instanceof ExecutorStepExecution.PlaceholderTask;
 	}
 
-    @Nonnull
-    PriorityConfigurationCallback getPriority(@Nonnull ExecutorStepExecution.PlaceholderTask task, @Nonnull PriorityConfigurationCallback priorityCallback) {
+    @NonNull
+    PriorityConfigurationCallback getPriority(@NonNull ExecutorStepExecution.PlaceholderTask task, @NonNull PriorityConfigurationCallback priorityCallback) {
         Queue.Task ownerTask = task.getOwnerTask();
         if (ownerTask instanceof Job<?, ?>) {
             Job<?, ?> job = (Job<?, ?>) ownerTask;
