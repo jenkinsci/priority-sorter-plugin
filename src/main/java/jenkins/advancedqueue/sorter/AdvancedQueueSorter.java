@@ -74,17 +74,15 @@ public class AdvancedQueueSorter extends QueueSorter {
 	@Override
 	public void sortBuildableItems(List<BuildableItem> items) {
 
-		Collections.sort(items, new Comparator<BuildableItem>() {
-			public int compare(BuildableItem o1, BuildableItem o2) {
-				ItemInfo item1 = QueueItemCache.get().getItem(o1.getId());
-				ItemInfo item2 = QueueItemCache.get().getItem(o2.getId());
-				if(item1 == null || item2 == null) {
-					LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
-					return Long.compare(o1.getInQueueSince(), o2.getInQueueSince());
-				}
-				return item1.compareTo(item2);
-			}
-		});
+		Collections.sort(items, (BuildableItem o1, BuildableItem o2) -> {
+                    ItemInfo item1 = QueueItemCache.get().getItem(o1.getId());
+                    ItemInfo item2 = QueueItemCache.get().getItem(o2.getId());
+                    if(item1 == null || item2 == null) {
+                        LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
+                        return Long.compare(o1.getInQueueSince(), o2.getInQueueSince());
+                    }
+                    return item1.compareTo(item2);
+                });
 		//
 		if (items.size() > 0 && LOGGER.isLoggable(Level.FINE)) {
 			float minWeight = QueueItemCache.get().getItem(items.get(0).getId()).getWeight();
