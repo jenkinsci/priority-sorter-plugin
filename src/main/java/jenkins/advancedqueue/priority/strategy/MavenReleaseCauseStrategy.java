@@ -35,7 +35,7 @@ import java.util.List;
  * <p>
  * <p>
  * The cause is provided by the
- * <a href="http://wiki.jenkins-ci.org/display/JENKINS/M2+Release+Plugin">Maven Release Plug-in</a>
+ * <a href="https://plugins.jenkins.io/m2release/">Maven Release Plug-in</a>
  * (org.jenkins-ci.plugins.m2release:m2release:VERSION). No dependency at runtime is required to
  * support scenarios where no Maven Release Plug-in is installed, but this PrioritySorter Plug-in.
  *
