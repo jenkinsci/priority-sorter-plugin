@@ -114,23 +114,6 @@ public class AdvancedQueueSorter extends QueueSorter {
 		}
 	}
 
-	/**
-	 * Returned the calculated, cached, weight or calculates the weight if missing. Should only be
-	 * called when the value should already be there, if the item is new {@link #onNewItem(Item)} is
-	 * the method to call.
-	 *
-	 * @param item the item to get the weight for
-	 * @return the calculated weight
-	 */
-	private float getCalculatedWeight(BuildableItem item) {
-		try {
-			return QueueItemCache.get().getItem(item.getId()).getWeight();
-		} catch (NullPointerException e) {
-			onNewItem(item);
-			return QueueItemCache.get().getItem(item.getId()).getWeight();
-		}
-	}
-
 	public void onNewItem(@Nonnull Item item) {
 		final SorterStrategy prioritySorterStrategy = PrioritySorterConfiguration.get().getStrategy();
 		ItemInfo itemInfo = new ItemInfo(item);
