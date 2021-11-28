@@ -1,0 +1,23 @@
+chore:
+- eclipse-formatter.xml
+- .gitattributes
+- .github/**/*
+- .gitignore
+- Jenkinsfile
+- Makefile
+- maven.env
+- .mvn/**/*
+- .vscode/**/*
+
+dependencies:
+- pom.xml
+
+documentation:
+- CONTRIBUTING.md
+- README.md
+- LICENSE.txt
+- docs/**/*
+- src/main/**/*.html
+
+test:
+- src/test/**/*
