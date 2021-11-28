@@ -129,14 +129,24 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
 	@Override
 	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		if (job.getFullName().startsWith(folderName)) {
+		if (job != null && job.getFullName().startsWith(folderName)) {
 			if (!isUseJobFilter() || getJobPattern() == null || getCompiledPattern() == null) {
 				decisionLogger.addDecisionLog(2, "Not using filter ...");
 				return true;
 			} else {
 				decisionLogger.addDecisionLog(2, "Using filter ...");
 				try {
-					if (getCompiledPattern().matcher(job.getName()).matches()) {
+					Pattern pattern = getCompiledPattern();
+					if (pattern == null) {
+						decisionLogger.addDecisionLog(3, "Job filter is null ...");
+						return false;
+					}
+					if (job.getName() == null) {
+						decisionLogger.addDecisionLog(3, "Job name is null ...");
+						return false;
+					}
+					java.util.regex.Matcher matcher = pattern.matcher(job.getName());
+					if (matcher != null && matcher.matches()) {
 						decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
 						return true;
 					} else {
