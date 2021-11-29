@@ -6,7 +6,7 @@
 				<f:option value="${view.value}" selected="${view.value==instance.viewName}">${view.name}</f:option>
 			</j:forEach>
 		</select>
-        <f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="${%Use a regular expression to only include a subset of the included Jobs}">
+        <f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="${%Use a regular expression to only include a subset of the included jobs}">
             <f:entry title="${%Regular Expression}">
                 <f:textbox name="jobPattern" field="jobPattern" value="${instance.jobPattern}" />
             </f:entry>

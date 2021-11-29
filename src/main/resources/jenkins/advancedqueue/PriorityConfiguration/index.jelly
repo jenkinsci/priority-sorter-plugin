@@ -27,7 +27,7 @@
 			<div class="col-xlg-14 col-lg-20 col-md-24">
 				<div>
 					<h2>${%Job Priorities}</h2>
-					<p>${%Assign Priorities by creating Job groups. Priorities are assigned top down by first match.}</p>
+					<p>${%Assign Priorities by creating job groups. Priorities are assigned top down by first match.}</p>
 				</div>
 				<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 					<f:entry>
@@ -55,7 +55,7 @@
 								<f:entry title="Run Exclusive (experimental)" help="/descriptor/jenkins.advancedqueue.PriorityConfiguration/help/runExclusive">
 									<f:checkbox name="runExclusive" value="${jobGroup.runExclusive}" checked="${jobGroup.runExclusive}"/>
 								</f:entry>
-								<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use additional rules when assigning a priority to a Job}">
+								<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use additional rules when assigning a priority to a job}">
 									<f:entry>
 										<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="${%Priority Strategy}">
 											<local:blockWrapper>
