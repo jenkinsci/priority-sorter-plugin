@@ -8,7 +8,7 @@
 	xmlns:f="/lib/form">
 
 	<j:if test="${descriptor.isUsed(it)}">
-		<f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="Use specific priority for this Job">
+		<f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="Use specific priority for this job">
 			<f:entry title="${%Job Priority}" field="priority">
 				<select name="priority">
 					<j:forEach var="priority" items="${descriptor.getPriorities()}">

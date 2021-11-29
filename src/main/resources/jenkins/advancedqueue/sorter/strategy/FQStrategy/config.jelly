@@ -23,6 +23,6 @@
  -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-	<f:description><b>Fair Queueing</b> Each priority is regarded as <i>bucket</i> the scheduler tries to distribute resources evenly over the buckets, each bucket is sorted intermally with <i>First In First Out</i>.</f:description>
+	<f:description><strong>Fair Queuing</strong>: Each priority is regarded as a <i>bucket</i>. The scheduler tries to distribute resources evenly over the buckets. Each bucket is sorted internally with <i>First In First Out</i>.</f:description>
 	<st:include page="config.jelly" class="jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy" />
 </j:jelly>
