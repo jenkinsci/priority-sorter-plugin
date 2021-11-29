@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.jobrestrictions;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.logging.Logger;
 
 import hudson.Extension;
@@ -48,6 +50,8 @@ import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestri
  * @author Magnus Sandberg
  * @since 3.3
  */
+@SuppressFBWarnings(value="SE_NO_SERIALVERSIONID",
+                    justification="Common usage in Jenkins to not include SE_NO_SERIALVERSIONID")
 public class PrioritySorterRestriction extends JobRestriction {
 	
 	private final static Logger LOGGER = Logger.getLogger(PrioritySorterRestriction.class.getName());

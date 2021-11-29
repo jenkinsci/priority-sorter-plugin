@@ -23,12 +23,14 @@
  */
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.matrix.MatrixConfiguration;
-import hudson.matrix.MatrixProject;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
@@ -38,14 +40,12 @@ import hudson.model.TopLevelItem;
 import hudson.model.ViewGroup;
 import hudson.model.View;
 import hudson.security.ACL;
-import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,8 +53,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 import javax.servlet.ServletException;
 
@@ -93,20 +91,12 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 		jobGroups = new LinkedList<JobGroup>();
 		load();
 		//
-		Collections.sort(jobGroups, new Comparator<JobGroup>() {
-			public int compare(JobGroup o1, JobGroup o2) {
-				return o1.getId() - o2.getId();
-			}
-		});
+		Collections.sort(jobGroups, (JobGroup o1, JobGroup o2) -> o1.getId() - o2.getId());
 		//
 		id2jobGroup = new HashMap<Integer, JobGroup>();
 		for (JobGroup jobGroup : jobGroups) {
 			id2jobGroup.put(jobGroup.getId(), jobGroup);
-			Collections.sort(jobGroup.getPriorityStrategies(), new Comparator<JobGroup.PriorityStrategyHolder>() {
-				public int compare(JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) {
-					return o1.getId() - o2.getId();
-				}
-			});
+			Collections.sort(jobGroup.getPriorityStrategies(), (JobGroup.PriorityStrategyHolder o1, JobGroup.PriorityStrategyHolder o2) -> o1.getId() - o2.getId());
 		}
 		//
 		Plugin plugin = Jenkins.get().getPlugin("matrix-project");
@@ -241,7 +231,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 	}
 
 	@CheckForNull
-	public JobGroup getJobGroup(@Nonnull PriorityConfigurationCallback priorityCallback, @Nonnull Job<?, ?> job) {
+	public JobGroup getJobGroup(@NonNull PriorityConfigurationCallback priorityCallback, @NonNull Job<?, ?> job) {
 		if (!(job instanceof TopLevelItem)) {
 			priorityCallback.addDecisionLog(0, "Job is not a TopLevelItem [" + job.getClass().getName() + "] ...");
 			return null;

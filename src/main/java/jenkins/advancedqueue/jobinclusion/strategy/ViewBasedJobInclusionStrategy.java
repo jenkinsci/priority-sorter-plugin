@@ -32,6 +32,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -112,7 +113,11 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		this.viewName = viewName;
 		this.useJobFilter = (jobFilter != null);
 		if (this.useJobFilter) {
-			this.jobPattern = jobFilter.jobPattern;
+			if (jobFilter != null) {
+				this.jobPattern = jobFilter.jobPattern;
+			} else {
+				LOGGER.log(Level.SEVERE, "Ignoring null job filter for view ''{0}''", viewName);
+			}
 		}
 	}
 
@@ -133,13 +138,17 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		final Jenkins jenkins = Jenkins.get();
 		View view = jenkins.getView(nestedViewNames[0]);
 		if(null == view) {
-			LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
+			LOGGER.log(Level.SEVERE, "Configured View does not exist ''{0}'' using primary view", viewName);
 			return jenkins.getPrimaryView();
 		}
 		for(int i = 1; i < nestedViewNames.length; i++) {
+			if (!(view instanceof ViewGroup)) {
+				LOGGER.log(Level.SEVERE, "View is not a ViewGroup ''{0}'', using primary view", viewName);
+				return jenkins.getPrimaryView();
+                        }
 			view = ((ViewGroup) view).getView(nestedViewNames[i]);
 			if(null == view) {
-				LOGGER.severe("Configured View does not exist '" + viewName + "' using primary view");
+				LOGGER.log(Level.SEVERE, "Configured View does not exist ''{0}'' using primary view", viewName);
 				return jenkins.getPrimaryView();
 			}
 		}

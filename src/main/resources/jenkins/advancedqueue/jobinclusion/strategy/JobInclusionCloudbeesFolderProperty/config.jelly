@@ -8,7 +8,7 @@
 	xmlns:f="/lib/form">
 
 	<j:if test="${descriptor.isUsed()}">
-		<f:optionalBlock name="useJobGroup" inline="true" checked="${instance.useJobGroup}" title="${%Include Jobs in this Folder to a Job Group}">
+		<f:optionalBlock name="useJobGroup" inline="true" checked="${instance.useJobGroup}" title="${%Include jobs from this folder in a job group}">
 			<f:entry title="${%Job Group}" field="jobGroupName">
 				<select name="jobGroupName">
 					<j:forEach var="jobGroup" items="${descriptor.getJobGroups()}">
