@@ -25,7 +25,6 @@ package jenkins.advancedqueue.priority.strategy;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
-import hudson.model.AbstractProject;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Job;
 import hudson.model.JobProperty;
