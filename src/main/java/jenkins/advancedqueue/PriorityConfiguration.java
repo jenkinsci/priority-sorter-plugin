@@ -108,7 +108,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		if (!checkActive()) {
 			return null;
 		}
-		return "/plugin/PrioritySorter/advqueue.png";
+		return "/plugin/PrioritySorter/advqueue.svg";
 	}
 
 	@Override
