@@ -111,7 +111,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
 		if (!checkActive()) {
 			return null;
 		}
-		return "/plugin/PrioritySorter/advqueue.png";
+		return "/plugin/PrioritySorter/advqueue.svg";
 	}
 
 	@Override

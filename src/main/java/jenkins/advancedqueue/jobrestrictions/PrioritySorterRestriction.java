@@ -44,7 +44,7 @@ import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestri
 import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestrictionDescriptor;
 
 /**
- * Extends the {@link JobRestriction} from  <a href="https://wiki.jenkins-ci.org/display/JENKINS/Job+Restrictions+Plugin">Job Restrictions Plugin</a>
+ * Extends the {@link JobRestriction} from  <a href="https://plugins.jenkins.io/job-restrictions/">Job Restrictions Plugin</a>
  * making it possible to restrict Node usage based on priority. 
  * 
  * @author Magnus Sandberg

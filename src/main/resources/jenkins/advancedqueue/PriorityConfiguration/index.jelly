@@ -1,25 +1,9 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:local="local">
-	<d:taglib uri="local">
-		<d:tag name="blockWrapper">
-			<j:choose>
-				<j:when test="${divBasedFormLayout}">
-					<div>
-						<d:invokeBody/>
-					</div>
-				</j:when>
-				<j:otherwise>
-					<table style="width:75%">
-						<d:invokeBody/>
-					</table>
-				</j:otherwise>
-			</j:choose>
-		</d:tag>
-	</d:taglib>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
 	<l:layout norefresh="true" title="${%Job Priorities}">
 	 	<l:side-panel>
             <l:tasks>
-                <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}"/>
+                <l:task icon="icon-up icon-md" href="${rootURL}/" title="${%Back to Dashboard}"/>
             </l:tasks>
         </l:side-panel>
 		<l:main-panel>
@@ -32,7 +16,7 @@
 				<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 					<f:entry>
 						<f:repeatable var="jobGroup" items="${it.jobGroups}" header="Job group">
-							<local:blockWrapper>
+							<div>
 							   <f:entry title="${%Description}">
 										<f:textarea name="description" value="${jobGroup.description}"/>
 								</f:entry>
@@ -58,7 +42,7 @@
 								<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use additional rules when assigning a priority to a job}">
 									<f:entry>
 										<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="${%Priority Strategy}">
-											<local:blockWrapper>
+											<div>
 												<j:if test="${holder == null}">
 													<f:entry>
 														<f:dropdownDescriptorSelector descriptors="${it.getPriorityStrategyDescriptors()}" title="${%Select Strategy}"/>
@@ -77,7 +61,7 @@
 														<f:repeatableDeleteButton />
 													</div>
 												</f:entry>
-											</local:blockWrapper>
+											</div>
 										</f:repeatable>
 									</f:entry>
 								</f:optionalBlock>
@@ -86,7 +70,7 @@
 										<f:repeatableDeleteButton />
 									</div>
 								</f:entry>
-							</local:blockWrapper>
+							</div>
 						</f:repeatable>
 						<br/>
 						<br/>

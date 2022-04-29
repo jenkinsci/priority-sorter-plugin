@@ -2,7 +2,6 @@ package jenkins.advancedqueue.test;
 
 import hudson.cli.BuildCommand.CLICause;
 import hudson.model.Cause;
-import hudson.model.FreeStyleProject;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
 import jenkins.advancedqueue.testutil.TestRunListener;
