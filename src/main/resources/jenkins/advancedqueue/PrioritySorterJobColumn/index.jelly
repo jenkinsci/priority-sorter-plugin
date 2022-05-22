@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-  ${%Column showing the priority of a job.}
+  ${%Column_showing_the_priority_of_a_job}
 </div>

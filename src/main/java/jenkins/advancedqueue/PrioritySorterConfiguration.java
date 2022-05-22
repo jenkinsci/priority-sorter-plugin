@@ -123,7 +123,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
 		items.add(
 				0,
-				new ListBoxModel.Option("-- use default priority --", String.valueOf(PriorityCalculationsUtil
+				new ListBoxModel.Option(Messages.Use_default_priority(), String.valueOf(PriorityCalculationsUtil
 						.getUseDefaultPriorityPriority())));
 		return items;
 	}

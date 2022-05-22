@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import jenkins.advancedqueue.DecisionLogger;
-import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
 
@@ -80,14 +79,14 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 		
 		public FormValidation doCheckJobPattern(@QueryParameter String jobPattern) {
 			if(jobPattern.isEmpty()) {
-				return FormValidation.ok("Empty pattern matches all Jobs.");
+                                return FormValidation.ok(Messages.Empty_pattern_matches_all_jobs());
 			}
             try {
                 Pattern.compile(jobPattern);
             } catch (PatternSyntaxException exception) {
                 return FormValidation.error(exception.getDescription());
             }
-            return FormValidation.ok("Pattern is valid.");
+            return FormValidation.ok(Messages.Pattern_is_valid());
         }
 		
 	};
