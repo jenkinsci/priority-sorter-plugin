@@ -23,12 +23,12 @@
  -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-    <f:entry title="Number of Priorities" description="The update will do a linear mapping from your current priorities to the selected range." field="numberOfPriorities">
+    <f:entry title="${%Number_of_Priorities}" description="${%The_update_will_do_a_linear_mapping_from_your_current_priorities}" field="numberOfPriorities">
         <f:textbox id="ps_numberOfPriorities" 
                    onchange="updateListBox('ps_defaultPriority','descriptorByName/${instance.class.name}/updateDefaultPriorityItems?value='+encode(this.value))"
                    default="${descriptor.defaultPrioritiesNumber}"/>
     </f:entry>
-    <f:entry title="Default Priority" field="defaultPriority">
+    <f:entry title="${%Default_Priority}" field="defaultPriority">
         <f:select id="ps_defaultPriority" default="${descriptor.defaultPriority}"/>
     </f:entry> 
 </j:jelly>

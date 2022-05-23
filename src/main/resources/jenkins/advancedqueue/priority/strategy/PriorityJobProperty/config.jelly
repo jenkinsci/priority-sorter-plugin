@@ -8,8 +8,8 @@
 	xmlns:f="/lib/form">
 
 	<j:if test="${descriptor.isUsed(it)}">
-		<f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="Use specific priority for this job">
-			<f:entry title="${%Job Priority}" field="priority">
+		<f:optionalBlock name="useJobPriority" inline="true" checked="${instance.useJobPriority}" title="${%Use_specific_priority_for_this_job}">
+			<f:entry title="${%Job_Priority}" field="priority">
 				<select name="priority">
 					<j:forEach var="priority" items="${descriptor.getPriorities()}">
 				    	<j:if test="${priority.value == instance.priority}">
