@@ -76,6 +76,8 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
                 }
                 
 		String upstreamProject = upstreamCause.getUpstreamProject();
+		// Only use short job name to find in cache
+		upstreamProject = upstreamProject.substring(upstreamProject.lastIndexOf('/') + 1);
 		int upstreamBuildId = upstreamCause.getUpstreamBuild();
 		ItemInfo upstreamItem = StartedJobItemCache.get().getStartedItem(upstreamProject, upstreamBuildId);
 		// Upstream Item being null should be very very rare
