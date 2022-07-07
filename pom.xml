@@ -10,7 +10,7 @@
         <revision>4.1.1</revision>
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
-        <jenkins.version>2.319.3</jenkins.version>
+        <jenkins.version>2.346.1</jenkins.version>
         <pmdVersion>6.47.0</pmdVersion>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.threshold>Low</spotbugs.threshold>
@@ -49,7 +49,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>io.jenkins.tools.bom</groupId>
-				<artifactId>bom-2.319.x</artifactId>
+				<artifactId>bom-2.346.x</artifactId>
 				<version>1466.v85a_616ea_b_87c</version>
 				<scope>import</scope>
 				<type>pom</type>
