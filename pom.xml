@@ -11,7 +11,7 @@
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
         <jenkins.version>2.319.3</jenkins.version>
-        <pmdVersion>6.47.0</pmdVersion>
+        <pmdVersion>6.48.0</pmdVersion>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.threshold>Low</spotbugs.threshold>
     </properties>
