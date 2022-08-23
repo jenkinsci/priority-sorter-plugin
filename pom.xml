@@ -85,7 +85,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-pmd-plugin</artifactId>
-                        <version>3.17.0</version>
+                        <version>3.18.0</version>
                         <dependencies>
                             <dependency>
                                 <groupId>net.sourceforge.pmd</groupId>
@@ -105,7 +105,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.17.0</version>
+                    <version>3.18.0</version>
                     <executions>
                         <execution>
                             <goals>
