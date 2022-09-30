@@ -23,6 +23,6 @@
  -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-	<f:description><b>Weighted Fair Queueing</b> As <i>Fair Queueing</i> but <i>lower</i> priority value gets more resources than <i>higher</i> value.</f:description>
+	<f:description>${%Weighted_Fair_Queuing}</f:description>
 	<st:include page="config.jelly" class="jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy" />
 </j:jelly>

@@ -3,16 +3,15 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.31</version>
+        <version>4.47</version>
         <relativePath />
     </parent>
     <properties>
-        <revision>4.1.0</revision>
+        <revision>4.1.1</revision>
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
-        <jenkins.version>2.277.1</jenkins.version>
-        <java.level>8</java.level>
-        <pmdVersion>6.40.0</pmdVersion>
+        <jenkins.version>2.332.4</jenkins.version>
+        <pmdVersion>6.49.0</pmdVersion>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.threshold>Low</spotbugs.threshold>
     </properties>
@@ -20,7 +19,6 @@
 	<version>${revision}${changelist}</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Priority Sorter Plugin</name>
-	<description>This plugin allows for the build queue to be sorted based on configurable Sorting and Priority Assigment Strategies.</description>
 	<url>https://github.com/jenkinsci/priority-sorter-plugin</url>
 
 	<licenses>
@@ -51,8 +49,8 @@
 		<dependencies>
 			<dependency>
 				<groupId>io.jenkins.tools.bom</groupId>
-				<artifactId>bom-2.277.x</artifactId>
-				<version>984.vb5eaac999a7e</version>
+				<artifactId>bom-2.332.x</artifactId>
+				<version>1607.va_c1576527071</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
@@ -63,9 +61,31 @@
             <pluginManagement>
                 <plugins>
                     <plugin>
+                       <groupId>com.diffplug.spotless</groupId>
+                       <artifactId>spotless-maven-plugin</artifactId>
+                       <version>2.27.0</version>
+                       <configuration>
+                           <!-- define a language-specific format -->
+                           <java>
+                               <!-- no need to specify files, inferred automatically -->
+                               <endWithNewline />
+                               <removeUnusedImports />
+                           </java>
+                       </configuration>
+                       <executions>
+                           <execution>
+                               <!-- Runs in verify phase by default -->
+                               <goals>
+                                   <!-- Can be disabled using -Dspotless.check.skip -->
+                                   <goal>check</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-pmd-plugin</artifactId>
-                        <version>3.15.0</version>
+                        <version>3.19.0</version>
                         <dependencies>
                             <dependency>
                                 <groupId>net.sourceforge.pmd</groupId>
@@ -85,7 +105,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.15.0</version>
+                    <version>3.19.0</version>
                     <executions>
                         <execution>
                             <goals>
@@ -102,6 +122,12 @@
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>matrix-project</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
@@ -128,13 +154,6 @@
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>script-security</artifactId>
 			<optional>true</optional>
-			<!-- TODO remove after https://github.com/jenkinsci/script-security-plugin/pull/323 is released -->
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.errorprone</groupId>
-					<artifactId>error_prone_annotations</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
@@ -145,7 +164,7 @@
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>nested-view</artifactId>
-			<version>1.22</version>
+			<version>1.24</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
