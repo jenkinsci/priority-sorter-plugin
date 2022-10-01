@@ -115,7 +115,7 @@ Pull request builds merge the most recent changes from their target branch with 
 They can be downloaded from ci.jenkins.io and used to test the pull request.
 Steps to test a pull request build are:
 
-. *Find the pull request on [GitHub](https://github.com/jenkinsci/priority-sorter-plugin/pulls)*
-. *Find the [ci.jenkins.io](https://ci.jenkins.io/job/Plugins/job/priority-sorter-plugin/view/change-requests/) artifacts for that pull request* from the artifacts link in the specific Jenkins job
-. *Paste the link to the  `hpi` file* into the URL field of the Advanced page of the Jenkins Plugin Manager
-. *Restart your Jenkins* and you're ready to test
+* *Find the pull request on [GitHub](https://github.com/jenkinsci/priority-sorter-plugin/pulls)*
+* *Find the [ci.jenkins.io](https://ci.jenkins.io/job/Plugins/job/priority-sorter-plugin/view/change-requests/) artifacts for that pull request* from the artifacts link in the specific Jenkins job
+* *Paste the link to the  `hpi` file* into the URL field of the Advanced page of the Jenkins Plugin Manager
+* *Restart your Jenkins* and you're ready to test
