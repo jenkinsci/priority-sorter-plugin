@@ -48,9 +48,9 @@ Prerequisites: _Java_ and _Maven_, (some plugins use Gradle, you will just need 
 
   ```console
   $ java -version
-openjdk version "11.0.16.1" 2022-08-12
-OpenJDK Runtime Environment Temurin-11.0.16.1+1 (build 11.0.16.1+1)
-OpenJDK 64-Bit Server VM Temurin-11.0.16.1+1 (build 11.0.16.1+1, mixed mode)
+  openjdk version "11.0.16.1" 2022-08-12
+  OpenJDK Runtime Environment Temurin-11.0.16.1+1 (build 11.0.16.1+1)
+  OpenJDK 64-Bit Server VM Temurin-11.0.16.1+1 (build 11.0.16.1+1, mixed mode)
   ```
 
 - Ensure Maven > 3.8.5 is installed and included in the PATH environment variable.
