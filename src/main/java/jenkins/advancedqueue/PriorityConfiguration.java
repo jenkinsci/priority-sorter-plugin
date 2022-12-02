@@ -64,6 +64,7 @@ import net.sf.json.JSONObject;
 
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.jenkins.ui.icon.IconSpec;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -74,7 +75,7 @@ import org.kohsuke.stapler.StaplerResponse;
  * @since 2.0
  */
 @Extension
-public class PriorityConfiguration extends Descriptor<PriorityConfiguration> implements RootAction, Describable<PriorityConfiguration> {
+public class PriorityConfiguration extends Descriptor<PriorityConfiguration> implements RootAction, IconSpec, Describable<PriorityConfiguration> {
 
 	private final static Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
 
@@ -104,11 +105,18 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration> imp
 		}
 	}
 
+	@Override
 	public String getIconFileName() {
+		return null;
+	}
+
+	@Override
+	public String getIconClassName() {
 		if (!checkActive()) {
 			return null;
 		}
-		return "/plugin/PrioritySorter/advqueue.svg";
+
+		return "symbol-swap-vertical-outline plugin-ionicons-api";
 	}
 
 	@Override
