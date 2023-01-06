@@ -10,10 +10,12 @@
   - [IDE configuration](#ide-configuration)
 - [Preparing a pull request](#preparing-a-pull-request)
   - [Compiling and testing the plugin](#compiling-and-testing-the-plugin)
-  - [Code coverage reporting](#code-coverage-reporting)
   - [Spotbugs checks](#spotbugs-checks)
+- [Code coverage](#code-coverage)
+  - [Reviewing code coverage](#reviewing-code-coverage)
 - [Reviewing Pull Requests](#reviewing-pull-requests)
   - [Testing a Pull Request Build](#testing-a-pull-request-build)
+- [Reporting Issues](#reporting-issues)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -44,24 +46,24 @@ If you are a newcomer contributor and have any questions, please do not hesitate
 
 Prerequisites: _Java_ and _Maven_, (some plugins use Gradle, you will just need Java if you're building a Gradle plugin).
 
-- Ensure Java 8, 11, or 17 is available.
+- Ensure Java 11 or 17 are available.
 
   ```console
   $ java -version
-  openjdk version "11.0.16.1" 2022-08-12
-  OpenJDK Runtime Environment Temurin-11.0.16.1+1 (build 11.0.16.1+1)
-  OpenJDK 64-Bit Server VM Temurin-11.0.16.1+1 (build 11.0.16.1+1, mixed mode)
+  openjdk version "11.0.17" 2022-10-18
+  OpenJDK Runtime Environment Temurin-11.0.17+8 (build 11.0.17+8)
+  OpenJDK 64-Bit Server VM Temurin-11.0.17+8 (build 11.0.17+8, mixed mode)
   ```
 
 - Ensure Maven > 3.8.5 is installed and included in the PATH environment variable.
 
   ```console
   $ mvn --version
-  Apache Maven 3.8.6 (84538c9988a25aec085021c365c560670ad80f63)
-  Maven home: /home/mwaite/tools/apache-maven-3.8.6
-  Java version: 11.0.16.1, vendor: Eclipse Adoptium, runtime: /home/mwaite/tools/jdk-11.0.16.1+1
+  Apache Maven 3.8.7 (b89d5959fcde851dcb1c8946a785a163f14e1e29)
+  Maven home: /home/mwaite/tools/apache-maven-3.8.7
+  Java version: 11.0.17, vendor: Eclipse Adoptium, runtime: /opt/jdk-11
   Default locale: en_US, platform encoding: UTF-8
-  OS name: "linux", version: "4.18.0-372.19.1.el8_6.x86_64", arch: "amd64", family: "unix"
+  OS name: "linux", version: "4.18.0-425.3.1.el8.x86_64", arch: "amd64", family: "unix"
   ```
 
 ### IDE configuration
@@ -80,7 +82,7 @@ Tests help us assure that we're delivering a reliable plugin, and that we've com
 
 ### Compiling and testing the plugin
 
-Compile and run the plugin automated tests on Java 8, Java 11, or Java 17 with:
+Compile and run the plugin automated tests with:
 
 * `mvn clean verify`
 
@@ -88,19 +90,35 @@ Run the plugin inside a Jenkins environment with the [maven hpi plugin](https://
 
 * `mvn -Dport=8080 hpi:run`
 
-### Code coverage reporting
-
-Code coverage reporting is available as a maven target.
-Please improve code coverage with tests when you submit.
-
-* `mvn -P enable-jacoco clean install jacoco:report` to report code coverage
-
 ### Spotbugs checks
 
 Please don't introduce new spotbugs output.
 
 * `mvn spotbugs:check` to analyze project using [Spotbugs](https://spotbugs.github.io/).
 * `mvn spotbugs:gui` to review Spotbugs report using GUI
+
+## Code coverage
+
+Code coverage reporting is available as a maven target.
+Please try to improve code coverage with tests when you submit pull requests.
+
+* `mvn -P enable-jacoco clean install jacoco:report` reports code coverage
+
+### Reviewing code coverage
+
+The code coverage report is a set of HTML files that show methods and lines executed.
+The following commands will open the `index.html` file in the browser.
+
+* Windows - `start target\site\jacoco\index.html`
+* Linux - `xdg-open target/site/jacoco/index.html`
+* Gitpod - `cd target/site/jacoco && python -m http.server 8000`
+
+The file will have a list of package names.
+Click on them to find a list of class names.
+
+The lines of the code will be covered in three different colors, red, green, and orange.
+Red lines are not covered in the tests.
+Green lines are covered with tests.
 
 ## Reviewing Pull Requests
 
@@ -117,5 +135,10 @@ Steps to test a pull request build are:
 
 * *Find the pull request on [GitHub](https://github.com/jenkinsci/priority-sorter-plugin/pulls)*
 * *Find the [ci.jenkins.io](https://ci.jenkins.io/job/Plugins/job/priority-sorter-plugin/view/change-requests/) artifacts for that pull request* from the artifacts link in the specific Jenkins job
-* *Paste the link to the  `hpi` file* into the URL field of the Advanced page of the Jenkins Plugin Manager
+* *Paste the link to the `hpi` file* into the URL field of the Advanced page of the Jenkins Plugin Manager
 * *Restart your Jenkins* and you're ready to test
+
+## Reporting Issues
+
+Report issues in the [Jenkins issue tracker](https://www.jenkins.io/participate/report-issue/redirect/#15771).
+Please use the link:https://www.jenkins.io/participate/report-issue/["How to Report an Issue"] guidelines when reporting issues.
