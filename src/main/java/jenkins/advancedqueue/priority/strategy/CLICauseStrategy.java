@@ -27,9 +27,7 @@ import hudson.Extension;
 import hudson.cli.BuildCommand.CLICause;
 import hudson.model.Cause;
 import hudson.model.Queue;
-
 import java.util.List;
-
 import jenkins.advancedqueue.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -39,29 +37,27 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class CLICauseStrategy extends AbstractStaticPriorityStrategy {
 
-	@Extension
-	public static class UserIdCauseStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
+    @Extension
+    public static class UserIdCauseStrategyDescriptor extends AbstractStaticPriorityStrategyDescriptor {
 
-		public UserIdCauseStrategyDescriptor() {
-			super(Messages.Job_triggered_from_CLI());
-		}
+        public UserIdCauseStrategyDescriptor() {
+            super(Messages.Job_triggered_from_CLI());
+        }
+    }
 
-	}
+    @DataBoundConstructor
+    public CLICauseStrategy(int priority) {
+        setPriority(priority);
+    }
 
-	@DataBoundConstructor
-	public CLICauseStrategy(int priority) {
-		setPriority(priority);
-	}
-
-	@Override
-	public boolean isApplicable(Queue.Item item) {
-		List<Cause> causes = item.getCauses();
-		for (Cause cause : causes) {
-			if (cause.getClass() == CLICause.class) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+    @Override
+    public boolean isApplicable(Queue.Item item) {
+        List<Cause> causes = item.getCauses();
+        for (Cause cause : causes) {
+            if (cause.getClass() == CLICause.class) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -25,17 +25,13 @@ package jenkins.advancedqueue.priority.strategy;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-
 import hudson.Extension;
 import hudson.model.ParametersAction;
 import hudson.model.Queue;
 import hudson.model.StringParameterValue;
-
 import java.util.List;
-
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -44,58 +40,59 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class BuildParameterStrategy extends AbstractDynamicPriorityStrategy {
 
-	@Extension
-	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+    @Extension
+    public static class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
-		public BuildParameterStrategyDescriptor() {
-			super(Messages.Use_Priority_from_Build_Parameter());
-		}
-	};
+        public BuildParameterStrategyDescriptor() {
+            super(Messages.Use_Priority_from_Build_Parameter());
+        }
+    }
+    ;
 
-	private final String parameterName;
+    private final String parameterName;
 
-	@DataBoundConstructor
-	public BuildParameterStrategy(String parameterName) {
-		this.parameterName = parameterName;
-	}
+    @DataBoundConstructor
+    public BuildParameterStrategy(String parameterName) {
+        this.parameterName = parameterName;
+    }
 
-	public String getParameterName() {
-		return parameterName;
-	}
+    public String getParameterName() {
+        return parameterName;
+    }
 
-	@CheckForNull
-	private Integer getPriorityInternal(@NonNull Queue.Item item) {
-		List<ParametersAction> actions = item.getActions(ParametersAction.class);
-		for (ParametersAction action : actions) {
-			StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
-			if (parameterValue != null) {
-				String value = parameterValue.getValue();
-				if (value == null) {
-					// continue since we cannot take this value
-					continue;
-				}
-				try {
-					return Integer.parseInt(value);
-				} catch (NumberFormatException e) {
-					// continue
-				}
-			}
-		}
-		return null;
-	}
+    @CheckForNull
+    private Integer getPriorityInternal(@NonNull Queue.Item item) {
+        List<ParametersAction> actions = item.getActions(ParametersAction.class);
+        for (ParametersAction action : actions) {
+            StringParameterValue parameterValue = (StringParameterValue) action.getParameter(parameterName);
+            if (parameterValue != null) {
+                String value = parameterValue.getValue();
+                if (value == null) {
+                    // continue since we cannot take this value
+                    continue;
+                }
+                try {
+                    return Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    // continue
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Gets priority of the queue item.
-	 * @param item Queue item
-	 * @return Priority if it can be determined. Default priority otherwise
-	 */
-	public int getPriority(@NonNull Queue.Item item) {
-		final Integer p = getPriorityInternal(item);
-		return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-	}
+    /**
+     * Gets priority of the queue item.
+     * @param item Queue item
+     * @return Priority if it can be determined. Default priority otherwise
+     */
+    public int getPriority(@NonNull Queue.Item item) {
+        final Integer p = getPriorityInternal(item);
+        return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+    }
 
-	@Override
-	public boolean isApplicable(@NonNull Queue.Item item) {
-		return getPriorityInternal(item) != null;
-	}
+    @Override
+    public boolean isApplicable(@NonNull Queue.Item item) {
+        return getPriorityInternal(item) != null;
+    }
 }

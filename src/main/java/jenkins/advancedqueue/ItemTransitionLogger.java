@@ -24,10 +24,8 @@
 package jenkins.advancedqueue;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import jenkins.advancedqueue.sorter.ItemInfo;
 
 /**
@@ -36,30 +34,29 @@ import jenkins.advancedqueue.sorter.ItemInfo;
  */
 public class ItemTransitionLogger {
 
-	private final static Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
+    private static final Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Items");
 
-	static public void logNewItem(@NonNull ItemInfo info) {
-		if (LOGGER.isLoggable(Level.FINER)) {
-			LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
-		} else {
-			LOGGER.fine("New Item: " + info.toString());
-		}
-	}
+    public static void logNewItem(@NonNull ItemInfo info) {
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.finer("New Item: " + info.toString() + "\n" + info.getDescisionLog());
+        } else {
+            LOGGER.fine("New Item: " + info.toString());
+        }
+    }
 
-	static public void logBlockedItem(@NonNull ItemInfo info) {
-		LOGGER.fine("Blocking: " + info.toString());
-	}
+    public static void logBlockedItem(@NonNull ItemInfo info) {
+        LOGGER.fine("Blocking: " + info.toString());
+    }
 
-	static public void logBuilableItem(@NonNull ItemInfo info) {
-		LOGGER.fine("Buildable: " + info.toString());
-	}
+    public static void logBuilableItem(@NonNull ItemInfo info) {
+        LOGGER.fine("Buildable: " + info.toString());
+    }
 
-	static public void logStartedItem(@NonNull ItemInfo info) {
-		LOGGER.fine("Starting: " + info.toString());
-	}
+    public static void logStartedItem(@NonNull ItemInfo info) {
+        LOGGER.fine("Starting: " + info.toString());
+    }
 
-	static public void logCanceledItem(@NonNull ItemInfo info) {
-		LOGGER.fine("Canceling: " + info.toString());
-	}
-
+    public static void logCanceledItem(@NonNull ItemInfo info) {
+        LOGGER.fine("Canceling: " + info.toString());
+    }
 }
