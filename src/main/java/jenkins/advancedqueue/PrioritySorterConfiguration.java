@@ -23,6 +23,7 @@
  */
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.security.ACL;
@@ -46,8 +47,6 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -124,7 +123,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
 		items.add(
 				0,
-				new ListBoxModel.Option("-- use default priority --", String.valueOf(PriorityCalculationsUtil
+				new ListBoxModel.Option(Messages.Use_default_priority(), String.valueOf(PriorityCalculationsUtil
 						.getUseDefaultPriorityPriority())));
 		return items;
 	}
@@ -144,6 +143,7 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 		return FormValidation.ok();
 	}
 
+	@SuppressFBWarnings(value="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",justification="try with resources checks null")
 	private void updatePriorities(int prevNumberOfPriorities) {
 		// Shouldn't really by a permission problem when getting here but
 		// to be on the safe side

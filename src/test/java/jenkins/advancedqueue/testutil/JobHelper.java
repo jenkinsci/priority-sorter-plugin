@@ -3,7 +3,6 @@ package jenkins.advancedqueue.testutil;
 import hudson.Launcher;
 import hudson.matrix.AxisList;
 import hudson.matrix.DefaultMatrixExecutionStrategyImpl;
-import hudson.matrix.MatrixExecutionStrategy;
 import hudson.matrix.MatrixProject;
 import hudson.matrix.NoopMatrixConfigurationSorter;
 import hudson.matrix.TextAxis;
@@ -11,7 +10,6 @@ import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.Cause;
 import hudson.model.FreeStyleProject;
-import hudson.model.Project;
 import hudson.tasks.Builder;
 
 import java.io.IOException;

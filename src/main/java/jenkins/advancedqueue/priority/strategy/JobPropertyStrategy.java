@@ -23,11 +23,12 @@
  */
 package jenkins.advancedqueue.priority.strategy;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Queue.Item;
-import javax.annotation.CheckForNull;
 
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;

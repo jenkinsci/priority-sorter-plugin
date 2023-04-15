@@ -23,10 +23,11 @@
  */
 package jenkins.advancedqueue.sorter.strategy;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
-import javax.annotation.CheckForNull;
 
 import javax.servlet.ServletException;
 

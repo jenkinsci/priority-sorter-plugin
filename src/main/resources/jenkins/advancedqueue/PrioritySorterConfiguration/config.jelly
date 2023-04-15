@@ -1,8 +1,8 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <f:section title="${%Priority Sorter}">
+    <f:section title="${%Priority_Sorter}">
         <f:dropdownDescriptorSelector field="strategy" title="${%Strategy}"/>
-        <f:entry title="${%Only Admins can edit Job Priorities}" description="${%Check if only Administrators should be allowed to view and edit the Job Priorities}" field="onlyAdminsMayEditPriorityConfiguration">
+        <f:entry title="${%Only_Admins_can_edit_job_priorities}" description="${%Check_if_only_Administrators_should_be_allowed_to_view_and_edit_the_job_priorities}" field="onlyAdminsMayEditPriorityConfiguration">
             <f:checkbox name="onlyAdminsMayEditPriorityConfiguration" checked="${onlyAdminsMayEditPriorityConfiguration}"/>
         </f:entry>               
 	</f:section>

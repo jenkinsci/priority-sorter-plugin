@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 import hudson.model.Queue.BlockedItem;
 import hudson.model.Queue.BuildableItem;
 
@@ -32,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
 
 /**
  * Keeps track of the Queue.Items seen by the Sorter. Uses a WeakHash to store the entries that have

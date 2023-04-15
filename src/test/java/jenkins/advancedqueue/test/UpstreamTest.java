@@ -1,5 +1,7 @@
 package jenkins.advancedqueue.test;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,7 +15,6 @@ import org.jvnet.hudson.test.recipes.LocalData;
 import hudson.model.Cause;
 import hudson.model.Cause.UpstreamCause;
 import hudson.model.Cause.UserIdCause;
-import javax.annotation.CheckForNull;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
 import jenkins.advancedqueue.testutil.TestRunListener;

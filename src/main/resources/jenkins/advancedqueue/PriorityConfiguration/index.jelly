@@ -1,46 +1,30 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:local="local">
-	<d:taglib uri="local">
-		<d:tag name="blockWrapper">
-			<j:choose>
-				<j:when test="${divBasedFormLayout}">
-					<div>
-						<d:invokeBody/>
-					</div>
-				</j:when>
-				<j:otherwise>
-					<table style="width:75%">
-						<d:invokeBody/>
-					</table>
-				</j:otherwise>
-			</j:choose>
-		</d:tag>
-	</d:taglib>
-	<l:layout norefresh="true" title="${%Job Priorities}">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+	<l:layout norefresh="true" title="${%Job_Priorities}">
 	 	<l:side-panel>
             <l:tasks>
-                <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}"/>
+                <l:task icon="icon-up icon-md" href="${rootURL}/" title="${%Back_to_Dashboard}"/>
             </l:tasks>
         </l:side-panel>
 		<l:main-panel>
 			<!-- make the page not so wide on large screens -->
 			<div class="col-xlg-14 col-lg-20 col-md-24">
 				<div>
-					<h2>${%Job Priorities}</h2>
-					<p>${%Assign Priorities by creating Job groups. Priorities are assigned top down by first match.}</p>
+					<h2>${%Job_Priorities}</h2>
+					<p>${%Assign_priorities_by_creating_job_groups}</p>
 				</div>
 				<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 					<f:entry>
-						<f:repeatable var="jobGroup" items="${it.jobGroups}" header="Job group">
-							<local:blockWrapper>
+						<f:repeatable var="jobGroup" items="${it.jobGroups}" header="${%Job_group}">
+							<div>
 							   <f:entry title="${%Description}">
 										<f:textarea name="description" value="${jobGroup.description}"/>
 								</f:entry>
 								<f:entry>
 									<j:set var="instance" value="${jobGroup}"/>
-									<f:dropdownDescriptorSelector title="${%Jobs to include}" field="jobGroupStrategy" descriptors="${it.jobInclusionStrategyDescriptors}"/>
+									<f:dropdownDescriptorSelector title="${%Jobs_to_include}" field="jobGroupStrategy" descriptors="${it.jobInclusionStrategyDescriptors}"/>
 								</f:entry>
-								<f:entry title="Priority">
+								<f:entry title="${%Priority}">
 									<select name="priority">
 										<j:forEach var="priority" items="${it.priorities}">
 											<j:if test="${priority.value == jobGroup.priority}">
@@ -52,16 +36,16 @@
 										</j:forEach>
 									</select>
 								</f:entry>
-								<f:entry title="Run Exclusive (experimental)" help="/descriptor/jenkins.advancedqueue.PriorityConfiguration/help/runExclusive">
+								<f:entry title="${%Run_exclusive}" help="/descriptor/jenkins.advancedqueue.PriorityConfiguration/help/runExclusive">
 									<f:checkbox name="runExclusive" value="${jobGroup.runExclusive}" checked="${jobGroup.runExclusive}"/>
 								</f:entry>
-								<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use additional rules when assigning a priority to a Job}">
+								<f:optionalBlock name="usePriorityStrategies" checked="${jobGroup.usePriorityStrategies}" title="${%Use_additional_rules}">
 									<f:entry>
-										<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="${%Priority Strategy}">
-											<local:blockWrapper>
+										<f:repeatable var="holder" items="${jobGroup.priorityStrategies}" header="${%Priority_Strategy}">
+											<div>
 												<j:if test="${holder == null}">
 													<f:entry>
-														<f:dropdownDescriptorSelector descriptors="${it.getPriorityStrategyDescriptors()}" title="${%Select Strategy}"/>
+														<f:dropdownDescriptorSelector descriptors="${it.getPriorityStrategyDescriptors()}" title="${%Select_Strategy}"/>
 													</f:entry>
 												</j:if>
 												<j:if test="${holder != null}">
@@ -77,7 +61,7 @@
 														<f:repeatableDeleteButton />
 													</div>
 												</f:entry>
-											</local:blockWrapper>
+											</div>
 										</f:repeatable>
 									</f:entry>
 								</f:optionalBlock>
@@ -86,7 +70,7 @@
 										<f:repeatableDeleteButton />
 									</div>
 								</f:entry>
-							</local:blockWrapper>
+							</div>
 						</f:repeatable>
 						<br/>
 						<br/>

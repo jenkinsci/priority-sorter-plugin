@@ -1,12 +1,12 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-    <f:entry title="${%From Priority (inclusive)}" field="fromPriority">
+    <f:entry title="${%From_Priority}" field="fromPriority">
         <f:select 
         	id="fromPriority" 
         	default="${descriptor.defaultPriority}"
         	onchange="updateListBox('toPriority','${rootURL}/descriptorByName/jenkins.advancedqueue.jobrestrictions.PrioritySorterRestriction/updateFromPriorityItems?value='+encode(this.value))" />
     </f:entry> 
-    <f:entry title="${%To Priority (inclusive)}" field="toPriority">
+    <f:entry title="${%To_Priority}" field="toPriority">
         <f:select id="toPriority" default="${descriptor.defaultPriority}"/>
     </f:entry> 
 </j:jelly>
