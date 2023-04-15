@@ -26,13 +26,12 @@ package jenkins.advancedqueue.jobinclusion.strategy;
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.util.DescribableList;
 import jenkins.advancedqueue.DecisionLogger;
-
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author Magnus Sandberg
@@ -40,34 +39,34 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class FolderPropertyLoader {
 
-	@CheckForNull    
-	static public String getJobGroupName(DecisionLogger decisionLogger, Job<?, ?> job) {
-		ItemGroup<?> parent = job.getParent();
-		decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");
-		while(parent != null) {
-			if(parent instanceof AbstractFolder) {
-				AbstractFolder folder = (AbstractFolder) parent;
-				decisionLogger.addDecisionLog(3, "Evaluating Folder [" + folder.getFullName() + "] ...");
-				DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = folder.getProperties();
-				for(AbstractFolderProperty<?> property : properties) {
-					if(property instanceof JobInclusionFolderProperty) {
-						JobInclusionFolderProperty incProperty = (JobInclusionFolderProperty) property;
-						if(incProperty.isUseJobGroup()) {
-							String name = incProperty.getJobGroupName();
-							decisionLogger.addDecisionLog(4, "JobGroup is enabled, with JobGroup [" + name + "] ...");
-							return name;
-						}
-					}
-				}
-			}
-			if(parent instanceof TopLevelItem) {
-				parent = ((TopLevelItem) parent).getParent();				
-			} else {
-				parent = null;
-			}
-		}
-		decisionLogger.addDecisionLog(2, "No match ...");
-		return null;
-	}
-
+    @CheckForNull
+    public static String getJobGroupName(DecisionLogger decisionLogger, Job<?, ?> job) {
+        ItemGroup<?> parent = job.getParent();
+        decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");
+        while (parent != null) {
+            if (parent instanceof AbstractFolder) {
+                AbstractFolder folder = (AbstractFolder) parent;
+                decisionLogger.addDecisionLog(3, "Evaluating Folder [" + folder.getFullName() + "] ...");
+                DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor> properties =
+                        folder.getProperties();
+                for (AbstractFolderProperty<?> property : properties) {
+                    if (property instanceof JobInclusionFolderProperty) {
+                        JobInclusionFolderProperty incProperty = (JobInclusionFolderProperty) property;
+                        if (incProperty.isUseJobGroup()) {
+                            String name = incProperty.getJobGroupName();
+                            decisionLogger.addDecisionLog(4, "JobGroup is enabled, with JobGroup [" + name + "] ...");
+                            return name;
+                        }
+                    }
+                }
+            }
+            if (parent instanceof TopLevelItem) {
+                parent = ((TopLevelItem) parent).getParent();
+            } else {
+                parent = null;
+            }
+        }
+        decisionLogger.addDecisionLog(2, "No match ...");
+        return null;
+    }
 }

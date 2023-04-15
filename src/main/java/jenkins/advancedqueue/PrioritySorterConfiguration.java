@@ -30,12 +30,10 @@ import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.SorterStrategy;
@@ -46,7 +44,6 @@ import jenkins.advancedqueue.util.PrioritySorterUtil;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -57,135 +54,135 @@ import org.kohsuke.stapler.StaplerRequest;
 @Extension
 public class PrioritySorterConfiguration extends GlobalConfiguration {
 
-	private final static Logger LOGGER = Logger.getLogger(PrioritySorterConfiguration.class.getName());
-	private final static SorterStrategy DEFAULT_STRATEGY = new AbsoluteStrategy(
-			MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
+    private static final Logger LOGGER = Logger.getLogger(PrioritySorterConfiguration.class.getName());
+    private static final SorterStrategy DEFAULT_STRATEGY =
+            new AbsoluteStrategy(MultiBucketStrategy.DEFAULT_PRIORITIES_NUMBER, MultiBucketStrategy.DEFAULT_PRIORITY);
 
-	/**
-	 * @deprecated used in 2.x - replaces with XXX
-	 */
-	@Deprecated
-	private boolean allowPriorityOnJobs;
+    /**
+     * @deprecated used in 2.x - replaces with XXX
+     */
+    @Deprecated
+    private boolean allowPriorityOnJobs;
 
-	private boolean onlyAdminsMayEditPriorityConfiguration = false;
+    private boolean onlyAdminsMayEditPriorityConfiguration = false;
 
-	private SorterStrategy strategy;
+    private SorterStrategy strategy;
 
-	public PrioritySorterConfiguration() {
-	}
+    public PrioritySorterConfiguration() {}
 
-	public static void init() {
-		PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
-		// Make sure default is good for updating from legacy
-		prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
-		prioritySorterConfiguration.allowPriorityOnJobs = false;
-		prioritySorterConfiguration.load();
-	}
+    public static void init() {
+        PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
+        // Make sure default is good for updating from legacy
+        prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
+        prioritySorterConfiguration.allowPriorityOnJobs = false;
+        prioritySorterConfiguration.load();
+    }
 
-	@Override
-	public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+    @Override
+    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
 
-		int prevNumberOfPriorities = strategy.getNumberOfPriorities();
-		strategy = req.bindJSON(SorterStrategy.class, json.getJSONObject("strategy"));
-		int newNumberOfPriorities = strategy.getNumberOfPriorities();
+        int prevNumberOfPriorities = strategy.getNumberOfPriorities();
+        strategy = req.bindJSON(SorterStrategy.class, json.getJSONObject("strategy"));
+        int newNumberOfPriorities = strategy.getNumberOfPriorities();
 
-		FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String.valueOf(newNumberOfPriorities));
-		if (numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
-			throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
-		}
-		//
-		onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
-		//
-		updatePriorities(prevNumberOfPriorities);
-		//
-		save();
-		return true;
-	}
+        FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String.valueOf(newNumberOfPriorities));
+        if (numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
+            throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
+        }
+        //
+        onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
+        //
+        updatePriorities(prevNumberOfPriorities);
+        //
+        save();
+        return true;
+    }
 
-	public boolean getOnlyAdminsMayEditPriorityConfiguration() {
-		return onlyAdminsMayEditPriorityConfiguration;
-	}
+    public boolean getOnlyAdminsMayEditPriorityConfiguration() {
+        return onlyAdminsMayEditPriorityConfiguration;
+    }
 
-	public SorterStrategy getStrategy() {
-		return strategy;
-	}
+    public SorterStrategy getStrategy() {
+        return strategy;
+    }
 
-	public ListBoxModel doFillStrategyItems() {
-		ListBoxModel strategies = new ListBoxModel();
-		List<SorterStrategyDescriptor> values = SorterStrategy.getAllSorterStrategies();
-		for (SorterStrategyDescriptor sorterStrategy : values) {
-			strategies.add(sorterStrategy.getDisplayName(), sorterStrategy.getKey());
-		}
-		return strategies;
-	}
+    public ListBoxModel doFillStrategyItems() {
+        ListBoxModel strategies = new ListBoxModel();
+        List<SorterStrategyDescriptor> values = SorterStrategy.getAllSorterStrategies();
+        for (SorterStrategyDescriptor sorterStrategy : values) {
+            strategies.add(sorterStrategy.getDisplayName(), sorterStrategy.getKey());
+        }
+        return strategies;
+    }
 
-	public ListBoxModel doGetPriorityItems() {
-		ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
-		items.add(
-				0,
-				new ListBoxModel.Option(Messages.Use_default_priority(), String.valueOf(PriorityCalculationsUtil
-						.getUseDefaultPriorityPriority())));
-		return items;
-	}
+    public ListBoxModel doGetPriorityItems() {
+        ListBoxModel items = PrioritySorterUtil.fillPriorityItems(strategy.getNumberOfPriorities());
+        items.add(
+                0,
+                new ListBoxModel.Option(
+                        Messages.Use_default_priority(),
+                        String.valueOf(PriorityCalculationsUtil.getUseDefaultPriorityPriority())));
+        return items;
+    }
 
-	public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
-		if (value.length() == 0) {
-			return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
-		}
-		try {
-			int intValue = Integer.parseInt(value);
-			if (intValue <= 0) {
-				return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
-			}
-		} catch (NumberFormatException e) {
-			return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
-		}
-		return FormValidation.ok();
-	}
+    public FormValidation doCheckNumberOfPriorities(@QueryParameter String value) {
+        if (value.length() == 0) {
+            return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+        }
+        try {
+            int intValue = Integer.parseInt(value);
+            if (intValue <= 0) {
+                return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+            }
+        } catch (NumberFormatException e) {
+            return FormValidation.error(Messages.PrioritySorterConfiguration_enterValueRequestMessage());
+        }
+        return FormValidation.ok();
+    }
 
-	@SuppressFBWarnings(value="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",justification="try with resources checks null")
-	private void updatePriorities(int prevNumberOfPriorities) {
-		// Shouldn't really by a permission problem when getting here but
-		// to be on the safe side
-		try(ACLContext saveCtx = ACL.as(ACL.SYSTEM)) {
-			@SuppressWarnings("rawtypes")
-			List<Job> allJobs = Jenkins.get().getAllItems(Job.class);
-			for (Job<?, ?> job : allJobs) {
-				try {
-					// Scale any priority on the Job
-					PriorityJobProperty priorityProperty = job
-							.getProperty(PriorityJobProperty.class);
-					if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
-						int newPriority = PriorityCalculationsUtil.scale(prevNumberOfPriorities,
-								strategy.getNumberOfPriorities(), priorityProperty.priority);
+    @SuppressFBWarnings(
+            value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+            justification = "try with resources checks null")
+    private void updatePriorities(int prevNumberOfPriorities) {
+        // Shouldn't really by a permission problem when getting here but
+        // to be on the safe side
+        try (ACLContext saveCtx = ACL.as(ACL.SYSTEM)) {
+            @SuppressWarnings("rawtypes")
+            List<Job> allJobs = Jenkins.get().getAllItems(Job.class);
+            for (Job<?, ?> job : allJobs) {
+                try {
+                    // Scale any priority on the Job
+                    PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
+                    if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
+                        int newPriority = PriorityCalculationsUtil.scale(
+                                prevNumberOfPriorities, strategy.getNumberOfPriorities(), priorityProperty.priority);
                         if (newPriority != priorityProperty.getPriority()) {
                             job.removeProperty(priorityProperty);
-                            job.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(),
-                                    newPriority));
+                            job.addProperty(new PriorityJobProperty(priorityProperty.getUseJobPriority(), newPriority));
                             job.save();
                         }
-					}
-				} catch (IOException e) {
-					LOGGER.log(Level.WARNING, "Failed to update Advanced Job Priority To {0}", job.getName());
-				}
-			}
-			//
-			List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
-			for (JobGroup jobGroup : jobGroups) {
-				jobGroup.setPriority(PriorityCalculationsUtil.scale(prevNumberOfPriorities,
-						strategy.getNumberOfPriorities(), jobGroup.getPriority()));
-				List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
-				for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
-					priorityStrategyHolder.getPriorityStrategy().numberPrioritiesUpdates(prevNumberOfPriorities,
-							strategy.getNumberOfPriorities());
-				}
-			}
-			PriorityConfiguration.get().save();
-		}
-	}
+                    }
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Failed to update Advanced Job Priority To {0}", job.getName());
+                }
+            }
+            //
+            List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
+            for (JobGroup jobGroup : jobGroups) {
+                jobGroup.setPriority(PriorityCalculationsUtil.scale(
+                        prevNumberOfPriorities, strategy.getNumberOfPriorities(), jobGroup.getPriority()));
+                List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+                for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+                    priorityStrategyHolder
+                            .getPriorityStrategy()
+                            .numberPrioritiesUpdates(prevNumberOfPriorities, strategy.getNumberOfPriorities());
+                }
+            }
+            PriorityConfiguration.get().save();
+        }
+    }
 
-	static public PrioritySorterConfiguration get() {
-		return (PrioritySorterConfiguration) Jenkins.get().getDescriptor(PrioritySorterConfiguration.class);
-	}
-
+    public static PrioritySorterConfiguration get() {
+        return (PrioritySorterConfiguration) Jenkins.get().getDescriptor(PrioritySorterConfiguration.class);
+    }
 }

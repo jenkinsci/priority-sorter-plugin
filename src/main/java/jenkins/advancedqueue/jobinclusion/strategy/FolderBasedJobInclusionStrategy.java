@@ -23,20 +23,16 @@
  */
 package jenkins.advancedqueue.jobinclusion.strategy;
 
+import com.cloudbees.hudson.plugins.folder.Folder;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.util.ListBoxModel;
-
 import java.util.List;
-
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
-
 import org.kohsuke.stapler.DataBoundConstructor;
-
-import com.cloudbees.hudson.plugins.folder.Folder;
 
 /**
  * @author Magnus Sandberg
@@ -44,38 +40,38 @@ import com.cloudbees.hudson.plugins.folder.Folder;
  */
 public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 
-	@Extension(optional = true)
-	static public class FolderBasedJobInclusionStrategyDescriptor extends
-			AbstractJobInclusionStrategyDescriptor<FolderBasedJobInclusionStrategy> {
+    @Extension(optional = true)
+    public static class FolderBasedJobInclusionStrategyDescriptor
+            extends AbstractJobInclusionStrategyDescriptor<FolderBasedJobInclusionStrategy> {
 
-		public FolderBasedJobInclusionStrategyDescriptor() {
-			super(Messages.Jobs_included_in_folder());
-		}
+        public FolderBasedJobInclusionStrategyDescriptor() {
+            super(Messages.Jobs_included_in_folder());
+        }
 
-		public ListBoxModel getListFolderItems() {
-			ListBoxModel items = new ListBoxModel();
-			List<Folder> folders = Jenkins.get().getAllItems(Folder.class);
-			for (Folder folder : folders) {
-				items.add(folder.getFullName(), folder.getFullName());
-			}
-			return items;
-		}
+        public ListBoxModel getListFolderItems() {
+            ListBoxModel items = new ListBoxModel();
+            List<Folder> folders = Jenkins.get().getAllItems(Folder.class);
+            for (Folder folder : folders) {
+                items.add(folder.getFullName(), folder.getFullName());
+            }
+            return items;
+        }
+    }
+    ;
 
-	};
+    private String folderName;
 
-	private String folderName;
+    @DataBoundConstructor
+    public FolderBasedJobInclusionStrategy(String folderName) {
+        this.folderName = folderName;
+    }
 
-	@DataBoundConstructor
-	public FolderBasedJobInclusionStrategy(String folderName) {
-		this.folderName = folderName;
-	}
+    public String getFolderName() {
+        return folderName;
+    }
 
-	public String getFolderName() {
-		return folderName;
-	}
-
-	@Override
-	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		return job.getFullName().startsWith(folderName);
-	}
+    @Override
+    public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+        return job.getFullName().startsWith(folderName);
+    }
 }

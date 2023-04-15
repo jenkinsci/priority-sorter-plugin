@@ -24,10 +24,8 @@
 package jenkins.advancedqueue.sorter;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 import hudson.model.Queue.BlockedItem;
 import hudson.model.Queue.BuildableItem;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,87 +37,86 @@ import java.util.logging.Logger;
  * Keeps track of the Queue.Items seen by the Sorter. Uses a WeakHash to store the entries that have
  * left the queue, this can be used by Strategies that needs this info but still minimizes the need
  * to lookup the data again from Jenkins Core.
- * 
+ *
  * @author Magnus Sandberg
  * @since 2.3
  */
 public class QueueItemCache {
 
-	private final static Logger LOGGER = Logger.getLogger(QueueItemCache.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(QueueItemCache.class.getName());
 
-	static private QueueItemCache queueItemCache = null;
+    private static QueueItemCache queueItemCache = null;
 
-	static {
-		queueItemCache = new QueueItemCache();
-	}
+    static {
+        queueItemCache = new QueueItemCache();
+    }
 
-	static public QueueItemCache get() {
-		return queueItemCache;
-	}
+    public static QueueItemCache get() {
+        return queueItemCache;
+    }
 
-	// Keeps track of all items currently in the queue
-	private Map<Long, ItemInfo> item2info = new HashMap<>();
-	// Keeps track of the last started item of the Job
-	private Map<String, ItemInfo> jobName2info = new HashMap<>();
+    // Keeps track of all items currently in the queue
+    private Map<Long, ItemInfo> item2info = new HashMap<>();
+    // Keeps track of the last started item of the Job
+    private Map<String, ItemInfo> jobName2info = new HashMap<>();
 
-	private QueueItemCache() {
-	}
+    private QueueItemCache() {}
 
-	public synchronized ItemInfo getItem(long itemId) {
-		return item2info.get(itemId);
-	}
+    public synchronized ItemInfo getItem(long itemId) {
+        return item2info.get(itemId);
+    }
 
-	/**
-	 * Gets the Item for and itemId/queueId
-	 * 
-	 * @param itemId the id of a Job currently in the queue
-	 * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
-	 *         queue
-	 */
-	@Deprecated
-	synchronized public ItemInfo getItem(Integer itemId) {
-		return item2info.get(itemId.longValue());
-	}
+    /**
+     * Gets the Item for and itemId/queueId
+     *
+     * @param itemId the id of a Job currently in the queue
+     * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
+     *         queue
+     */
+    @Deprecated
+    public synchronized ItemInfo getItem(Integer itemId) {
+        return item2info.get(itemId.longValue());
+    }
 
-	/**
-	 * Get the ItemInfo for the last knows start of this Job Name
-	 * 
-	 * @param jobName a name of a Job
-	 * @return the {@link ItemInfo} for the last know start of the Job.
-         *         Can be {@code null} if job didn't run yet
-	 */
-        @CheckForNull
-	synchronized public ItemInfo getItem(String jobName) {
-		return jobName2info.get(jobName);
-	}
+    /**
+     * Get the ItemInfo for the last knows start of this Job Name
+     *
+     * @param jobName a name of a Job
+     * @return the {@link ItemInfo} for the last know start of the Job.
+     *         Can be {@code null} if job didn't run yet
+     */
+    @CheckForNull
+    public synchronized ItemInfo getItem(String jobName) {
+        return jobName2info.get(jobName);
+    }
 
-	synchronized public ItemInfo addItem(ItemInfo itemInfo) {
-		long itemId = itemInfo.getItemId();
-		item2info.put(itemId, itemInfo);
-		jobName2info.put(itemInfo.getJobName(), itemInfo);
-		return itemInfo;
-	}
+    public synchronized ItemInfo addItem(ItemInfo itemInfo) {
+        long itemId = itemInfo.getItemId();
+        item2info.put(itemId, itemInfo);
+        jobName2info.put(itemInfo.getJobName(), itemInfo);
+        return itemInfo;
+    }
 
-        @CheckForNull
-		@Deprecated
-	synchronized public ItemInfo removeItem(Integer itemId) {
-		return item2info.remove(itemId.longValue());
-	}
+    @CheckForNull
+    @Deprecated
+    public synchronized ItemInfo removeItem(Integer itemId) {
+        return item2info.remove(itemId.longValue());
+    }
 
-	@CheckForNull
-	public synchronized ItemInfo removeItem(long itemId) {
-		return item2info.remove(itemId);
-	}
+    @CheckForNull
+    public synchronized ItemInfo removeItem(long itemId) {
+        return item2info.remove(itemId);
+    }
 
-	/**
-	 * This method will return a sorted list of all known and active {@link ItemInfo}s this will
-	 * include Items mapped to {@link BuildableItem}s as well as {@link BlockedItem}s
-	 * 
-	 * @return the sorted list of all {@link ItemInfo}s
-	 */
-	synchronized public List<ItemInfo> getSortedList() {
-		ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
-		Collections.sort(list);
-		return Collections.unmodifiableList(list);
-	}
+    /**
+     * This method will return a sorted list of all known and active {@link ItemInfo}s this will
+     * include Items mapped to {@link BuildableItem}s as well as {@link BlockedItem}s
+     *
+     * @return the sorted list of all {@link ItemInfo}s
+     */
+    public synchronized List<ItemInfo> getSortedList() {
+        ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
+        Collections.sort(list);
+        return Collections.unmodifiableList(list);
+    }
 }

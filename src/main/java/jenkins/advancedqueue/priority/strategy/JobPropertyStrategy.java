@@ -24,15 +24,12 @@
 package jenkins.advancedqueue.priority.strategy;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Queue.Item;
-
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -41,40 +38,37 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 
-	@Extension
-	public static class UserIdCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+    @Extension
+    public static class UserIdCauseStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
 
-		public UserIdCauseStrategyDescriptor() {
-			super(Messages.Take_the_priority_from_property_on_the_job());
-		}
+        public UserIdCauseStrategyDescriptor() {
+            super(Messages.Take_the_priority_from_property_on_the_job());
+        }
+    }
 
-	}
+    @DataBoundConstructor
+    public JobPropertyStrategy() {}
 
-	@DataBoundConstructor
-	public JobPropertyStrategy() {
-	}
-	
-	@CheckForNull
-	private Integer getPriorityInternal(Queue.Item item) {
-		if(item.task instanceof Job<?, ?>) {
-			Job<?, ?> job = (Job<?, ?>) item.task;
-			PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
-			if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
-				return priorityProperty.priority;
-			}
-		} 
-		return null;
-	}
+    @CheckForNull
+    private Integer getPriorityInternal(Queue.Item item) {
+        if (item.task instanceof Job<?, ?>) {
+            Job<?, ?> job = (Job<?, ?>) item.task;
+            PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
+            if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
+                return priorityProperty.priority;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public boolean isApplicable(Queue.Item item) {
-		return getPriorityInternal(item) != null;
-	}
+    @Override
+    public boolean isApplicable(Queue.Item item) {
+        return getPriorityInternal(item) != null;
+    }
 
-	@Override
-	public int getPriority(Item item) {
-		final Integer p = getPriorityInternal(item);
-		return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-	}
-
+    @Override
+    public int getPriority(Item item) {
+        final Integer p = getPriorityInternal(item);
+        return p != null ? p : PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+    }
 }
