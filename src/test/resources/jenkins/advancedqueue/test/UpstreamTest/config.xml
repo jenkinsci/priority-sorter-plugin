@@ -37,7 +37,7 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <comparator class="java.lang.String$CaseInsensitiveComparator"/>
         <string>Matrix</string>
       </jobNames>
       <jobFilters/>
@@ -60,7 +60,7 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <comparator class="java.lang.String$CaseInsensitiveComparator"/>
       </jobNames>
       <jobFilters/>
       <columns>
