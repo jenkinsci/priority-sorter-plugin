@@ -1,5 +1,6 @@
 package jenkins.advancedqueue;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Queue.Item;
 import hudson.model.Run;
