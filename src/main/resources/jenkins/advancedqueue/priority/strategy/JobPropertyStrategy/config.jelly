@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-	<f:description>${%Take the priority from the the Priority assigned directly on the Job.}</f:description>
+	<f:description>${%Take_the_priority_assigned_directly_on_the_job}</f:description>
 </j:jelly>

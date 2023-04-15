@@ -53,9 +53,9 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
 		@Override
 		public String getDisplayName() {
 			if (cloudbeesFolders) {
-				return "Jobs and Folders marked for inclusion";
+                                return Messages.Jobs_and_Folders_marked_for_inclusion();
 			} else {
-				return "Jobs marked for inclusion";
+                                return Messages.Jobs_marked_for_inclusion();
 			}
 		}
 

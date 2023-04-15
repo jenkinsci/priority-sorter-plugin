@@ -1,7 +1,6 @@
 package jenkins.advancedqueue.test;
 
 import hudson.model.Cause.UserIdCause;
-import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
 import jenkins.advancedqueue.testutil.TestRunListener;

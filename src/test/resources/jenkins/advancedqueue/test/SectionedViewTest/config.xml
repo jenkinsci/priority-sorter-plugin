@@ -37,7 +37,7 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <comparator class="java.lang.String$CaseInsensitiveComparator"/>
         <string>Job 1</string>
       </jobNames>
       <jobFilters/>
@@ -62,7 +62,7 @@
       <sections>
         <hudson.plugins.sectioned__view.ListViewSection>
           <jobNames>
-            <comparator class="hudson.util.CaseInsensitiveComparator"/>
+            <comparator class="java.lang.String$CaseInsensitiveComparator"/>
           </jobNames>
           <jobFilters/>
           <name>List View Section</name>
