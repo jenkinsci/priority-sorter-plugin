@@ -1,6 +1,5 @@
 package jenkins.advancedqueue;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Queue.Item;
 import hudson.model.Run;
@@ -17,11 +16,7 @@ import jenkins.advancedqueue.sorter.QueueItemCache;
 public class RunExclusiveThrottler {
 
     private static List<String> exclusiveJobs = Collections.synchronizedList(new ArrayList<String>());
-
-    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Low risk")
     private static int exclusiveJobGroupId = -1;
-
-    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Low risk")
     private static String exclusiveJobName = "";
 
     static PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
