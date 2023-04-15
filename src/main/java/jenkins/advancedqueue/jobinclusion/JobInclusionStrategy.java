@@ -37,30 +37,30 @@ import jenkins.model.Jenkins;
  */
 public abstract class JobInclusionStrategy implements ExtensionPoint, Describable<JobInclusionStrategy> {
 
-	static public class AbstractJobInclusionStrategyDescriptor<T extends JobInclusionStrategy> extends Descriptor<JobInclusionStrategy> {
+    public static class AbstractJobInclusionStrategyDescriptor<T extends JobInclusionStrategy>
+            extends Descriptor<JobInclusionStrategy> {
 
-		private final String displayName;
+        private final String displayName;
 
-		protected AbstractJobInclusionStrategyDescriptor(String displayName) {
-			this.displayName = displayName;
-		}
+        protected AbstractJobInclusionStrategyDescriptor(String displayName) {
+            this.displayName = displayName;
+        }
 
-		@Override
-		public String getDisplayName() {
-			return displayName;
-		}
+        @Override
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+    ;
 
-	};
+    @SuppressWarnings("unchecked")
+    public Descriptor<JobInclusionStrategy> getDescriptor() {
+        return Jenkins.get().getDescriptor(this.getClass());
+    }
 
-	@SuppressWarnings("unchecked")
-	public Descriptor<JobInclusionStrategy> getDescriptor() {
-		return Jenkins.get().getDescriptor(this.getClass());
-	}
+    public abstract boolean contains(DecisionLogger decisionLogger, Job<?, ?> job);
 
-	abstract public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job);
-
-	public static DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> all() {
-		return Jenkins.get().getDescriptorList(JobInclusionStrategy.class);
-	}
-
+    public static DescriptorExtensionList<JobInclusionStrategy, Descriptor<JobInclusionStrategy>> all() {
+        return Jenkins.get().getDescriptorList(JobInclusionStrategy.class);
+    }
 }

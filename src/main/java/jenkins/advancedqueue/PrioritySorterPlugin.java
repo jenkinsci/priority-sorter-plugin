@@ -23,50 +23,50 @@
  */
 package jenkins.advancedqueue;
 
+import static hudson.init.InitMilestone.EXTENSIONS_AUGMENTED;
 import static hudson.init.InitMilestone.JOB_LOADED;
 import static hudson.init.InitMilestone.PLUGINS_STARTED;
-import static hudson.init.InitMilestone.EXTENSIONS_AUGMENTED;
+
 import hudson.Plugin;
 import hudson.init.Initializer;
 import hudson.model.Items;
-
 import java.util.logging.Logger;
-
 import jenkins.advancedqueue.priority.strategy.PriorityJobProperty;
 import jenkins.advancedqueue.sorter.AdvancedQueueSorter;
 
 /**
  * Plugin is the staring point of the Priority Sorter Plugin.
- * 
+ *
  * Used to make sure that the data is initialized at startup.
- * 
+ *
  * @author Magnus Sandberg
  * @since 2.3
  */
 public class PrioritySorterPlugin extends Plugin {
 
-	private final static Logger LOGGER = Logger.getLogger(PrioritySorterPlugin.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PrioritySorterPlugin.class.getName());
 
-	@Initializer(before=PLUGINS_STARTED) 
-	public static void addAliases() { 
-		// Moved in 3.0 when JobPropertyStrategy was added
-		Items.XSTREAM2.addCompatibilityAlias("jenkins.advancedqueue.AdvancedQueueSorterJobProperty", PriorityJobProperty.class);
-		// moved in 3.0 everything in hudson.* is deprecated
-		Items.XSTREAM2.addCompatibilityAlias("hudson.queueSorter.PrioritySorterJobColumn", PrioritySorterJobColumn.class);		
-	}
-	
-	@Initializer(after = EXTENSIONS_AUGMENTED)
-	public static void init1() {
-		// Check for any Legacy Configuration and init the Configuration
-		LOGGER.info("Configuring the Priority Sorter ...");
-		PrioritySorterConfiguration.init();
-	}
+    @Initializer(before = PLUGINS_STARTED)
+    public static void addAliases() {
+        // Moved in 3.0 when JobPropertyStrategy was added
+        Items.XSTREAM2.addCompatibilityAlias(
+                "jenkins.advancedqueue.AdvancedQueueSorterJobProperty", PriorityJobProperty.class);
+        // moved in 3.0 everything in hudson.* is deprecated
+        Items.XSTREAM2.addCompatibilityAlias(
+                "hudson.queueSorter.PrioritySorterJobColumn", PrioritySorterJobColumn.class);
+    }
 
-	@Initializer(after = JOB_LOADED)
-	public static void init2() {
-		// Init the Queue and sort the loaded Queue items
-		LOGGER.info("Sorting existing Queue ...");
-		AdvancedQueueSorter.init();
-	}
+    @Initializer(after = EXTENSIONS_AUGMENTED)
+    public static void init1() {
+        // Check for any Legacy Configuration and init the Configuration
+        LOGGER.info("Configuring the Priority Sorter ...");
+        PrioritySorterConfiguration.init();
+    }
 
+    @Initializer(after = JOB_LOADED)
+    public static void init2() {
+        // Init the Queue and sort the loaded Queue items
+        LOGGER.info("Sorting existing Queue ...");
+        AdvancedQueueSorter.init();
+    }
 }
