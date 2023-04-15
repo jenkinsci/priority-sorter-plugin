@@ -146,7 +146,7 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 						return false;
 					}
 					java.util.regex.Matcher matcher = pattern.matcher(job.getName());
-					if (matcher != null && matcher.matches()) {
+					if (matcher.matches()) {
 						decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
 						return true;
 					} else {
