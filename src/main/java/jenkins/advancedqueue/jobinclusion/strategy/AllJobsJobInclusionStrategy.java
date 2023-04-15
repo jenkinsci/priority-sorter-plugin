@@ -28,7 +28,6 @@ import hudson.model.Job;
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -37,21 +36,21 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class AllJobsJobInclusionStrategy extends JobInclusionStrategy {
 
-	@Extension
-	static public class AllJobsJobInclusionStrategyDescriptor extends
-			AbstractJobInclusionStrategyDescriptor<AllJobsJobInclusionStrategy> {
+    @Extension
+    public static class AllJobsJobInclusionStrategyDescriptor
+            extends AbstractJobInclusionStrategyDescriptor<AllJobsJobInclusionStrategy> {
 
-		public AllJobsJobInclusionStrategyDescriptor() {
-			super(Messages.All_jobs());
-		}
-	};
+        public AllJobsJobInclusionStrategyDescriptor() {
+            super(Messages.All_jobs());
+        }
+    }
+    ;
 
-	@DataBoundConstructor
-	public AllJobsJobInclusionStrategy() {
-	}
+    @DataBoundConstructor
+    public AllJobsJobInclusionStrategy() {}
 
-	@Override
-	public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-		return true;
-	}
+    @Override
+    public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
+        return true;
+    }
 }

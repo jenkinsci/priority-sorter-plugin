@@ -27,7 +27,6 @@ import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -35,30 +34,29 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * for the job and is an easy way to compare the priorities of many jobs.
  */
 public class PrioritySorterJobColumn extends ListViewColumn {
-	
-	@DataBoundConstructor
-	public PrioritySorterJobColumn() {
-	}
 
-	public String getPriority(final Job<?, ?> job) {
-		ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
-		if(itemInfo == null) {
-			return "Pending"; // You need to run a Job
-		}
-		return Integer.toString(itemInfo.getPriority());
-	}
+    @DataBoundConstructor
+    public PrioritySorterJobColumn() {}
 
-	@Extension
-	public static class DescriptorImpl extends ListViewColumnDescriptor {
+    public String getPriority(final Job<?, ?> job) {
+        ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
+        if (itemInfo == null) {
+            return "Pending"; // You need to run a Job
+        }
+        return Integer.toString(itemInfo.getPriority());
+    }
 
-		@Override
-		public String getDisplayName() {
-			return "Priority Value";
-		}
+    @Extension
+    public static class DescriptorImpl extends ListViewColumnDescriptor {
 
-		@Override
-		public boolean shownByDefault() {
-			return false;
-		}
-	}
+        @Override
+        public String getDisplayName() {
+            return "Priority Value";
+        }
+
+        @Override
+        public boolean shownByDefault() {
+            return false;
+        }
+    }
 }
