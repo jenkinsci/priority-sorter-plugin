@@ -25,19 +25,15 @@ package jenkins.advancedqueue.priority.strategy;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-
 import hudson.Extension;
 import hudson.model.Cause;
 import hudson.model.Cause.UpstreamCause;
 import hudson.model.Queue;
-
 import java.util.List;
-
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.StartedJobItemCache;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -46,47 +42,47 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
 
-	@Extension
-	static public class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
-		public BuildParameterStrategyDescriptor() {
-			super(Messages.Job_triggered_by_a_upstream_build());
-		}
-	};
+    @Extension
+    public static class BuildParameterStrategyDescriptor extends AbstractDynamicPriorityStrategyDescriptor {
+        public BuildParameterStrategyDescriptor() {
+            super(Messages.Job_triggered_by_a_upstream_build());
+        }
+    }
+    ;
 
-	@DataBoundConstructor
-	public UpstreamCauseStrategy() {
-	}
+    @DataBoundConstructor
+    public UpstreamCauseStrategy() {}
 
-	@CheckForNull
-	private UpstreamCause getUpstreamCause(@NonNull Queue.Item item) {
-		List<Cause> causes = item.getCauses();
-		for (Cause cause : causes) {
-			if (cause.getClass() == UpstreamCause.class) {
-				return (UpstreamCause) cause;
-			}
-		}
-		return null;
-	}
+    @CheckForNull
+    private UpstreamCause getUpstreamCause(@NonNull Queue.Item item) {
+        List<Cause> causes = item.getCauses();
+        for (Cause cause : causes) {
+            if (cause.getClass() == UpstreamCause.class) {
+                return (UpstreamCause) cause;
+            }
+        }
+        return null;
+    }
 
-	public int getPriority(Queue.Item item) {
-		UpstreamCause upstreamCause = getUpstreamCause(item);
-                if (upstreamCause == null) {
-                    // Cannot determine
-                    return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-                }
-                
-		String upstreamProject = upstreamCause.getUpstreamProject();
-		int upstreamBuildId = upstreamCause.getUpstreamBuild();
-		ItemInfo upstreamItem = StartedJobItemCache.get().getStartedItem(upstreamProject, upstreamBuildId);
-		// Upstream Item being null should be very very rare
-		if (upstreamItem != null) {
-			return upstreamItem.getPriority();
-		}
-		return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-	}
+    public int getPriority(Queue.Item item) {
+        UpstreamCause upstreamCause = getUpstreamCause(item);
+        if (upstreamCause == null) {
+            // Cannot determine
+            return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+        }
 
-	@Override
-	public boolean isApplicable(Queue.Item item) {
-		return getUpstreamCause(item) != null;
-	}
+        String upstreamProject = upstreamCause.getUpstreamProject();
+        int upstreamBuildId = upstreamCause.getUpstreamBuild();
+        ItemInfo upstreamItem = StartedJobItemCache.get().getStartedItem(upstreamProject, upstreamBuildId);
+        // Upstream Item being null should be very very rare
+        if (upstreamItem != null) {
+            return upstreamItem.getPriority();
+        }
+        return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+    }
+
+    @Override
+    public boolean isApplicable(Queue.Item item) {
+        return getUpstreamCause(item) != null;
+    }
 }

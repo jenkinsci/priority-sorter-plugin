@@ -23,15 +23,14 @@
  */
 package jenkins.advancedqueue.sorter;
 
-/** 
+/**
  * Statuses for Build in the the queue, used to track status in ItemInfo
- *  
+ *
  * @author Magnus Sandberg
  * @since 2.3
  */
 public enum ItemStatus {
-
-	WAITING,
-	BUILDABLE,
-	BLOCKED
+    WAITING,
+    BUILDABLE,
+    BLOCKED
 }

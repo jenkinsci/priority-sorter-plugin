@@ -23,14 +23,12 @@
  */
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import hudson.Extension;
-import hudson.util.ListBoxModel;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-
+import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.hudson.plugins.folder.FolderProperty;
 import com.cloudbees.hudson.plugins.folder.FolderPropertyDescriptor;
-import com.cloudbees.hudson.plugins.folder.Folder;
+import hudson.Extension;
+import hudson.util.ListBoxModel;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Magnus Sandberg
@@ -38,45 +36,43 @@ import com.cloudbees.hudson.plugins.folder.Folder;
  */
 public class JobInclusionFolderProperty extends FolderProperty<Folder> {
 
-	private boolean useJobGroup;
+    private boolean useJobGroup;
 
-	private String jobGroupName;
+    private String jobGroupName;
 
-	@DataBoundConstructor
-	public JobInclusionFolderProperty(Boolean useJobGroup, String jobGroupName) {
-		this.useJobGroup = useJobGroup;
-		this.jobGroupName = jobGroupName;
-	}
+    @DataBoundConstructor
+    public JobInclusionFolderProperty(Boolean useJobGroup, String jobGroupName) {
+        this.useJobGroup = useJobGroup;
+        this.jobGroupName = jobGroupName;
+    }
 
-	public String getJobGroupName() {
-		return jobGroupName;
-	}
-	
-	public boolean isUseJobGroup() {
-		return useJobGroup;
-	}
+    public String getJobGroupName() {
+        return jobGroupName;
+    }
 
+    public boolean isUseJobGroup() {
+        return useJobGroup;
+    }
 
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
+    @Override
+    public DescriptorImpl getDescriptor() {
+        return (DescriptorImpl) super.getDescriptor();
+    }
 
-	@Extension(optional = true)
-	public static final class DescriptorImpl extends FolderPropertyDescriptor {
-		
-		@Override
-		public String getDisplayName() {
-			return "XXX";
-		}
+    @Extension(optional = true)
+    public static final class DescriptorImpl extends FolderPropertyDescriptor {
 
-		public ListBoxModel getJobGroups() {
-			return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
-		}
+        @Override
+        public String getDisplayName() {
+            return "XXX";
+        }
 
-		public boolean isUsed() {
-			return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups().size() > 0;
-		}
-	}
+        public ListBoxModel getJobGroups() {
+            return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
+        }
 
+        public boolean isUsed() {
+            return PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups().size() > 0;
+        }
+    }
 }
