@@ -27,19 +27,19 @@ import hudson.model.Descriptor;
 
 /**
  * Implements descriptor for {@link SorterStrategy}.
- * 
+ *
  * @author Oleg Nenashev
  * @since 2.0
  */
 public abstract class SorterStrategyDescriptor extends Descriptor<SorterStrategy> {
-	/**
-	 * Returns a short name of strategy, which can be used as a unique id.
-	 * 
-	 * @return Short name of the sorter strategy.
-	 */
-	public abstract String getShortName();
+    /**
+     * Returns a short name of strategy, which can be used as a unique id.
+     *
+     * @return Short name of the sorter strategy.
+     */
+    public abstract String getShortName();
 
-	public String getKey() {
-		return getShortName();
-	}
+    public String getKey() {
+        return getShortName();
+    }
 }

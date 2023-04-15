@@ -30,10 +30,8 @@ import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.util.ListBoxModel;
-
 import java.util.List;
 import java.util.logging.Logger;
-
 import jenkins.advancedqueue.JobGroup;
 import jenkins.advancedqueue.JobGroup.PriorityStrategyHolder;
 import jenkins.advancedqueue.Messages;
@@ -42,7 +40,6 @@ import jenkins.advancedqueue.PriorityConfigurationCallback;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -52,88 +49,89 @@ import org.kohsuke.stapler.StaplerRequest;
  */
 public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
 
-	private final static Logger LOGGER = Logger.getLogger(PriorityJobProperty.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PriorityJobProperty.class.getName());
 
-	public final boolean useJobPriority;
-	public final int priority;
+    public final boolean useJobPriority;
+    public final int priority;
 
-	@Override
-	public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
-		return super.reconfigure(req, form);
-	}
+    @Override
+    public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
+        return super.reconfigure(req, form);
+    }
 
-	@DataBoundConstructor
-	public PriorityJobProperty(boolean useJobPriority, int priority) {
-		this.useJobPriority = useJobPriority;
-		this.priority = priority;
-	}
+    @DataBoundConstructor
+    public PriorityJobProperty(boolean useJobPriority, int priority) {
+        this.useJobPriority = useJobPriority;
+        this.priority = priority;
+    }
 
-	public int getPriority() {
-		return priority;
-	}
+    public int getPriority() {
+        return priority;
+    }
 
-	public boolean getUseJobPriority() {
-		return useJobPriority;
-	}
+    public boolean getUseJobPriority() {
+        return useJobPriority;
+    }
 
-	@Override
-	public DescriptorImpl getDescriptor() {
-		return (DescriptorImpl) super.getDescriptor();
-	}
+    @Override
+    public DescriptorImpl getDescriptor() {
+        return (DescriptorImpl) super.getDescriptor();
+    }
 
-	@Extension
-	public static final class DescriptorImpl extends JobPropertyDescriptor {
-		@SuppressFBWarnings(value="SIC_INNER_SHOULD_BE_STATIC_ANON", justification="Commont pattern in Jenkins")
-		private PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
-			
-                        @Override
-			public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
-				return this;
-			}
-			
-                        @Override
-			public PriorityConfigurationCallback setPrioritySelection(int priority) {
-				return this;
-			}
-			
-                        @Override
-			public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
-				return this;
-			}
+    @Extension
+    public static final class DescriptorImpl extends JobPropertyDescriptor {
+        @SuppressFBWarnings(value = "SIC_INNER_SHOULD_BE_STATIC_ANON", justification = "Commont pattern in Jenkins")
+        private PriorityConfigurationCallback dummyCallback = new PriorityConfigurationCallback() {
 
-                        @Override
-			public PriorityConfigurationCallback setPrioritySelection(int priority, long sortAsInQueueSince,
-					int jobGroupId, PriorityStrategy reason) {
-				return this;
-			}
-		};
-		
-		@Override
-		public String getDisplayName() {
-			return Messages.AdvancedQueueSorterJobProperty_displayName();
-		}
+            @Override
+            public PriorityConfigurationCallback setPrioritySelection(
+                    int priority, int jobGroupId, PriorityStrategy reason) {
+                return this;
+            }
 
-		public int getDefault() {
-			return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
-		}
+            @Override
+            public PriorityConfigurationCallback setPrioritySelection(int priority) {
+                return this;
+            }
 
-		public ListBoxModel getPriorities() {
-			ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
-			return items;
-		}
+            @Override
+            public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
+                return this;
+            }
 
-		public boolean isUsed(Job<?,?> owner) {
-			PriorityConfiguration configuration = PriorityConfiguration.get();
-			JobGroup jobGroup = configuration.getJobGroup(dummyCallback, owner);
-			if(jobGroup != null && jobGroup.isUsePriorityStrategies()) {
-				List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
-				for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
-					if(priorityStrategyHolder.getPriorityStrategy() instanceof JobPropertyStrategy) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-	}
+            @Override
+            public PriorityConfigurationCallback setPrioritySelection(
+                    int priority, long sortAsInQueueSince, int jobGroupId, PriorityStrategy reason) {
+                return this;
+            }
+        };
+
+        @Override
+        public String getDisplayName() {
+            return Messages.AdvancedQueueSorterJobProperty_displayName();
+        }
+
+        public int getDefault() {
+            return PrioritySorterConfiguration.get().getStrategy().getDefaultPriority();
+        }
+
+        public ListBoxModel getPriorities() {
+            ListBoxModel items = PrioritySorterConfiguration.get().doGetPriorityItems();
+            return items;
+        }
+
+        public boolean isUsed(Job<?, ?> owner) {
+            PriorityConfiguration configuration = PriorityConfiguration.get();
+            JobGroup jobGroup = configuration.getJobGroup(dummyCallback, owner);
+            if (jobGroup != null && jobGroup.isUsePriorityStrategies()) {
+                List<PriorityStrategyHolder> priorityStrategies = jobGroup.getPriorityStrategies();
+                for (PriorityStrategyHolder priorityStrategyHolder : priorityStrategies) {
+                    if (priorityStrategyHolder.getPriorityStrategy() instanceof JobPropertyStrategy) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
 }

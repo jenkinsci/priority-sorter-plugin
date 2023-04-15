@@ -23,10 +23,10 @@
  */
 package jenkins.advancedqueue.jobinclusion.strategy;
 
+import com.cloudbees.hudson.plugins.folder.Folder;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.util.ListBoxModel;
-
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -61,16 +61,20 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 			super(Messages.Jobs_included_in_folder());
 		}
 
-		public ListBoxModel getListFolderItems() {
-			ListBoxModel items = new ListBoxModel();
-			List<Folder> folders = Jenkins.get().getAllItems(Folder.class);
-			for (Folder folder : folders) {
-				items.add(folder.getFullName(), folder.getFullName());
-			}
-			return items;
-		}
+        public FolderBasedJobInclusionStrategyDescriptor() {
+            super(Messages.Jobs_included_in_folder());
+        }
 
-	};
+        public ListBoxModel getListFolderItems() {
+            ListBoxModel items = new ListBoxModel();
+            List<Folder> folders = Jenkins.get().getAllItems(Folder.class);
+            for (Folder folder : folders) {
+                items.add(folder.getFullName(), folder.getFullName());
+            }
+            return items;
+        }
+    }
+    ;
 
 	@Restricted(NoExternalUse.class)
 	static public class JobPattern {
@@ -103,9 +107,9 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
 		this.folderName = folderName;
 	}
 
-	public String getFolderName() {
-		return folderName;
-	}
+    public String getFolderName() {
+        return folderName;
+    }
 
 	public boolean isUseJobFilter() {
 		return useJobFilter;
