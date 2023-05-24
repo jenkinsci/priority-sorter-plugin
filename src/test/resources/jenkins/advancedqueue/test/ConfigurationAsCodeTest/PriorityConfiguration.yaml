@@ -1,0 +1,33 @@
+---
+unclassified:
+  priorityConfiguration:
+    jobGroups:
+      - id: 0
+        priority: 1
+        description: "Complex"
+        runExclusive: true
+        usePriorityStrategies: true
+        priorityStrategies:
+          - userIdCauseStrategy:
+              priority: 1
+          - upstreamCauseStrategy
+          - userIdCauseStrategy:
+              priority: 3
+          - cLICauseStrategy:
+              priority: 4
+          - jobPropertyStrategy
+          - buildParameterStrategy:
+              parameterName: priority
+          - healthStrategy:
+              priority: 2
+              health: HEALTH_0_TO_20
+              selection: BETTER
+        jobGroupStrategy:
+          folderBased:
+            folderName: "Jenkins"
+      - id: 1
+        priority: 2
+        description: "Simple"
+        runExclusive: false
+        usePriorityStrategies: false
+        jobGroupStrategy: allJobs

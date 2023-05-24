@@ -25,6 +25,8 @@ package jenkins.advancedqueue;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.model.Descriptor;
+import hudson.model.Queue.Item;
 import java.util.ArrayList;
 import java.util.List;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
@@ -42,7 +44,7 @@ import org.kohsuke.stapler.DataBoundSetter;
  */
 public class JobGroup {
 
-    public static class PriorityStrategyHolder {
+    public static class PriorityStrategyHolder extends PriorityStrategy {
         private int id = 0;
         private PriorityStrategy priorityStrategy;
 
@@ -68,6 +70,26 @@ public class JobGroup {
 
         public void setPriorityStrategy(PriorityStrategy priorityStrategy) {
             this.priorityStrategy = priorityStrategy;
+        }
+
+        @Override
+        public Descriptor<PriorityStrategy> getDescriptor() {
+            return priorityStrategy.getDescriptor();
+        }
+
+        @Override
+        public boolean isApplicable(Item item) {
+            return priorityStrategy.isApplicable(item);
+        }
+
+        @Override
+        public int getPriority(Item item) {
+            return priorityStrategy.getPriority(item);
+        }
+
+        @Override
+        public void numberPrioritiesUpdates(int oldNumberOfPriorities, int newNumberOfPriorities) {
+            priorityStrategy.numberPrioritiesUpdates(oldNumberOfPriorities, newNumberOfPriorities);
         }
     }
 
@@ -95,7 +117,7 @@ public class JobGroup {
     private String jobPattern = ".*";
 
     private boolean usePriorityStrategies;
-    private List<JobGroup.PriorityStrategyHolder> priorityStrategies = new ArrayList<JobGroup.PriorityStrategyHolder>();
+    private List<PriorityStrategyHolder> priorityStrategies = new ArrayList<PriorityStrategyHolder>();
 
     @DataBoundConstructor
     public JobGroup() {}
@@ -190,10 +212,13 @@ public class JobGroup {
     }
 
     @DataBoundSetter
-    public void setPriorityStrategies(List<PriorityStrategy> priorityStrategies) {
-        this.priorityStrategies = convertToPriorityStrategyHolder(priorityStrategies);
-        if (priorityStrategies.isEmpty()) {
-            this.setUsePriorityStrategies(false);
+    public void setPriorityStrategies(List<? extends PriorityStrategy> priorityStrategies) {
+        if (priorityStrategies != null && priorityStrategies.size() > 0) {
+            if (priorityStrategies.get(0) instanceof PriorityStrategyHolder) {
+                this.priorityStrategies = (List<PriorityStrategyHolder>) priorityStrategies;
+            } else {
+                this.priorityStrategies = convertToPriorityStrategyHolder((List<PriorityStrategy>) priorityStrategies);
+            }
         }
     }
 
