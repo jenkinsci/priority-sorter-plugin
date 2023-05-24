@@ -174,7 +174,10 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
             if (jobGroupObject.isEmpty()) {
                 break;
             }
-            JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
+            jobGroupObject.element("id", id++);
+            transformPriorityStrategiesData(jobGroupObject);
+
+            JobGroup jobGroup = req.bindJSON(JobGroup.class, jobGroupObject);
             jobGroups.add(jobGroup);
             id2jobGroup.put(jobGroup.getId(), jobGroup);
         }
@@ -203,6 +206,19 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
             return getPriorityInternal(item, priorityCallback);
         } finally {
             SecurityContextHolder.setContext(saveCtx);
+        }
+    }
+
+    private void transformPriorityStrategiesData(JSONObject jobGroupObject) {
+        if (jobGroupObject.has("usePriorityStrategies")) {
+            JSONObject usePriorityStrategies = jobGroupObject.getJSONObject("usePriorityStrategies");
+            if (usePriorityStrategies.has("holder")) {
+                JSONArray priorityStrategies = JSONArray.fromObject(usePriorityStrategies.getJSONObject("holder"));
+                jobGroupObject.element("priorityStrategies", priorityStrategies);
+                jobGroupObject.element("usePriorityStrategies", true);
+            } else {
+                jobGroupObject.element("usePriorityStrategies", false);
+            }
         }
     }
 
