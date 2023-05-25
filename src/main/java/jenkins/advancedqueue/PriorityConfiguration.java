@@ -205,7 +205,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
         if (jobGroupObject.has("usePriorityStrategies")) {
             JSONObject usePriorityStrategies = jobGroupObject.getJSONObject("usePriorityStrategies");
             if (usePriorityStrategies.has("holder")) {
-                JSONArray priorityStrategies = JSONArray.fromObject(usePriorityStrategies.getJSONObject("holder"));
+                JSONArray priorityStrategies = JSONArray.fromObject(usePriorityStrategies.get("holder"));
                 jobGroupObject.element("priorityStrategies", priorityStrategies);
                 jobGroupObject.element("usePriorityStrategies", true);
             } else {
