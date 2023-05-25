@@ -25,6 +25,7 @@ package jenkins.advancedqueue;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Queue.Item;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import java.util.List;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.model.Jenkins;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -47,6 +50,10 @@ public class JobGroup {
     public static class PriorityStrategyHolder extends PriorityStrategy {
         private int id = 0;
         private PriorityStrategy priorityStrategy;
+
+        @Extension
+        @Symbol("priorityStrategy")
+        public static class PriorityStrategyHolderDescriptor extends Descriptor<PriorityStrategy> {}
 
         public PriorityStrategyHolder() {}
 
@@ -74,7 +81,7 @@ public class JobGroup {
 
         @Override
         public Descriptor<PriorityStrategy> getDescriptor() {
-            return priorityStrategy.getDescriptor();
+            return Jenkins.get().getDescriptor(this.getClass());
         }
 
         @Override
@@ -117,7 +124,7 @@ public class JobGroup {
     private String jobPattern = ".*";
 
     private boolean usePriorityStrategies;
-    private List<PriorityStrategyHolder> priorityStrategies = new ArrayList<PriorityStrategyHolder>();
+    private List<PriorityStrategyHolder> priorityStrategies = new ArrayList<>();
 
     @DataBoundConstructor
     public JobGroup() {}
@@ -178,7 +185,11 @@ public class JobGroup {
         // Convert from 2.x
         if (jobGroupStrategy == null && view != null) {
             ViewBasedJobInclusionStrategy.JobPattern pattern = new ViewBasedJobInclusionStrategy.JobPattern(jobPattern);
-            jobGroupStrategy = new ViewBasedJobInclusionStrategy(view, useJobFilter == false ? null : pattern);
+            ViewBasedJobInclusionStrategy viewBasedJobInclusionStrategy = new ViewBasedJobInclusionStrategy(view);
+            if (useJobFilter) {
+                viewBasedJobInclusionStrategy.setJobFilter(pattern);
+            }
+            jobGroupStrategy = viewBasedJobInclusionStrategy;
         }
         return jobGroupStrategy;
     }

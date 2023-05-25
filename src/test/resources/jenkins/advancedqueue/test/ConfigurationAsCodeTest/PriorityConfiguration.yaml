@@ -8,20 +8,41 @@ unclassified:
         runExclusive: true
         usePriorityStrategies: true
         priorityStrategies:
-          - userIdCauseStrategy:
-              priority: 1
-          - upstreamCauseStrategy
-          - userIdCauseStrategy:
-              priority: 3
-          - cLICauseStrategy:
-              priority: 4
-          - jobPropertyStrategy
-          - buildParameterStrategy:
-              parameterName: priority
-          - healthStrategy:
-              priority: 2
-              health: HEALTH_0_TO_20
-              selection: BETTER
+          - priorityStrategy:
+              id: 0
+              priorityStrategy:
+                userIdCauseStrategy:
+                  priority: 1
+          - priorityStrategy:
+              id: 1
+              priorityStrategy:
+                upstreamCauseStrategy
+          - priorityStrategy:
+              id: 2
+              priorityStrategy:
+                userIdCauseStrategy:
+                  priority: 3
+          - priorityStrategy:
+              id: 3
+              priorityStrategy:
+                cLICauseStrategy:
+                  priority: 4
+          - priorityStrategy:
+              id: 4
+              priorityStrategy:
+                jobPropertyStrategy
+          - priorityStrategy:
+              id: 5
+              priorityStrategy:
+                buildParameterStrategy:
+                  parameterName: priority
+          - priorityStrategy:
+              id: 6
+              priorityStrategy:
+                healthStrategy:
+                  priority: 2
+                  health: HEALTH_0_TO_20
+                  selection: BETTER
         jobGroupStrategy:
           folderBased:
             folderName: "Jenkins"
