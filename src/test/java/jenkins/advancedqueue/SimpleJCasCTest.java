@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 
 import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
+import java.util.List;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
 import org.jvnet.hudson.test.RestartableJenkinsRule;
 
@@ -42,7 +43,11 @@ public class SimpleJCasCTest extends RoundTripAbstractTest {
         assertThat("Wrong default priority", globalConfig.getStrategy().getDefaultPriority(), is(3));
 
         PriorityConfiguration config = PriorityConfiguration.get();
-        assertThat("Wrong number of job groups", config.getJobGroups().size(), is(1));
+        List<JobGroup> jobGroups = config.getJobGroups();
+        assertThat("Wrong number of job groups", jobGroups.size(), is(1));
+        assertThat(jobGroups.get(0).getDescription(), is("Group 1 - default priority"));
+        assertThat(jobGroups.get(0).getPriority(), is(-1));
+        assertThat(jobGroups.get(0).getJobGroupStrategy().getDescriptor().getDisplayName(), is("All Jobs"));
     }
 
     @Override
