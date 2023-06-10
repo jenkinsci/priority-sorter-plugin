@@ -32,7 +32,7 @@ import java.util.List;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
 import org.jvnet.hudson.test.RestartableJenkinsRule;
 
-public class SimpleJCasCTest extends RoundTripAbstractTest {
+public class JCasCSimpleTest extends RoundTripAbstractTest {
 
     @Override
     protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {
