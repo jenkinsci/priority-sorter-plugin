@@ -8,6 +8,11 @@
     <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
     <Class name="jenkins.advancedqueue.PriorityConfiguration"/>
   </Match>
+  <Match>
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    <Class name="jenkins.advancedqueue.RunExclusiveThrottler$RunExclusiveRunListener"/>
+    <Method name="onStarted"/>
+  </Match>
 
   <!--
     Here lies technical debt. Exclusions in this section have not yet

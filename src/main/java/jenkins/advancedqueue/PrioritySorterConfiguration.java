@@ -43,9 +43,8 @@ import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import jenkins.advancedqueue.util.PrioritySorterUtil;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * @author Magnus Sandberg
@@ -76,26 +75,6 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
         prioritySorterConfiguration.strategy = DEFAULT_STRATEGY; // TODO: replace with class ref
         prioritySorterConfiguration.allowPriorityOnJobs = false;
         prioritySorterConfiguration.load();
-    }
-
-    @Override
-    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-
-        int prevNumberOfPriorities = strategy.getNumberOfPriorities();
-        strategy = req.bindJSON(SorterStrategy.class, json.getJSONObject("strategy"));
-        int newNumberOfPriorities = strategy.getNumberOfPriorities();
-
-        FormValidation numberOfPrioritiesCheck = doCheckNumberOfPriorities(String.valueOf(newNumberOfPriorities));
-        if (numberOfPrioritiesCheck.kind != FormValidation.Kind.OK) {
-            throw new FormException(numberOfPrioritiesCheck.getMessage(), "numberOfPriorities");
-        }
-        //
-        onlyAdminsMayEditPriorityConfiguration = json.getBoolean("onlyAdminsMayEditPriorityConfiguration");
-        //
-        updatePriorities(prevNumberOfPriorities);
-        //
-        save();
-        return true;
     }
 
     public boolean getOnlyAdminsMayEditPriorityConfiguration() {
@@ -182,7 +161,20 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
         }
     }
 
+    @DataBoundSetter
+    public void setOnlyAdminsMayEditPriorityConfiguration(boolean onlyAdminsMayEditPriorityConfiguration) {
+        this.onlyAdminsMayEditPriorityConfiguration = onlyAdminsMayEditPriorityConfiguration;
+        save();
+    }
+
+    @DataBoundSetter
+    public void setStrategy(SorterStrategy strategy) {
+        updatePriorities(strategy.getNumberOfPriorities());
+        this.strategy = strategy;
+        save();
+    }
+
     public static PrioritySorterConfiguration get() {
-        return (PrioritySorterConfiguration) Jenkins.get().getDescriptor(PrioritySorterConfiguration.class);
+        return GlobalConfiguration.all().get(PrioritySorterConfiguration.class);
     }
 }

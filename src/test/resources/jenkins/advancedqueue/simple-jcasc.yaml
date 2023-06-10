@@ -1,0 +1,12 @@
+unclassified:
+  priorityConfiguration:
+    jobGroups:
+    - description: "Group 1 - default priority"
+      jobGroupStrategy: "allJobs"
+      priority: -1
+  prioritySorterConfiguration:
+    onlyAdminsMayEditPriorityConfiguration: false
+    strategy:
+      absoluteStrategy:
+        defaultPriority: 3
+        numberOfPriorities: 5

@@ -1,0 +1,42 @@
+---
+unclassified:
+  priorityConfiguration:
+    jobGroups:
+      - description: "complex"
+        priority: 1
+        usePriorityStrategies: true
+        priorityStrategies:
+          - priorityStrategy:
+              id: 0
+              priorityStrategy:
+                upstreamCauseStrategy
+          - priorityStrategy:
+              id: 1
+              priorityStrategy:
+                userIdCauseStrategy:
+                  priority: 4
+          - priorityStrategy:
+              id: 2
+              priorityStrategy:
+                cLICauseStrategy:
+                  priority: 5
+          - priorityStrategy:
+              id: 3
+              priorityStrategy:
+                buildParameterStrategy:
+                  parameterName: "BuildPriority"
+      - description: "special"
+        id: 1
+        priority: 3
+        runExclusive: true
+        jobGroupStrategy:
+          propertyBased:
+            name: "specialGroup"
+      - description: "default"
+        id: 2
+        priority: -1
+        jobGroupStrategy:
+          viewBased:
+            jobPattern: ".*default"
+            useJobFilter: true
+            viewName: "all"

@@ -1,0 +1,47 @@
+{
+  "jobGroup": [
+    {
+      "description": "high",
+      "": "3",
+      "jobGroupStrategy": {
+        "folderName": "",
+        "stapler-class": "jenkins.advancedqueue.jobinclusion.strategy.FolderBasedJobInclusionStrategy",
+        "$class": "jenkins.advancedqueue.jobinclusion.strategy.FolderBasedJobInclusionStrategy"
+      },
+      "priority": "1",
+      "runExclusive": true
+    },
+    {
+      "description": "medium",
+      "": "2",
+      "jobGroupStrategy": {
+        "viewName": "all",
+        "jobFilter": {
+          "jobPattern": ".*medium"
+        },
+        "stapler-class": "jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy",
+        "$class": "jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy"
+      },
+      "priority": "2",
+      "runExclusive": false
+    },
+    {
+      "description": "special",
+      "": "1",
+      "jobGroupStrategy": {
+        "name": "specialGroup",
+        "stapler-class": "jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy",
+        "$class": "jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy"
+      },
+      "priority": "-1",
+      "runExclusive": false,
+      "usePriorityStrategies": {
+        "holder": {
+          "stapler-class": "jenkins.advancedqueue.priority.strategy.UserIdCauseStrategy",
+          "priority": "2"
+        }
+      }
+    }
+  ],
+  "Jenkins-Crumb": "test"
+}
