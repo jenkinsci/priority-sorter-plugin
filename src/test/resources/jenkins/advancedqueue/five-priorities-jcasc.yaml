@@ -1,0 +1,60 @@
+unclassified:
+  priorityConfiguration:
+    jobGroups:
+    - description: "Group 1 - priority five"
+      jobGroupStrategy: "allJobs"
+      priority: 5
+      priorityStrategies:
+      - priorityStrategy:
+          id: 0
+          priorityStrategy:
+            userIdCauseStrategy:
+              priority: 5
+      usePriorityStrategies: true
+    - description: "Group 2 - priority four"
+      id: 1
+      jobGroupStrategy: "allJobs"
+      priority: 4
+      priorityStrategies:
+      - priorityStrategy:
+          id: 0
+          priorityStrategy: "upstreamCauseStrategy"
+      usePriorityStrategies: true
+    - description: "Group 3 - priority three"
+      id: 2
+      jobGroupStrategy: "allJobs"
+      priority: 3
+      priorityStrategies:
+      - priorityStrategy:
+          id: 0
+          priorityStrategy:
+            cLICauseStrategy:
+              priority: 3
+      usePriorityStrategies: true
+    - description: "Group 4 - priority two"
+      id: 3
+      jobGroupStrategy: "allJobs"
+      priorityStrategies:
+      - priorityStrategy:
+          id: 0
+          priorityStrategy:
+            healthStrategy:
+              health: "HEALTH_41_TO_60"
+              priority: 2
+              selection: "BETTER"
+      usePriorityStrategies: true
+    - description: "Group 5 - priority one"
+      id: 4
+      jobGroupStrategy: "allJobs"
+      priority: -1
+      priorityStrategies:
+      - priorityStrategy:
+          id: 0
+          priorityStrategy: "jobPropertyStrategy"
+      usePriorityStrategies: true
+  prioritySorterConfiguration:
+    onlyAdminsMayEditPriorityConfiguration: false
+    strategy:
+      absoluteStrategy:
+        defaultPriority: 3
+        numberOfPriorities: 5

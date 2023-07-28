@@ -130,6 +130,55 @@ The column will show the priority used the last time the job was
 launched, and, if the job has not been started yet, the column will show
 *Pending*.
 
+## Configuration as Code support
+
+Priority Sorter Plugin has support for use of [Configuration as Code plugin](https://plugins.jenkins.io/configuration-as-code/).
+
+To provide priority configuration follow below example:
+```yaml
+unclassified:
+  priorityConfiguration:
+    jobGroups:
+      - id: 0
+        priority: 1
+        description: "Complex"
+        runExclusive: true
+        usePriorityStrategies: true
+        priorityStrategies:
+          - priorityStrategy:
+              id: 0
+              priorityStrategy:
+                userIdCauseStrategy:
+                  priority: 1
+          - priorityStrategy:
+              id: 1
+              priorityStrategy:
+                upstreamCauseStrategy
+        jobGroupStrategy:
+          folderBased:
+            folderName: "Jenkins"
+      - id: 1
+        priority: 2
+        description: "Simple"
+        runExclusive: false
+        usePriorityStrategies: false
+        jobGroupStrategy: allJobs
+```
+
+Global settings for priority sorter can be configured like this:
+```yaml
+unclassified:
+  prioritySorterConfiguration:
+    onlyAdminsMayEditPriorityConfiguration: true
+    strategy:
+      absoluteStrategy:
+        defaultPriority: 3
+        numberOfPriorities: 5
+```
+
+For more examples see [tests resources](https://github.com/jenkinsci/priority-sorter-plugin/tree/master/src/test/resources/jenkins/advancedqueue/test/ConfigurationAsCodeTest).
+
+
 ## Notable changes and upgrading
 
 ### Upgrading from 2.x

@@ -39,6 +39,7 @@ import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
@@ -103,16 +104,8 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
     private String jobPattern = ".*";
 
     @DataBoundConstructor
-    public ViewBasedJobInclusionStrategy(String viewName, JobPattern jobFilter) {
+    public ViewBasedJobInclusionStrategy(String viewName) {
         this.viewName = viewName;
-        this.useJobFilter = (jobFilter != null);
-        if (this.useJobFilter) {
-            if (jobFilter != null) {
-                this.jobPattern = jobFilter.jobPattern;
-            } else {
-                LOGGER.log(Level.SEVERE, "Ignoring null job filter for view ''{0}''", viewName);
-            }
-        }
     }
 
     public String getViewName() {
@@ -125,6 +118,28 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
 
     public String getJobPattern() {
         return jobPattern;
+    }
+
+    @DataBoundSetter
+    public void setJobFilter(JobPattern jobFilter) {
+        this.useJobFilter = (jobFilter != null);
+        if (this.useJobFilter) {
+            if (jobFilter != null) {
+                this.jobPattern = jobFilter.jobPattern;
+            } else {
+                LOGGER.log(Level.SEVERE, "Ignoring null job filter for view ''{0}''", viewName);
+            }
+        }
+    }
+
+    @DataBoundSetter
+    public void setUseJobFilter(boolean useJobFilter) {
+        this.useJobFilter = useJobFilter;
+    }
+
+    @DataBoundSetter
+    public void setJobPattern(String jobPattern) {
+        this.jobPattern = jobPattern;
     }
 
     private View getView() {

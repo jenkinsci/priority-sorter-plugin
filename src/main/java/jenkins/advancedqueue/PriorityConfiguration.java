@@ -30,7 +30,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.matrix.MatrixConfiguration;
-import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Queue;
@@ -54,6 +53,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -70,8 +70,7 @@ import org.kohsuke.stapler.StaplerResponse;
  * @since 2.0
  */
 @Extension
-public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
-        implements RootAction, IconSpec, Describable<PriorityConfiguration> {
+public class PriorityConfiguration extends GlobalConfiguration implements RootAction, IconSpec {
 
     private static final Logger LOGGER = Logger.getLogger(PriorityConfiguration.class.getName());
 
@@ -82,7 +81,7 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
     private List<JobGroup> jobGroups;
 
     public PriorityConfiguration() {
-        super(PriorityConfiguration.class);
+        super();
         jobGroups = new LinkedList<JobGroup>();
         load();
         //
@@ -143,6 +142,11 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
         return jobGroups;
     }
 
+    public void setJobGroups(List<JobGroup> jobGroups) {
+        this.jobGroups = jobGroups;
+        save();
+    }
+
     public JobGroup getJobGroup(int id) {
         return id2jobGroup.get(id);
     }
@@ -174,16 +178,15 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
             if (jobGroupObject.isEmpty()) {
                 break;
             }
-            JobGroup jobGroup = JobGroup.newInstance(req, jobGroupObject, id++);
+            jobGroupObject.element("id", id++);
+            transformPriorityStrategiesData(jobGroupObject);
+
+            JobGroup jobGroup = req.bindJSON(JobGroup.class, jobGroupObject);
             jobGroups.add(jobGroup);
             id2jobGroup.put(jobGroup.getId(), jobGroup);
         }
         save();
         rsp.sendRedirect(Jenkins.get().getRootUrl());
-    }
-
-    public Descriptor<PriorityConfiguration> getDescriptor() {
-        return this;
     }
 
     public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {
@@ -203,6 +206,19 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
             return getPriorityInternal(item, priorityCallback);
         } finally {
             SecurityContextHolder.setContext(saveCtx);
+        }
+    }
+
+    private void transformPriorityStrategiesData(JSONObject jobGroupObject) {
+        if (jobGroupObject.has("usePriorityStrategies")) {
+            JSONObject usePriorityStrategies = jobGroupObject.getJSONObject("usePriorityStrategies");
+            if (usePriorityStrategies.has("holder")) {
+                JSONArray priorityStrategies = JSONArray.fromObject(usePriorityStrategies.get("holder"));
+                jobGroupObject.element("priorityStrategies", priorityStrategies);
+                jobGroupObject.element("usePriorityStrategies", true);
+            } else {
+                jobGroupObject.element("usePriorityStrategies", false);
+            }
         }
     }
 
@@ -308,6 +324,6 @@ public class PriorityConfiguration extends Descriptor<PriorityConfiguration>
     }
 
     public static PriorityConfiguration get() {
-        return (PriorityConfiguration) Jenkins.get().getDescriptor(PriorityConfiguration.class);
+        return GlobalConfiguration.all().get(PriorityConfiguration.class);
     }
 }
