@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.advancedqueue.PriorityConfiguration>
+    <jobGroups class="linked-list">
+        <jenkins.advancedqueue.JobGroup>
+            <id>0</id>
+            <priority>1</priority>
+            <description>complex</description>
+            <runExclusive>false</runExclusive>
+            <usePriorityStrategies>true</usePriorityStrategies>
+            <priorityStrategies>
+                <jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                    <id>0</id>
+                    <priorityStrategy class="jenkins.advancedqueue.priority.strategy.UpstreamCauseStrategy"/>
+                </jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                <jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                    <id>1</id>
+                    <priorityStrategy class="jenkins.advancedqueue.priority.strategy.UserIdCauseStrategy">
+                        <priority>4</priority>
+                    </priorityStrategy>
+                </jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                <jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                    <id>2</id>
+                    <priorityStrategy class="jenkins.advancedqueue.priority.strategy.CLICauseStrategy">
+                        <priority>5</priority>
+                    </priorityStrategy>
+                </jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                <jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+                    <id>3</id>
+                    <priorityStrategy class="jenkins.advancedqueue.priority.strategy.BuildParameterStrategy">
+                        <parameterName>BuildPriority</parameterName>
+                    </priorityStrategy>
+                </jenkins.advancedqueue.JobGroup_-PriorityStrategyHolder>
+            </priorityStrategies>
+        </jenkins.advancedqueue.JobGroup>
+        <jenkins.advancedqueue.JobGroup>
+            <id>1</id>
+            <priority>3</priority>
+            <description>special</description>
+            <runExclusive>true</runExclusive>
+            <useJobFilter>false</useJobFilter>
+            <jobPattern>.*</jobPattern>
+            <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+                <name>specialGroup</name>
+            </jobGroupStrategy>
+            <usePriorityStrategies>false</usePriorityStrategies>
+            <priorityStrategies/>
+        </jenkins.advancedqueue.JobGroup>
+        <jenkins.advancedqueue.JobGroup>
+            <id>2</id>
+            <priority>-1</priority>
+            <description>default</description>
+            <runExclusive>false</runExclusive>
+            <useJobFilter>false</useJobFilter>
+            <jobPattern>.*</jobPattern>
+            <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy">
+                <viewName>all</viewName>
+                <useJobFilter>true</useJobFilter>
+                <jobPattern>.*default</jobPattern>
+            </jobGroupStrategy>
+            <usePriorityStrategies>false</usePriorityStrategies>
+            <priorityStrategies/>
+        </jenkins.advancedqueue.JobGroup>
+    </jobGroups>
+</jenkins.advancedqueue.PriorityConfiguration>
