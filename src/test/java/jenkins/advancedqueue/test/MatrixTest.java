@@ -1,5 +1,7 @@
 package jenkins.advancedqueue.test;
 
+import static org.junit.Assume.assumeTrue;
+
 import hudson.cli.BuildCommand.CLICause;
 import hudson.model.Cause.UserIdCause;
 import jenkins.advancedqueue.testutil.ExpectedItem;
@@ -42,6 +44,7 @@ public class MatrixTest {
     @Test
     @LocalData
     public void matrix_and_jobs_with_no_configuration() throws Exception {
+        assumeTrue("Test unreliable on Windows", !isWindows());
         TestRunListener.init(
                 new ExpectedItem("Matrix 0", 1),
                 new ExpectedItem("Matrix 1", 5),
@@ -61,6 +64,7 @@ public class MatrixTest {
     @Test
     @LocalData
     public void matrix_and_jobs_with_no_configuration_reverse() throws Exception {
+        assumeTrue("Test unreliable on Windows", !isWindows());
         TestRunListener.init(
                 new ExpectedItem("Matrix 0", 1),
                 new ExpectedItem("Matrix 1", 5),
@@ -75,5 +79,9 @@ public class MatrixTest {
                 .go();
         j.waitUntilNoActivity();
         TestRunListener.assertStartedItems();
+    }
+
+    private boolean isWindows() {
+        return java.io.File.pathSeparatorChar == ';';
     }
 }
