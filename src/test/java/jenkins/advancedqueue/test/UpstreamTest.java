@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
-import jenkins.advancedqueue.test.BuildUpstreamCause;
 
 public class UpstreamTest {
     @Rule
@@ -28,7 +27,9 @@ public class UpstreamTest {
     public void testOrphanDownstreamJob() throws Exception {
         // Job 0 should run with default priority, as upstream build is unknown
         TestRunListener.init(new ExpectedItem("Job 0", 5));
-        jobHelper.scheduleProjects(createUpstreamCause(UpstreamCause.class, "Job X", 987)).go();
+        jobHelper
+                .scheduleProjects(createUpstreamCause(UpstreamCause.class, "Job X", 987))
+                .go();
         j.waitUntilNoActivity();
 
         TestRunListener.assertStartedItems();
@@ -87,7 +88,8 @@ public class UpstreamTest {
     }
 
     @CheckForNull
-    private <T extends UpstreamCause> T createUpstreamCause(Class<T> clazz, final String upstreamProject, final int upstreamBuild) throws Exception {
+    private <T extends UpstreamCause> T createUpstreamCause(
+            Class<T> clazz, final String upstreamProject, final int upstreamBuild) throws Exception {
         final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
         for (final Constructor<?> cons : constructors) {
