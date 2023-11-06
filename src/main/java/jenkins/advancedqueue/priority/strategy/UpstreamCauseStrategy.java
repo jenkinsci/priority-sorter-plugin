@@ -57,9 +57,12 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
     private UpstreamCause getUpstreamCause(@NonNull Queue.Item item) {
         List<Cause> causes = item.getCauses();
         for (Cause cause : causes) {
-            if (UpstreamCause.class.isAssignableFrom(cause.getClass())) {
+            if (cause.getClass() == UpstreamCause.class) {
                 return (UpstreamCause) cause;
             }
+            // if (UpstreamCause.class.isAssignableFrom(cause.getClass())) {
+            //     return (UpstreamCause) cause;
+            // }
         }
         return null;
     }
