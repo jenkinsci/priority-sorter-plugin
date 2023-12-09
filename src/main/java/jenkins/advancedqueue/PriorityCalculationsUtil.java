@@ -13,8 +13,9 @@ public class PriorityCalculationsUtil {
             return PRIORITY_USE_DEFAULT_PRIORITY;
         }
         float p = ((float) (value - 1) / (float) (oldmax - 1));
-        float eps = (float)0.0001;
-        if(p*(newmax - 1) > Math.round(p*(newmax - 1)) - eps &&  p*(newmax - 1) < Math.round(p*(newmax - 1)) + eps){
+        float eps = (float) 0.0001;
+        if (p * (newmax - 1) > Math.round(p * (newmax - 1)) - eps
+                && p * (newmax - 1) < Math.round(p * (newmax - 1)) + eps) {
             return (int) (Math.round(p * (newmax - 1))) + 1;
         }
         if (p <= 0.5) {
