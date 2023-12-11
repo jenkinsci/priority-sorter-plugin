@@ -130,6 +130,141 @@ The column will show the priority used the last time the job was
 launched, and, if the job has not been started yet, the column will show
 *Pending*.
 
+## Example
+
+Here's one way to use this plugin.  The use-case is we have some
+parameterized jobs where we can only execute one run of each job
+at a time for business reasons, and each run can take a long time
+to execute.  This means there can be a long queue of runs, even
+if we have executors available.
+Occasionally, there will be "urgent" runs that _must_ execute next,
+without having to abort and re-queue existing runs.
+With this plugin, we can make it so that such runs will
+"jump the queue" and be scheduled ahead of other, lower-priority runs.
+
+### The global configuration
+
+First, we must configure the plugin from the Jenkins configuration page.
+
+Scrolling down to the **Priority Sorter** section,
+let's configure the **Absolute** strategy,
+with **5** levels of priorities
+and a default priority of **3**.
+Let's also only let administrators configure job priorities
+by checking the **Only Admins can edit job priorities** checkbox:
+
+![Example Priority Sorter section of Global Configuration](docs/images/ExampleGlobalConfiguration.png)
+
+Let's activate the **Save** button and move to the next part.
+
+### The priority configuration
+
+Next up we will configure the rules to make it possible for some runs to
+"skip the line" by letting users enter a priority level as one of
+the run's parameters. Runs with a parameter value that doesn't parse as
+an integer or without that parameter at all will get the default priority.
+Let's go to "Job Priorities" from the root actions menu.
+
+First, we activate the **Add** button.
+We can provide a description for this _Job group_,
+but ours will be simple enough that it should not need one.
+
+Next, we check the **Use additional rules when assigning a priority to a job**
+checkbox and activate its **Add** button.
+
+Let's pick the **Use Priority from Build Parameter** strategy,
+and we'll keep the default _Build Parameter Name_ of `BuildPriority`:
+
+![Example Job Priorities configuration](docs/images/ExampleJobGroups.png)
+
+We'll keep defaults for everything else and activate that **Save** button.
+
+### The job configuration
+
+First off, the job(s) we will be modifying must already be parameterized
+so that there's a difference between successive runs,
+otherwise we have no way of distinguishing the runs,
+and we therefore have no need for priorities.
+For our example, we'll have a Pipeline job called `Sequential`
+that users can queue when they have work that needs to be done on
+a particular item.
+As such, the job already has a `ItemId` parameter.
+
+Let's add a `BuildPriority` parameter and we'll make it easy for our users
+by using a "choice" parameter type, defaulting to the lowest priority.
+
+Here's what our _Pipeline script_ might look like:
+
+```groovy
+properties([
+    disableConcurrentBuilds(), // "Do not allow concurrent builds"
+    parameters([  // "This project is parameterized"
+        // The job already had this parameter, to distinguish runs.
+        string(
+            name: 'ItemId',
+            trim: true,
+            description: 'The ID of the item to be processed.',
+        ),
+        // We add this parameter to give higher-priority runs the
+        // ability to start sooner, ahead of lower-priority runs.
+        choice(
+            name: 'BuildPriority',
+            choices: ['5', '4', '3', '2', '1'],
+            description: 'Lower number means higher priority. ' +
+                         'Runs with equal priority will execute in the order they were queued.',
+        ),
+    ]),
+])
+if (!env["ItemId"]) {
+    echo "No value provided for ItemId, nothing to do."
+    manager.buildNotBuilt()
+    return
+}
+node() {
+    // pretend we're doing work on the item with ID ItemId
+    sleep time: 1, unit: 'MINUTES'
+}
+```
+
+### Testing our job
+
+Let's pretend we have just created a new `Sequential` job with the
+_Pipeline script_ as above.  Since it has never run before,
+let's queue a run to configure the job for subsequent runs.
+This will complete rapidly due to the early return.
+
+Now that the job is aware of its properties (such as the parameters),
+we can queue some runs to test out our new priority scheme.
+Let's use the following parameter values and queue them quickly,
+so that we have queued all of them before run 2 finishes:
+
+| ItemId  | BuildPriority |
+|---------|---------------|
+| Alpha   | 5             |
+| Bravo   | 5             |
+| Charlie | 1             |
+| Delta   | 5             |
+| Echo    | 1             |
+
+After about 5 minutes, we can inspect the runs via their **Parameters** page
+to find out in what order they ended up running.
+Here's what we observe:
+
+| Run | ItemId  | BuildPriority |
+|-----|---------|---------------|
+| 2   | Alpha   | 5             |
+| 3   | Charlie | 1             |
+| 4   | Echo    | 1             |
+| 5   | Bravo   | 5             |
+| 6   | Delta   | 5             |
+
+Run 2 started right away because there were no other runs
+in the queue to compete with.
+We then see that both high-priority runs executed in the order they were queued,
+followed by the two low-priority runs, also in the order they were queued.
+
+This is exactly what we wanted!
+
 ## Configuration as Code support
 
 Priority Sorter Plugin has support for use of [Configuration as Code plugin](https://plugins.jenkins.io/configuration-as-code/).
