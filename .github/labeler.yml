@@ -1,23 +1,15 @@
-chore:
-- eclipse-formatter.xml
-- .gitattributes
-- .github/**/*
-- .gitignore
-- Jenkinsfile
-- Makefile
-- maven.env
-- .mvn/**/*
-- .vscode/**/*
+skip-changelog:
+- changed-files:
+  - any-glob-to-any-file: [ '.gitattributes', '.github/**/*', '.gitignore', 'crowdin.yml', '.mvn/**/*' ]
 
 dependencies:
-- pom.xml
+- changed-files:
+  - any-glob-to-any-file: [ 'pom.xml' ]
 
 documentation:
-- CONTRIBUTING.md
-- README.md
-- LICENSE.txt
-- docs/**/*
-- src/main/**/*.html
+- changed-files:
+  - any-glob-to-any-file: [ '*.adoc', '*.md', '*.txt', '**/*.html', '**/*.png', 'LICENSE*' ]
 
-test:
-- src/test/**/*
+tests:
+- changed-files:
+  - any-glob-to-any-file: [ 'src/test/**/*' ]
