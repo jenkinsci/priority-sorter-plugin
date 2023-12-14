@@ -11,6 +11,7 @@
 - [Preparing a pull request](#preparing-a-pull-request)
   - [Compiling and testing the plugin](#compiling-and-testing-the-plugin)
   - [Spotbugs checks](#spotbugs-checks)
+  - [Code formatting](#code-formatting)
 - [Code coverage](#code-coverage)
   - [Reviewing code coverage](#reviewing-code-coverage)
 - [Reviewing Pull Requests](#reviewing-pull-requests)
@@ -96,6 +97,11 @@ Please don't introduce new spotbugs output.
 
 * `mvn spotbugs:check` to analyze project using [Spotbugs](https://spotbugs.github.io/).
 * `mvn spotbugs:gui` to review Spotbugs report using GUI
+
+### Code formatting
+
+Source code and pom file formatting is maintained by the `spotless` maven plugin.
+Before submitting a pull request, confirm the formatting is correct with:
 
 ## Code coverage
 
