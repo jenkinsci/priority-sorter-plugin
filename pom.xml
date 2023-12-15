@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>PrioritySorter</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>5.1.0</version>
   <packaging>hpi</packaging>
   <name>Jenkins Priority Sorter Plugin</name>
   <url>https://github.com/jenkinsci/priority-sorter-plugin</url>
@@ -37,7 +37,7 @@
   <scm>
     <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
-    <tag>${scmTag}</tag>
+    <tag>PrioritySorter-5.1.0</tag>
     <url>https://github.com/${gitHubRepo}</url>
   </scm>
 
