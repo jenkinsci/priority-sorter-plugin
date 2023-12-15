@@ -1,7 +1,5 @@
 package jenkins.advancedqueue.test;
 
-import static org.junit.Assume.assumeTrue;
-
 import hudson.model.Cause.UserIdCause;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
