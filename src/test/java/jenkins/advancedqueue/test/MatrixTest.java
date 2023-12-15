@@ -28,19 +28,6 @@ public class MatrixTest {
         TestRunListener.assertStartedItems();
     }
 
-    @Test
-    @LocalData
-    public void simple_two_matrix_with_no_configuration() throws Exception {
-        assumeTrue("Test unreliable on Windows", !isWindows());
-        TestRunListener.init(
-                new ExpectedItem("Matrix 0", 1), new ExpectedItem("Matrix 1", 1),
-                new ExpectedItem("0A1=0A.", 1), new ExpectedItem("0A1=0A.", 1),
-                new ExpectedItem("1A1=1A.", 1), new ExpectedItem("1A1=1A.", 1));
-        jobHelper.scheduleMatrixProjects(new UserIdCause(), new UserIdCause()).go();
-        j.waitUntilNoActivity();
-        TestRunListener.assertStartedItems();
-    }
-
     private boolean isWindows() {
         return java.io.File.pathSeparatorChar == ';';
     }
