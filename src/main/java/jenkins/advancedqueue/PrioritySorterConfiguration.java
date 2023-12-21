@@ -67,7 +67,10 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
 
     private SorterStrategy strategy;
 
-    public PrioritySorterConfiguration() {}
+    public PrioritySorterConfiguration() {
+        /* Initalize strategy to prevent spotbugs uninitialized field warning */
+        strategy = DEFAULT_STRATEGY;
+    }
 
     public static void init() {
         PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
