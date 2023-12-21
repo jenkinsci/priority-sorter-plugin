@@ -61,13 +61,17 @@ public class PrioritySorterConfiguration extends GlobalConfiguration {
      * @deprecated used in 2.x - replaces with XXX
      */
     @Deprecated
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Allow deserialization of old definitions")
     private boolean allowPriorityOnJobs;
 
     private boolean onlyAdminsMayEditPriorityConfiguration = false;
 
     private SorterStrategy strategy;
 
-    public PrioritySorterConfiguration() {}
+    public PrioritySorterConfiguration() {
+        /* Initalize strategy to prevent spotbugs uninitialized field warning */
+        strategy = DEFAULT_STRATEGY;
+    }
 
     public static void init() {
         PrioritySorterConfiguration prioritySorterConfiguration = PrioritySorterConfiguration.get();
