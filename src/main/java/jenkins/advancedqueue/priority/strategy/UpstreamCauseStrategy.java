@@ -53,13 +53,17 @@ public class UpstreamCauseStrategy extends AbstractDynamicPriorityStrategy {
     @DataBoundConstructor
     public UpstreamCauseStrategy() {}
 
+    /* Package protected for testing */
     @CheckForNull
-    private UpstreamCause getUpstreamCause(@NonNull Queue.Item item) {
+    UpstreamCause getUpstreamCause(@NonNull Queue.Item item) {
         List<Cause> causes = item.getCauses();
         for (Cause cause : causes) {
             if (cause.getClass() == UpstreamCause.class) {
                 return (UpstreamCause) cause;
             }
+            // if (UpstreamCause.class.isAssignableFrom(cause.getClass())) {
+            //     return (UpstreamCause) cause;
+            // }
         }
         return null;
     }
