@@ -13,6 +13,12 @@
     <Class name="jenkins.advancedqueue.RunExclusiveThrottler$RunExclusiveRunListener"/>
     <Method name="onStarted"/>
   </Match>
+  <Match>
+    <!-- valid use of equals for compareTo -->
+    <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
+    <Class name="jenkins.advancedqueue.sorter.ItemInfo"/>
+    <Method name="compareTo"/>
+  </Match>
 
   <!--
     Here lies technical debt. Exclusions in this section have not yet
