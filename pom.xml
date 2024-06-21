@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.71</version>
+    <version>4.83</version>
     <relativePath />
   </parent>
 
@@ -42,11 +42,11 @@
   </scm>
 
   <properties>
-    <revision>5.0.1</revision>
+    <revision>5.1.1</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
-    <jenkins.version>2.387.3</jenkins.version>
-    <pmdVersion>6.55.0</pmdVersion>
+    <jenkins.version>2.426.3</jenkins.version>
+    <pmdVersion>7.0.0</pmdVersion>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
     <spotless.check.skip>false</spotless.check.skip>
@@ -56,8 +56,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.387.x</artifactId>
-        <version>2258.v522c10b_d4695</version>
+        <artifactId>bom-2.426.x</artifactId>
+        <version>3135.v6d6c1f6b_3572</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -119,13 +119,13 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>nested-view</artifactId>
-      <version>1.32</version>
+      <version>1.33</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>sectioned-view</artifactId>
-      <version>1.25</version>
+      <version>1.26</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -155,19 +155,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.21.0</version>
-          <dependencies>
-            <dependency>
-              <groupId>net.sourceforge.pmd</groupId>
-              <artifactId>pmd-core</artifactId>
-              <version>${pmdVersion}</version>
-            </dependency>
-            <dependency>
-              <groupId>net.sourceforge.pmd</groupId>
-              <artifactId>pmd-java</artifactId>
-              <version>${pmdVersion}</version>
-            </dependency>
-          </dependencies>
+          <version>3.23.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -175,7 +163,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.21.0</version>
+        <version>3.23.0</version>
         <executions>
           <execution>
             <goals>

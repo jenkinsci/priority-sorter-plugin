@@ -69,10 +69,8 @@ public class AdvancedQueueSorter extends QueueSorter {
         LOGGER.info("Initialized the QueueSorter with " + items.size() + " Buildable Items");
     }
 
-    @Override
-    public void sortBuildableItems(List<BuildableItem> items) {
-
-        Collections.sort(items, (BuildableItem o1, BuildableItem o2) -> {
+    public void sortNotWaitingItems(List<? extends Queue.NotWaitingItem> items) {
+        Collections.sort(items, (Comparator<Queue.NotWaitingItem>) (o1, o2) -> {
             ItemInfo item1 = QueueItemCache.get().getItem(o1.getId());
             ItemInfo item2 = QueueItemCache.get().getItem(o2.getId());
             if (item1 == null || item2 == null) {
@@ -87,22 +85,22 @@ public class AdvancedQueueSorter extends QueueSorter {
             float maxWeight = QueueItemCache.get()
                     .getItem(items.get(items.size() - 1).getId())
                     .getWeight();
-            LOGGER.log(Level.FINE, "Sorted {0} Buildable Items with Min Weight {1} and Max Weight {2}", new Object[] {
-                items.size(), minWeight, maxWeight
+            LOGGER.log(Level.FINE, "Sorted {0} {1}s with Min Weight {2} and Max Weight {3}", new Object[] {
+                items.size(), items.get(0).getClass().getName(), minWeight, maxWeight
             });
         }
         //
         if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
-            StringBuilder queueStr = new StringBuilder("Queue:\n"
+            StringBuilder queueStr = new StringBuilder(items.get(0).getClass().getName());
+            queueStr.append(" Queue:\n"
                     + "+----------------------------------------------------------------------+\n"
                     + "|   Item Id  |        Job Name       | Priority |        Weight        |\n"
                     + "+----------------------------------------------------------------------+\n");
-            for (BuildableItem item : items) {
+            for (Queue.NotWaitingItem item : items) {
                 ItemInfo itemInfo = QueueItemCache.get().getItem(item.getId());
                 String jobName = itemInfo.getJobName();
                 if (jobName.length() > 21) {
-                    jobName =
-                            jobName.substring(0, 9) + "..." + jobName.substring(jobName.length() - 9, jobName.length());
+                    jobName = jobName.substring(0, 9) + "..." + jobName.substring(jobName.length() - 9);
                 }
                 queueStr.append(String.format(
                         "| %10d | %20s | %8d | %20.5f |%n",
@@ -111,6 +109,16 @@ public class AdvancedQueueSorter extends QueueSorter {
             queueStr.append("+----------------------------------------------------------------------+");
             LOGGER.log(Level.FINER, queueStr.toString());
         }
+    }
+
+    @Override
+    public void sortBuildableItems(List<BuildableItem> items) {
+        sortNotWaitingItems(items);
+    }
+
+    @Override
+    public void sortBlockedItems(List<Queue.BlockedItem> blockedItems) {
+        sortNotWaitingItems(blockedItems);
     }
 
     public void onNewItem(@NonNull Item item) {
