@@ -29,7 +29,6 @@ import hudson.Extension;
 import hudson.model.Job;
 import hudson.util.ListBoxModel;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import jenkins.advancedqueue.DecisionLogger;
@@ -45,8 +44,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 3.0
  */
 public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
-
-    private static final Logger LOGGER = Logger.getLogger(FolderBasedJobInclusionStrategy.class.getName());
 
     @Extension(optional = true)
     public static class FolderBasedJobInclusionStrategyDescriptor
