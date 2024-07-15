@@ -46,7 +46,6 @@
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
     <jenkins.version>2.426.3</jenkins.version>
-    <pmdVersion>7.0.0</pmdVersion>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
     <spotless.check.skip>false</spotless.check.skip>
@@ -150,15 +149,6 @@
   </pluginRepositories>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.24.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
