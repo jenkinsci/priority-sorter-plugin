@@ -87,7 +87,7 @@ public class ItemInfo
     }
 
     public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
-        this.decisionLog.add(String.format("%" + ((indent + 1) * 2) + "s%s", "", log));
+        this.decisionLog.add(("%" + ((indent + 1) * 2) + "s%s").formatted("", log));
         return this;
     }
 
@@ -162,8 +162,7 @@ public class ItemInfo
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ItemInfo) {
-            ItemInfo itemInfo = (ItemInfo) obj;
+        if (obj instanceof ItemInfo itemInfo) {
             return compareTo(itemInfo) == 0;
         }
         return false;
@@ -190,9 +189,8 @@ public class ItemInfo
         if (priorityStrategy != null) {
             reason = priorityStrategy.getDescriptor().getDisplayName();
         }
-        return String.format(
-                "Id: %s, JobName: %s, jobGroupId: %s, reason: %s, priority: %s, weight: %s, status: %s",
-                itemId, jobName, jobGroupId, reason, priority, weight, itemStatus);
+        return "Id: %s, JobName: %s, jobGroupId: %s, reason: %s, priority: %s, weight: %s, status: %s"
+                .formatted(itemId, jobName, jobGroupId, reason, priority, weight, itemStatus);
     }
 
     public String getDescisionLog() {
