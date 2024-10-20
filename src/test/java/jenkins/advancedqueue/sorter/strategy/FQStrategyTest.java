@@ -27,7 +27,7 @@ public class FQStrategyTest {
         for (int i = 0; i < 10; ++i) {
             float newWeight = new FQStrategy().getWeightToUse(1, previousWeight);
             Assert.assertTrue(
-                    String.format("New weight %s should be greater than previous weight %s", newWeight, previousWeight),
+                    "New weight %s should be greater than previous weight %s".formatted(newWeight, previousWeight),
                     newWeight > previousWeight);
             previousWeight = newWeight;
         }
