@@ -271,8 +271,8 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
     }
 
     private boolean isJobInView(Job<?, ?> job, View view) {
-        if (view instanceof ViewGroup) {
-            return isJobInViewGroup(job, (ViewGroup) view);
+        if (view instanceof ViewGroup group) {
+            return isJobInViewGroup(job, group);
         } else {
             return view.contains((TopLevelItem) job);
         }
