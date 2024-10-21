@@ -3,8 +3,8 @@
     <st:adjunct includes="jenkins.advancedqueue.jobrestrictions.PrioritySorterRestriction.update-list-box"/>
     <f:entry title="${%From_Priority}" field="fromPriority">
         <f:select 
-        	id="fromPriority" 
-        	default="${descriptor.defaultPriority}"
+            id="fromPriority"
+            default="${descriptor.defaultPriority}"
             data-descriptor-url="${descriptor.descriptorUrl}"/>
     </f:entry> 
     <f:entry title="${%To_Priority}" field="toPriority">
