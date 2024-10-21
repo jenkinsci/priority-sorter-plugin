@@ -1,10 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
+    <st:adjunct includes="jenkins.advancedqueue.jobrestrictions.PrioritySorterRestriction.update-list-box"/>
     <f:entry title="${%From_Priority}" field="fromPriority">
         <f:select 
         	id="fromPriority" 
         	default="${descriptor.defaultPriority}"
-        	onchange="updateListBox('toPriority','${rootURL}/descriptorByName/jenkins.advancedqueue.jobrestrictions.PrioritySorterRestriction/updateFromPriorityItems?value='+encode(this.value))" />
+            data-descriptor-url="${descriptor.descriptorUrl}"/>
     </f:entry> 
     <f:entry title="${%To_Priority}" field="toPriority">
         <f:select id="toPriority" default="${descriptor.defaultPriority}"/>
