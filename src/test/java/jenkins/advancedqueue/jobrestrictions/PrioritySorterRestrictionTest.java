@@ -1,7 +1,11 @@
 package jenkins.advancedqueue.jobrestrictions;
 
+import static hudson.model.Queue.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import hudson.model.Run;
+import java.lang.reflect.Field;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
-import java.lang.reflect.Field;
-import static hudson.model.Queue.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class PrioritySorterRestrictionTest {
 
@@ -28,7 +28,7 @@ class PrioritySorterRestrictionTest {
     }
 
     @Test
-    void testCanTake_MissingItemInfo() throws NoSuchFieldException,IllegalAccessException {
+    void testCanTake_MissingItemInfo() throws NoSuchFieldException, IllegalAccessException {
         Task mockedTask = mock(Task.class);
         setTaskInMockedBuildableItem(mockedBuildableItem, mockedTask);
 
@@ -40,7 +40,8 @@ class PrioritySorterRestrictionTest {
         }
     }
 
-    private void setTaskInMockedBuildableItem(BuildableItem buildableItem, Task task) throws NoSuchFieldException, IllegalAccessException {
+    private void setTaskInMockedBuildableItem(BuildableItem buildableItem, Task task)
+            throws NoSuchFieldException, IllegalAccessException {
         Field taskField = BuildableItem.class.getField("task");
         taskField.setAccessible(true);
         taskField.set(buildableItem, task);
@@ -57,9 +58,13 @@ class PrioritySorterRestrictionTest {
             mockedCache.when(QueueItemCache::get).thenReturn(mockCache);
             when(mockCache.getItem(MOCKED_BUILDABLE_ITEM_ID)).thenReturn(mockItemInfo);
             if (priority >= 1 && priority <= 5)
-                assertTrue(restriction.canTake(mockedBuildableItem), "Should allow execution when priority is within range.");
+                assertTrue(
+                        restriction.canTake(mockedBuildableItem),
+                        "Should allow execution when priority is within range.");
             else
-                assertFalse(restriction.canTake(mockedBuildableItem), "Should not allow execution when priority is outside range.");
+                assertFalse(
+                        restriction.canTake(mockedBuildableItem),
+                        "Should not allow execution when priority is outside range.");
         }
     }
 
@@ -72,5 +77,3 @@ class PrioritySorterRestrictionTest {
         assertTrue(restriction.canTake(mockedRun), "canTake should return true when passed a Run object.");
     }
 }
-
-
