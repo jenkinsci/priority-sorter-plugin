@@ -19,10 +19,12 @@ class PrioritySorterRestrictionTest {
     private PrioritySorterRestriction restriction;
     private BuildableItem mockedBuildableItem;
     private static final long MOCKED_BUILDABLE_ITEM_ID = 1L;
+    private static final int LOWER_PRIORITY = 1;
+    private static final int UPPER_PRIORITY = 1;
 
     @BeforeEach
     void setUp() {
-        this.restriction = new PrioritySorterRestriction(1, 5);
+        this.restriction = new PrioritySorterRestriction(LOWER_PRIORITY, UPPER_PRIORITY);
         this.mockedBuildableItem = mock(BuildableItem.class);
         when(mockedBuildableItem.getId()).thenReturn(MOCKED_BUILDABLE_ITEM_ID);
     }
@@ -57,7 +59,7 @@ class PrioritySorterRestrictionTest {
             QueueItemCache mockCache = mock(QueueItemCache.class);
             mockedCache.when(QueueItemCache::get).thenReturn(mockCache);
             when(mockCache.getItem(MOCKED_BUILDABLE_ITEM_ID)).thenReturn(mockItemInfo);
-            if (priority >= 1 && priority <= 5)
+            if (priority >= LOWER_PRIORITY && priority <= UPPER_PRIORITY)
                 assertTrue(
                         restriction.canTake(mockedBuildableItem),
                         "Should allow execution when priority is within range.");
@@ -69,11 +71,18 @@ class PrioritySorterRestrictionTest {
     }
 
     @Test
-    void testGetterMethods() {
+    void testCanTake() {
         Run mockedRun = mock(Run.class);
-        restriction = new PrioritySorterRestriction(1, 5);
-        assertEquals(1, restriction.getFromPriority(), "From Priority should be 1");
-        assertEquals(5, restriction.getToPriority(), "To Priority should be 5");
         assertTrue(restriction.canTake(mockedRun), "canTake should return true when passed a Run object.");
+    }
+
+    @Test
+    void testGetFromPriority() {
+        assertEquals(LOWER_PRIORITY, restriction.getFromPriority(), "From Priority should be " + LOWER_PRIORITY);
+    }
+
+    @Test
+    void testGetToPriority() {
+        assertEquals(UPPER_PRIORITY, restriction.getToPriority(), "To Priority should be " + UPPER_PRIORITY);
     }
 }
