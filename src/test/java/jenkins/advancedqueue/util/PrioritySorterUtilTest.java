@@ -1,6 +1,7 @@
 package jenkins.advancedqueue.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import hudson.util.ListBoxModel;
 import org.junit.Test;
