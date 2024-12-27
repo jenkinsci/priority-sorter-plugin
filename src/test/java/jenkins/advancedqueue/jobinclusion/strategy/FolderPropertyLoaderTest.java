@@ -16,13 +16,13 @@ public class FolderPropertyLoaderTest {
     public JenkinsRule jenkinsRule = new JenkinsRule();
 
     private Folder folder;
-    private FreeStyleProject project;
+    private FreeStyleProject j;
     private DecisionLogger decisionLogger;
 
     @Before
     public void setUp() throws Exception {
         folder = jenkinsRule.createProject(com.cloudbees.hudson.plugins.folder.Folder.class, "testFolder");
-        project = folder.createProject(FreeStyleProject.class, "testProject");
+        j = folder.createProject(FreeStyleProject.class, "testProject");
         decisionLogger = new DecisionLogger() {
             @Override
             public DecisionLogger addDecisionLog(int indent, String log) {
@@ -36,14 +36,14 @@ public class FolderPropertyLoaderTest {
         JobInclusionFolderProperty property = new JobInclusionFolderProperty(true, "TestGroup");
         folder.getProperties().add(property);
 
-        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, project);
+        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, j);
 
         assertEquals("TestGroup", result);
     }
 
     @Test
     public void getJobGroupName_returnsNull_whenNoJobGroupProperty() throws Exception {
-        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, project);
+        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, j);
 
         assertNull(result);
     }
@@ -53,7 +53,7 @@ public class FolderPropertyLoaderTest {
         JobInclusionFolderProperty property = new JobInclusionFolderProperty(false, "TestGroup");
         folder.getProperties().add(property);
 
-        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, project);
+        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, j);
 
         assertNull(result);
     }
