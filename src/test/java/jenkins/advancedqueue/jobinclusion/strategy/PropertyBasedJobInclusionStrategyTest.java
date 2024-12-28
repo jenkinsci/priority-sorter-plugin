@@ -1,9 +1,17 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import hudson.model.FreeStyleProject;
 import hudson.util.ListBoxModel;
+import java.util.ArrayList;
 import java.util.List;
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.JobGroup;
@@ -11,39 +19,53 @@ import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class PropertyBasedJobInclusionStrategyTest {
 
-    @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
+    @ClassRule
+    public static JenkinsRule j = new JenkinsRule();
 
-    private FreeStyleProject j;
+    @Rule
+    public TestName testName = new TestName();
+
+    private FreeStyleProject project;
+    private String strategyName;
     private PropertyBasedJobInclusionStrategy strategy;
-    private static DecisionLogger decisionLogger;
+    private DecisionLogger decisionLogger;
+    private List<String> loggedMessages;
 
     @Before
-    public void setUp() throws Exception {
-        j = jenkinsRule.createFreeStyleProject();
-        strategy = new PropertyBasedJobInclusionStrategy("testGroup");
+    public void createStrategy() throws Exception {
+        strategyName = "testGroup-" + testName.getMethodName();
+        strategy = new PropertyBasedJobInclusionStrategy(strategyName);
+    }
+
+    @Before
+    public void createProject() throws Exception {
+        // Name each freestyle project with the name of the test creating it
+        project = j.createFreeStyleProject("freestyle-" + testName.getMethodName());
+    }
+
+    @Before
+    public void createDecisionLogger() throws Exception {
+        loggedMessages = new ArrayList<>();
         decisionLogger = new DecisionLogger() {
-            /**
-             * @param indent
-             * @param log
-             * @return
-             */
             @Override
             public DecisionLogger addDecisionLog(int indent, String log) {
-                return null;
+                loggedMessages.add(log);
+                return this;
             }
         };
     }
 
     @After
-    public void tearDown() throws Exception {
-        j.delete();
+    public void deleteProject() throws Exception {
+        project.delete();
     }
 
     @Test
@@ -52,36 +74,41 @@ public class PropertyBasedJobInclusionStrategyTest {
                 strategy.getDescriptor();
         assertNotNull(descriptor);
         assertTrue(descriptor.getDisplayName().contains("Jobs"));
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void all() {
         List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
         assertNotNull(jobGroups);
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void getName() {
-        assertEquals("testGroup", strategy.getName());
+        assertEquals(strategyName, strategy.getName());
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void contains() {
-
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertFalse(result); // Assuming the project does not have the required property
+        assertThat(loggedMessages, hasItems("No match ..."));
     }
 
     @Test
     public void getPropertyBasesJobGroups() {
         ListBoxModel jobGroups = PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
         assertNotNull(jobGroups);
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void getDescriptorReturnsNonNullDescriptor() {
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         assertNotNull(descriptor);
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
@@ -89,45 +116,60 @@ public class PropertyBasedJobInclusionStrategyTest {
         PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor descriptor =
                 strategy.getDescriptor();
         assertTrue(descriptor.getDisplayName().contains("Jobs"));
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void allReturnsNonNullJobGroups() {
         List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
         assertNotNull(jobGroups);
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void getNameReturnsCorrectName() {
-        assertEquals("testGroup", strategy.getName());
+        assertEquals(strategyName, strategy.getName());
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void containsReturnsFalseForProjectWithoutProperty() {
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertFalse(result);
+        assertThat(loggedMessages, hasItems("No match ..."));
     }
 
     @Test
     public void getPropertyBasesJobGroupsReturnsNonNullListBoxModel() {
         ListBoxModel jobGroups = PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
         assertNotNull(jobGroups);
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void containsReturnsTrueForProjectWithMatchingJobGroup() throws Exception {
-        j.addProperty(new JobInclusionJobProperty(true, "testGroup"));
+        project.addProperty(new JobInclusionJobProperty(true, strategyName));
 
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertTrue(result);
+        assertThat(
+                loggedMessages,
+                hasItems(
+                        "JobGroup is enabled on job, with JobGroup [" + strategyName + "] ...",
+                        "Job is included in JobGroup ..."));
     }
 
     @Test
     public void containsReturnsFalseForProjectWithNonMatchingJobGroup() throws Exception {
-        j.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
+        project.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
 
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertFalse(result);
+        assertThat(
+                loggedMessages,
+                hasItems(
+                        "JobGroup is enabled on job, with JobGroup [nonMatchingGroup] ...",
+                        "Job is not included in JobGroup ..."));
     }
 
     @Test
@@ -136,8 +178,9 @@ public class PropertyBasedJobInclusionStrategyTest {
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = false;
 
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertFalse(result);
+        assertThat(loggedMessages, hasItems("Checking for Job Property inclusion for [" + strategyName + "]..."));
     }
 
     @Test
@@ -148,26 +191,37 @@ public class PropertyBasedJobInclusionStrategyTest {
         ListBoxModel jobGroups = PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
         assertNotNull(jobGroups);
         assertTrue(jobGroups.isEmpty());
+        assertThat(loggedMessages, is(empty()));
     }
 
     @Test
     public void containsReturnsTrueForProjectWithMatchingPropertyAndCloudBeesFoldersEnabled() throws Exception {
-        j.addProperty(new JobInclusionJobProperty(true, "testGroup"));
+        project.addProperty(new JobInclusionJobProperty(true, strategyName));
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = true;
 
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertTrue(result);
+        assertThat(
+                loggedMessages,
+                hasItems(
+                        "JobGroup is enabled on job, with JobGroup [" + strategyName + "] ...",
+                        "Job is included in JobGroup ..."));
     }
 
     @Test
     public void containsReturnsFalseForProjectWithNonMatchingPropertyAndCloudBeesFoldersEnabled() throws Exception {
-        j.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
+        project.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = true;
 
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertFalse(result);
+        assertThat(
+                loggedMessages,
+                hasItems(
+                        "JobGroup is enabled on job, with JobGroup [nonMatchingGroup] ...",
+                        "Job is not included in JobGroup ..."));
     }
 
     @Test
@@ -175,8 +229,9 @@ public class PropertyBasedJobInclusionStrategyTest {
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = true;
 
-        boolean result = strategy.contains(decisionLogger, j);
+        boolean result = strategy.contains(decisionLogger, project);
         assertFalse(result);
+        assertThat(loggedMessages, hasItems("No match ..."));
     }
 
     @Test
@@ -192,5 +247,6 @@ public class PropertyBasedJobInclusionStrategyTest {
         ListBoxModel jobGroups = PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
         assertNotNull(jobGroups);
         assertEquals(2, jobGroups.size());
+        assertThat(loggedMessages, is(empty()));
     }
 }
