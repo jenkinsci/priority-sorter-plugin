@@ -22,7 +22,7 @@ public class TestRunListener extends RunListener<Run> {
 
     public static void init(ExpectedItem... expected) {
         TestRunListener.expected = expected;
-        actual = new ArrayList<ItemInfo>(expected.length);
+        actual = new ArrayList<>(expected.length);
     }
 
     @Override
@@ -30,6 +30,11 @@ public class TestRunListener extends RunListener<Run> {
         LOGGER.info("ON STARTED: " + r.getParent().getName());
         try {
             ItemInfo item = QueueItemCache.get().getItem(r.getParent().getName());
+            if (actual == null) {
+                // Init was not called, initialize
+                TestRunListener.expected = null;
+                actual = new ArrayList<>();
+            }
             actual.add(item);
         } catch (Throwable e) {
             LOGGER.log(Level.INFO, "###########", e);
