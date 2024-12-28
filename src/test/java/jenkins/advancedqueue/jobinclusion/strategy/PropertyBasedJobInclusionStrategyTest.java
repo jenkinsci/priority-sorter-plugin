@@ -20,13 +20,13 @@ public class PropertyBasedJobInclusionStrategyTest {
     @Rule
     public JenkinsRule jenkinsRule = new JenkinsRule();
 
-    private FreeStyleProject project;
+    private FreeStyleProject j;
     private PropertyBasedJobInclusionStrategy strategy;
     private static DecisionLogger decisionLogger;
 
     @Before
     public void setUp() throws Exception {
-        project = jenkinsRule.createFreeStyleProject();
+        j = jenkinsRule.createFreeStyleProject();
         strategy = new PropertyBasedJobInclusionStrategy("testGroup");
         decisionLogger = new DecisionLogger() {
             /**
@@ -43,7 +43,7 @@ public class PropertyBasedJobInclusionStrategyTest {
 
     @After
     public void tearDown() throws Exception {
-        project.delete();
+        j.delete();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class PropertyBasedJobInclusionStrategyTest {
     @Test
     public void contains() {
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertFalse(result); // Assuming the project does not have the required property
     }
 
@@ -104,7 +104,7 @@ public class PropertyBasedJobInclusionStrategyTest {
 
     @Test
     public void containsReturnsFalseForProjectWithoutProperty() {
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertFalse(result);
     }
 
@@ -116,17 +116,17 @@ public class PropertyBasedJobInclusionStrategyTest {
 
     @Test
     public void containsReturnsTrueForProjectWithMatchingJobGroup() throws Exception {
-        project.addProperty(new JobInclusionJobProperty(true, "testGroup"));
+        j.addProperty(new JobInclusionJobProperty(true, "testGroup"));
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertTrue(result);
     }
 
     @Test
     public void containsReturnsFalseForProjectWithNonMatchingJobGroup() throws Exception {
-        project.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
+        j.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertFalse(result);
     }
 
@@ -136,7 +136,7 @@ public class PropertyBasedJobInclusionStrategyTest {
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = false;
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertFalse(result);
     }
 
@@ -152,21 +152,21 @@ public class PropertyBasedJobInclusionStrategyTest {
 
     @Test
     public void containsReturnsTrueForProjectWithMatchingPropertyAndCloudBeesFoldersEnabled() throws Exception {
-        project.addProperty(new JobInclusionJobProperty(true, "testGroup"));
+        j.addProperty(new JobInclusionJobProperty(true, "testGroup"));
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = true;
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertTrue(result);
     }
 
     @Test
     public void containsReturnsFalseForProjectWithNonMatchingPropertyAndCloudBeesFoldersEnabled() throws Exception {
-        project.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
+        j.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = true;
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertFalse(result);
     }
 
@@ -175,7 +175,7 @@ public class PropertyBasedJobInclusionStrategyTest {
         PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
         descriptor.cloudbeesFolders = true;
 
-        boolean result = strategy.contains(decisionLogger, project);
+        boolean result = strategy.contains(decisionLogger, j);
         assertFalse(result);
     }
 
