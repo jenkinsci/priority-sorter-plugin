@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
-import jenkins.advancedqueue.jobrestrictions.PrioritySorterRestriction;
+import hudson.model.Run;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import org.junit.After;
 import org.junit.Before;
@@ -14,24 +14,24 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 public class JobInclusionFolderPropertyTest {
     @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     private static ItemInfo itemInfo;
-    private PrioritySorterRestriction restriction;
     private static final int LOWER_PRIORITY = 1;
-    private static FreeStyleProject j;
+    private static FreeStyleProject project;
     private static JobInclusionFolderProperty property;
 
     @Before
     public void setUp() throws Exception {
-        j = jenkinsRule.createFreeStyleProject();
-        j.scheduleBuild2(0).get(); // Schedule a build to ensure the queue item is created
+        project = j.createFreeStyleProject();
+        Run r = project.scheduleBuild2(0).get(); // Schedule a build to ensure the queue item is created
+        j.assertBuildStatusSuccess(r);
         property = new JobInclusionFolderProperty(true, "testGroup");
 
         // Ensure the custom QueueSorter is used
-        j.getDescriptor();
+        project.getDescriptor();
 
-        Queue.Item queueItem = j.getQueueItem();
+        Queue.Item queueItem = project.getQueueItem();
         assertNull("Queue.Item should be null", queueItem);
 
         if (queueItem != null) {
@@ -68,6 +68,6 @@ public class JobInclusionFolderPropertyTest {
     @Test
     public void testAllJobsJobInclusionStrategy() {
         AllJobsJobInclusionStrategy strategy = new AllJobsJobInclusionStrategy();
-        assertTrue(strategy.contains(null, j));
+        assertTrue(strategy.contains(null, project));
     }
 }
