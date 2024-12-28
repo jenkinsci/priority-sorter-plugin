@@ -68,9 +68,9 @@ public class FolderBasedJobInclusionStrategyTest {
 
     @Test
     public void containsReturnsTrueForJobInSubFolder() throws Exception {
-        FreeStyleProject project = jenkinsRule.createFreeStyleProject("testFolder_subFolder_jobName");
+        FreeStyleProject j = jenkinsRule.createFreeStyleProject("testFolder_subFolder_jobName");
 
-        assertTrue(strategy.contains(decisionLogger, project));
+        assertTrue(strategy.contains(decisionLogger, j));
     }
 
     @Test
