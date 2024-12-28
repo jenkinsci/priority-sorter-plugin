@@ -70,14 +70,6 @@ public class ItemInfo
         this.itemStatus = ItemStatus.WAITING;
     }
 
-    /** Public only for use in tests. */
-    public ItemInfo(Item item, int priority) {
-        this.itemId = item.getId();
-        this.inQueueSince = item.getInQueueSince();
-        this.jobName = item.task.getName();
-        this.itemStatus = ItemStatus.WAITING;
-    }
-
     public PriorityConfigurationCallback setPrioritySelection(int priority, int jobGroupId, PriorityStrategy reason) {
         this.priority = priority;
         this.jobGroupId = jobGroupId;

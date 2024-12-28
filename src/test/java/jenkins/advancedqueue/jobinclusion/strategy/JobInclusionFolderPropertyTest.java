@@ -1,13 +1,14 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import hudson.model.FreeStyleProject;
-import hudson.model.Queue;
-import hudson.model.Run;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import hudson.model.FreeStyleProject;
+import hudson.model.Queue;
+import hudson.model.Run;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
