@@ -70,6 +70,7 @@ public class ItemInfo
         this.itemStatus = ItemStatus.WAITING;
     }
 
+    /** Public only for use in tests. */
     public ItemInfo(Item item, int priority) {
         this.itemId = item.getId();
         this.inQueueSince = item.getInQueueSince();
