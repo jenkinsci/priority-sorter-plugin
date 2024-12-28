@@ -20,11 +20,13 @@ public class JobInclusionFolderPropertyTest {
     private PrioritySorterRestriction restriction;
     private static final int LOWER_PRIORITY = 1;
     private static FreeStyleProject j;
+    private static JobInclusionFolderProperty property;
 
     @Before
     public void setUp() throws Exception {
         j = jenkinsRule.createFreeStyleProject();
         j.scheduleBuild2(0).get(); // Schedule a build to ensure the queue item is created
+        property = new JobInclusionFolderProperty(true, "testGroup");
 
         // Ensure the custom QueueSorter is used
         j.getDescriptor();
@@ -42,19 +44,16 @@ public class JobInclusionFolderPropertyTest {
 
     @Test
     public void testGetJobGroupName() {
-        JobInclusionFolderProperty property = new JobInclusionFolderProperty(true, "testGroup");
         assertEquals("testGroup", property.getJobGroupName());
     }
 
     @Test
     public void testIsUseJobGroup() {
-        JobInclusionFolderProperty property = new JobInclusionFolderProperty(true, "testGroup");
         assertTrue(property.isUseJobGroup());
     }
 
     @Test
     public void testGetDescriptor() {
-        JobInclusionFolderProperty property = new JobInclusionFolderProperty(true, "testGroup");
         assertNotNull(property.getDescriptor());
     }
 
