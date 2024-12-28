@@ -31,6 +31,7 @@ import hudson.model.Queue.Item;
 import java.util.ArrayList;
 import java.util.List;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
+import jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.model.Jenkins;
@@ -46,6 +47,12 @@ import org.kohsuke.stapler.DataBoundSetter;
  * @since 2.0
  */
 public class JobGroup {
+
+    public JobGroup(String name, int priority, PropertyBasedJobInclusionStrategy jobGroupStrategy) {
+        this.description = name;
+        this.priority = priority;
+        this.jobGroupStrategy = jobGroupStrategy;
+    }
 
     public static class PriorityStrategyHolder extends PriorityStrategy {
         private int id = 0;
