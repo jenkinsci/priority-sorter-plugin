@@ -45,7 +45,7 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
     @Extension
     public static class PropertyBasedJobInclusionStrategyDescriptor extends Descriptor<JobInclusionStrategy> {
 
-        private boolean cloudbeesFolders = true;
+        boolean cloudbeesFolders = true;
 
         @Override
         public String getDisplayName() {
@@ -64,6 +64,11 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
         }
     }
     ;
+
+    @Override
+    public PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor getDescriptor() {
+        return (PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor) super.getDescriptor();
+    }
 
     private String name;
 
