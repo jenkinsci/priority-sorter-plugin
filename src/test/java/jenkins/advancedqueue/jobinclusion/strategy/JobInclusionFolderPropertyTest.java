@@ -1,22 +1,23 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import static org.junit.Assert.*;
-
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
 import hudson.model.Run;
-import jenkins.advancedqueue.sorter.ItemInfo;
-import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class JobInclusionFolderPropertyTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
 
-    private static ItemInfo itemInfo;
+    @ClassRule
+    public static JenkinsRule j = new JenkinsRule();
+
     private static final int LOWER_PRIORITY = 1;
     private static FreeStyleProject project;
     private static JobInclusionFolderProperty property;
@@ -33,14 +34,7 @@ public class JobInclusionFolderPropertyTest {
 
         Queue.Item queueItem = project.getQueueItem();
         assertNull("Queue.Item should be null", queueItem);
-
-        if (queueItem != null) {
-            itemInfo = new ItemInfo(queueItem, LOWER_PRIORITY);
-        }
     }
-
-    @After
-    public void tearDown() throws Exception {}
 
     @Test
     public void testGetJobGroupName() {
