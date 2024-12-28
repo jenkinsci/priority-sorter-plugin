@@ -1,6 +1,10 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import hudson.Launcher;
 import hudson.model.FreeStyleBuild;
@@ -9,22 +13,24 @@ import hudson.model.StreamBuildListener;
 import hudson.util.StreamTaskListener;
 import java.io.IOException;
 import java.io.PrintStream;
-import jenkins.advancedqueue.DecisionLogger;
-import org.junit.After;
+import java.nio.charset.StandardCharsets;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class JobInclusionJobPropertyTest {
 
+    @ClassRule
+    public static JenkinsRule j = new JenkinsRule();
+
     @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
+    public TestName testName = new TestName();
 
     private JobInclusionJobProperty property;
-    private FolderBasedJobInclusionStrategy strategy;
-    private FreeStyleProject j;
-    private DecisionLogger decisionLogger;
+    private FreeStyleProject project;
     private FreeStyleBuild build;
     private StreamBuildListener listener;
     private Launcher launcher;
@@ -32,24 +38,10 @@ public class JobInclusionJobPropertyTest {
     @Before
     public void setUp() throws Exception {
         property = new JobInclusionJobProperty(true, "testGroup");
-        strategy = new FolderBasedJobInclusionStrategy("testFolder");
-        j = jenkinsRule.createFreeStyleProject("testFolder_jobName");
-        jenkinsRule.buildAndAssertSuccess(j);
-        build = j.scheduleBuild2(0).get();
-        listener = new StreamBuildListener(new PrintStream(System.out));
+        project = j.createFreeStyleProject("testFolder_" + testName.getMethodName());
+        build = j.buildAndAssertSuccess(project);
+        listener = new StreamBuildListener(new PrintStream(System.out), StandardCharsets.UTF_8);
         launcher = new hudson.Launcher.LocalLauncher(StreamTaskListener.fromStdout());
-
-        decisionLogger = new DecisionLogger() {
-            @Override
-            public DecisionLogger addDecisionLog(int indent, String log) {
-                return null;
-            }
-        };
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        property = null;
     }
 
     @Test
@@ -60,13 +52,13 @@ public class JobInclusionJobPropertyTest {
     @Test
     public void getJobAction() {
         // Assuming getJobAction returns some action
-        assertNotNull(property.getJobActions(j));
+        assertNotNull(property.getJobActions(project));
     }
 
     @Test
     public void getJobActions() {
         // Assuming getJobActions returns a list of actions
-        assertNotNull(property.getJobActions(j));
+        assertNotNull(property.getJobActions(project));
     }
 
     @Test
@@ -90,33 +82,33 @@ public class JobInclusionJobPropertyTest {
     @Test
     public void getProjectActions() {
         // Assuming getProjectAction returns some project action
-        assertNotNull(property.getProjectActions(j));
+        assertNotNull(property.getProjectActions(project));
     }
 
     @Test
     public void getJobGroupNameReturnsCorrectName() throws Exception {
-        FreeStyleProject j = jenkinsRule.createFreeStyleProject("test-project");
-        JobInclusionJobProperty property = new JobInclusionJobProperty(true, "groupName");
-        j.addProperty(property);
-        assertEquals("groupName", property.getJobGroupName());
+        FreeStyleProject myProject = j.createFreeStyleProject("test-project");
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "groupName");
+        myProject.addProperty(jobProperty);
+        assertEquals("groupName", jobProperty.getJobGroupName());
     }
 
     @Test
     public void getJobGroupNameReturnsNullWhenNotSet() {
-        JobInclusionJobProperty property = new JobInclusionJobProperty(false, null);
-        assertNull(property.getJobGroupName());
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(false, null);
+        assertNull(jobProperty.getJobGroupName());
     }
 
     @Test
     public void isUseJobGroupReturnsCorrectValue() {
-        JobInclusionJobProperty property = new JobInclusionJobProperty(true, "groupName");
-        assertTrue(property.isUseJobGroup());
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "groupName");
+        assertTrue(jobProperty.isUseJobGroup());
     }
 
     @Test
     public void getJobGroupNameReturnsNullWhenJobGroupNameNotSet() {
-        JobInclusionJobProperty property = new JobInclusionJobProperty(true, null);
-        assertNull(property.getJobGroupName());
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, null);
+        assertNull(jobProperty.getJobGroupName());
     }
 
     @Test
