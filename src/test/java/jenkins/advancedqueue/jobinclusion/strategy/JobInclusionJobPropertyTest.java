@@ -1,19 +1,21 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class JobInclusionJobPropertyTest {
-
     private JobInclusionJobProperty jobProperty;
     private JobInclusionJobProperty.DescriptorImpl descriptor;
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    @Rule
+    public JenkinsRule jenkinsRule = new JenkinsRule();
 
     @Before
     public void setup() {
