@@ -1,38 +1,60 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
 import hudson.model.FreeStyleProject;
 import hudson.util.ListBoxModel;
+import java.util.ArrayList;
+import java.util.List;
 import jenkins.advancedqueue.DecisionLogger;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class FolderBasedJobInclusionStrategyTest {
 
-    @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
+    @ClassRule
+    public static JenkinsRule j = new JenkinsRule();
 
-    private FolderBasedJobInclusionStrategy strategy;
+    private static FolderBasedJobInclusionStrategy strategy;
     private static DecisionLogger decisionLogger;
+    private static List<String> loggedMessages;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void createStrategy() throws Exception {
         strategy = new FolderBasedJobInclusionStrategy("testFolder");
+    }
+
+    @BeforeClass
+    public static void createDecisionLogger() throws Exception {
         decisionLogger = new DecisionLogger() {
             @Override
             public DecisionLogger addDecisionLog(int indent, String log) {
-                return null;
+                loggedMessages.add(log);
+                return this;
             }
         };
     }
 
+    @Before
+    public void clearLoggedMessages() throws Exception {
+        loggedMessages = new ArrayList<>();
+    }
+
     @After
-    public void tearDown() throws Exception {}
+    public void checkLoggedMessages() throws Exception {
+        assertThat(loggedMessages, is(empty()));
+    }
 
     @Test
     public void getDescriptor() {
@@ -54,23 +76,23 @@ public class FolderBasedJobInclusionStrategyTest {
 
     @Test
     public void contains() throws Exception {
-        FreeStyleProject j = jenkinsRule.createFreeStyleProject("testFolder_jobName");
+        FreeStyleProject project = this.j.createFreeStyleProject("testFolder_jobName");
 
-        assertTrue(strategy.contains(decisionLogger, j));
+        assertTrue(strategy.contains(decisionLogger, project));
     }
 
     @Test
     public void containsReturnsFalseForJobNotInFolder() throws Exception {
-        FreeStyleProject j = jenkinsRule.createFreeStyleProject("otherFolder_jobName");
+        FreeStyleProject project = j.createFreeStyleProject("otherFolder_jobName");
 
-        assertFalse(strategy.contains(decisionLogger, j));
+        assertFalse(strategy.contains(decisionLogger, project));
     }
 
     @Test
     public void containsReturnsTrueForJobInSubFolder() throws Exception {
-        FreeStyleProject j = jenkinsRule.createFreeStyleProject("testFolder_subFolder_jobName");
+        FreeStyleProject project = j.createFreeStyleProject("testFolder_subFolder_jobName");
 
-        assertTrue(strategy.contains(decisionLogger, j));
+        assertTrue(strategy.contains(decisionLogger, project));
     }
 
     @Test
@@ -84,8 +106,8 @@ public class FolderBasedJobInclusionStrategyTest {
     @Test
     public void getListFolderItemsReturnsCorrectFolderNames() throws Exception {
 
-        Folder folder1 = jenkinsRule.jenkins.createProject(Folder.class, "folder1");
-        Folder folder2 = jenkinsRule.jenkins.createProject(Folder.class, "folder2");
+        j.jenkins.createProject(Folder.class, "folder1");
+        j.jenkins.createProject(Folder.class, "folder2");
 
         FolderBasedJobInclusionStrategy.FolderBasedJobInclusionStrategyDescriptor descriptor =
                 new FolderBasedJobInclusionStrategy.FolderBasedJobInclusionStrategyDescriptor();
