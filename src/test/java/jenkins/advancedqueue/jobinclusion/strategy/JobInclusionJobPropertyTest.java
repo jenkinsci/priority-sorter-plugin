@@ -102,6 +102,11 @@ public class JobInclusionJobPropertyTest {
     @Test
     public void isUseJobGroupReturnsCorrectValue() {
         JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "groupName");
+    }
+
+    @Test
+    public void isUseJobGroupTest() {
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, null);
         assertTrue(jobProperty.isUseJobGroup());
     }
 
@@ -117,9 +122,19 @@ public class JobInclusionJobPropertyTest {
         assertEquals("XXX", descriptor.getDisplayName());
     }
 
+    public void getDescriptorTest() {
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, null);
+        assertNotNull(jobProperty.getDescriptor());
+    }
+
     @Test
     public void descriptorImplIsUsed() {
         JobInclusionJobProperty.DescriptorImpl descriptor = new JobInclusionJobProperty.DescriptorImpl();
         assertFalse(descriptor.isUsed());
+    }
+
+    public void getJobGroupsTest() {
+        JobInclusionJobProperty.DescriptorImpl descriptor = new JobInclusionJobProperty.DescriptorImpl();
+        assertNotNull(descriptor.getJobGroups());
     }
 }
