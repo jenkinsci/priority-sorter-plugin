@@ -69,15 +69,6 @@ public class PropertyBasedJobInclusionStrategyTest {
     }
 
     @Test
-    public void getDescriptor() {
-        PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor descriptor =
-                strategy.getDescriptor();
-        assertNotNull(descriptor);
-        assertTrue(descriptor.getDisplayName().contains("Jobs"));
-        assertThat(loggedMessages, is(empty()));
-    }
-
-    @Test
     public void all() {
         List<JobGroup> jobGroups = PriorityConfiguration.get().getJobGroups();
         assertNotNull(jobGroups);
@@ -105,16 +96,9 @@ public class PropertyBasedJobInclusionStrategyTest {
     }
 
     @Test
-    public void getDescriptorReturnsNonNullDescriptor() {
-        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
-        assertNotNull(descriptor);
-        assertThat(loggedMessages, is(empty()));
-    }
-
-    @Test
-    public void getDescriptorDisplayNameContainsJobs() {
+    public void getDisplayNameContainsJobs() {
         PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor descriptor =
-                strategy.getDescriptor();
+                strategy.getThisDescriptor();
         assertTrue(descriptor.getDisplayName().contains("Jobs"));
         assertThat(loggedMessages, is(empty()));
     }
@@ -175,7 +159,7 @@ public class PropertyBasedJobInclusionStrategyTest {
     @Test
     public void containsReturnsFalseWhenCloudBeesFoldersPluginNotEnabled() throws Exception {
         // Simulate CloudBees Folders plugin not enabled
-        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
+        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getThisDescriptor();
         descriptor.cloudbeesFolders = false;
 
         boolean result = strategy.contains(decisionLogger, project);
@@ -197,7 +181,7 @@ public class PropertyBasedJobInclusionStrategyTest {
     @Test
     public void containsReturnsTrueForProjectWithMatchingPropertyAndCloudBeesFoldersEnabled() throws Exception {
         project.addProperty(new JobInclusionJobProperty(true, strategyName));
-        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
+        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getThisDescriptor();
         descriptor.cloudbeesFolders = true;
 
         boolean result = strategy.contains(decisionLogger, project);
@@ -212,7 +196,7 @@ public class PropertyBasedJobInclusionStrategyTest {
     @Test
     public void containsReturnsFalseForProjectWithNonMatchingPropertyAndCloudBeesFoldersEnabled() throws Exception {
         project.addProperty(new JobInclusionJobProperty(true, "nonMatchingGroup"));
-        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
+        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getThisDescriptor();
         descriptor.cloudbeesFolders = true;
 
         boolean result = strategy.contains(decisionLogger, project);
@@ -226,7 +210,7 @@ public class PropertyBasedJobInclusionStrategyTest {
 
     @Test
     public void containsReturnsFalseForProjectWithoutPropertyAndCloudBeesFoldersEnabled() throws Exception {
-        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getDescriptor();
+        PropertyBasedJobInclusionStrategyDescriptor descriptor = strategy.getThisDescriptor();
         descriptor.cloudbeesFolders = true;
 
         boolean result = strategy.contains(decisionLogger, project);

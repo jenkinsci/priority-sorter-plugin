@@ -65,8 +65,9 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
     }
     ;
 
-    @Override
-    public PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor getDescriptor() {
+    /* Package protected for testing */
+    /* Intentionally does not override getDescriptor() from the super class */
+    PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor getThisDescriptor() {
         return (PropertyBasedJobInclusionStrategy.PropertyBasedJobInclusionStrategyDescriptor) super.getDescriptor();
     }
 
