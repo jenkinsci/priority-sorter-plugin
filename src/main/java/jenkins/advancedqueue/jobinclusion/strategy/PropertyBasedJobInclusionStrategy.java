@@ -119,14 +119,4 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
         }
         return strategies;
     }
-
-    private static ListBoxModel jobGroups = new ListBoxModel();
-
-    public static void addJobGroup(String displayName, String value) {
-        jobGroups.add(displayName, value);
-    }
-
-    public static ListBoxModel getJobGroups() {
-        return jobGroups;
-    }
 }
