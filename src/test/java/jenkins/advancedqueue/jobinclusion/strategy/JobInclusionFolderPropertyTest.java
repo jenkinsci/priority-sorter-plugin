@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
 import hudson.model.Run;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -19,12 +19,11 @@ public class JobInclusionFolderPropertyTest {
     @ClassRule
     public static JenkinsRule j = new JenkinsRule();
 
-    private static final int LOWER_PRIORITY = 1;
     private static FreeStyleProject project;
     private static JobInclusionFolderProperty property;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void createProject() throws Exception {
         project = j.createFreeStyleProject();
         Run r = project.scheduleBuild2(0).get(); // Schedule a build to ensure the queue item is created
         j.assertBuildStatusSuccess(r);
