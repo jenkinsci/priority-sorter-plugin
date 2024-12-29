@@ -38,6 +38,9 @@
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
     <spotless.check.skip>false</spotless.check.skip>
+    <!-- Silence Maven XREF warning, don't need hyperlinked source code -->
+    <!-- https://stackoverflow.com/questions/12038238/unable-to-locate-source-xref-to-link-to -->
+    <linkXRef>false</linkXRef>
   </properties>
 
   <dependencyManagement>
