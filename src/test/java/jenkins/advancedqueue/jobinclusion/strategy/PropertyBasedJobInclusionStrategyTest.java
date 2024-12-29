@@ -236,17 +236,20 @@ public class PropertyBasedJobInclusionStrategyTest {
 
     @Test
     public void getPropertyBasesJobGroupsReturnsNonNullListBoxModelWhenMultipleJobGroups() {
-        // Simulate multiple job groups
-        PriorityConfiguration.get()
-                .getJobGroups()
-                .add(new JobGroup("group1", 1, new PropertyBasedJobInclusionStrategy("group1")));
-        PriorityConfiguration.get()
-                .getJobGroups()
-                .add(new JobGroup("group2", 2, new PropertyBasedJobInclusionStrategy("group2")));
+        PriorityConfiguration.get().getJobGroups().add(createJobGroup("group1", 1));
+        PriorityConfiguration.get().getJobGroups().add(createJobGroup("group2", 2));
 
         ListBoxModel jobGroups = PropertyBasedJobInclusionStrategy.getPropertyBasesJobGroups();
         assertNotNull(jobGroups);
         assertEquals(2, jobGroups.size());
         assertThat(loggedMessages, is(empty()));
+    }
+
+    private JobGroup createJobGroup(String description, int priority) {
+        JobGroup group = new JobGroup();
+        group.setDescription(description);
+        group.setPriority(priority);
+        group.setJobGroupStrategy(new PropertyBasedJobInclusionStrategy(description));
+        return group;
     }
 }
