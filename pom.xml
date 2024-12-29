@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.83</version>
+    <version>4.88</version>
     <relativePath />
   </parent>
 
@@ -22,42 +22,33 @@
     </license>
   </licenses>
 
-  <developers>
-    <developer>
-      <id>markewaite</id>
-      <name>Mark Waite</name>
-      <email>mark.earl.waite@gmail.com</email>
-      <roles>
-        <role>maintainer</role>
-      </roles>
-      <timezone>America/Denver</timezone>
-    </developer>
-  </developers>
-
   <scm>
-    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <connection>scm:git:https://github.com/${gitHubRepo}</connection>
     <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <tag>${scmTag}</tag>
     <url>https://github.com/${gitHubRepo}</url>
   </scm>
 
   <properties>
-    <revision>5.1.1</revision>
+    <revision>5.2.1</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
-    <jenkins.version>2.426.3</jenkins.version>
-    <pmdVersion>7.0.0</pmdVersion>
+    <jenkins.baseline>2.452</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.4</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
     <spotless.check.skip>false</spotless.check.skip>
+    <!-- Silence Maven XREF warning, don't need hyperlinked source code -->
+    <!-- https://stackoverflow.com/questions/12038238/unable-to-locate-source-xref-to-link-to -->
+    <linkXRef>false</linkXRef>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.426.x</artifactId>
-        <version>3135.v6d6c1f6b_3572</version>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>3850.vb_c5319efa_e29</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -119,13 +110,13 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>nested-view</artifactId>
-      <version>1.33</version>
+      <version>1.35</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>sectioned-view</artifactId>
-      <version>1.26</version>
+      <version>1.28</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -150,20 +141,11 @@
   </pluginRepositories>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.23.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.23.0</version>
+        <version>3.26.0</version>
         <executions>
           <execution>
             <goals>
