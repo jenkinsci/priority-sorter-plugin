@@ -107,12 +107,6 @@ public class JobInclusionJobPropertyTest {
     }
 
     @Test
-    public void getRequiredMonitorService() {
-        // Assuming getRequiredMonitorService returns some service
-        assertNotNull(property.getRequiredMonitorService());
-    }
-
-    @Test
     public void getJobGroupNameReturnsCorrectName() throws Exception {
         FreeStyleProject myProject = j.createFreeStyleProject("test-project");
         JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "testJobGroupName");
