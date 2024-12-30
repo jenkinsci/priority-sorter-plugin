@@ -45,6 +45,7 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
     @Extension
     public static class PropertyBasedJobInclusionStrategyDescriptor extends Descriptor<JobInclusionStrategy> {
 
+        /* Package protected for testing */
         boolean cloudbeesFolders = true;
 
         @Override
