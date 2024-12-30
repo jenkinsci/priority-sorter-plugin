@@ -41,7 +41,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 3.0
  */
 public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
-    private static ListBoxModel jobGroups = new ListBoxModel();
 
     @Extension
     public static class PropertyBasedJobInclusionStrategyDescriptor extends Descriptor<JobInclusionStrategy> {
@@ -119,13 +118,5 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
             }
         }
         return strategies;
-    }
-
-    public static void addJobGroup(String displayName, String value) {
-        jobGroups.add(displayName, value);
-    }
-
-    public static ListBoxModel getJobGroups() {
-        return jobGroups;
     }
 }

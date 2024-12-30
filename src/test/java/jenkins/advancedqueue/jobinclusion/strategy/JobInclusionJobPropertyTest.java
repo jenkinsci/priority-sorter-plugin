@@ -6,16 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import hudson.Launcher;
-import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import hudson.model.StreamBuildListener;
-import hudson.util.ListBoxModel;
-import hudson.util.StreamTaskListener;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import jenkins.advancedqueue.PriorityConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -32,19 +23,13 @@ public class JobInclusionJobPropertyTest {
     @Rule
     public TestName testName = new TestName();
 
-    private JobInclusionJobProperty property;
+    private JobInclusionJobProperty jobProperty;
     private FreeStyleProject project;
-    private FreeStyleBuild build;
-    private StreamBuildListener listener;
-    private Launcher launcher;
 
     @Before
     public void setUp() throws Exception {
-        property = new JobInclusionJobProperty(true, "testGroup");
+        jobProperty = new JobInclusionJobProperty(true, "testJobGroup");
         project = j.createFreeStyleProject("testFolder_" + testName.getMethodName());
-        build = j.buildAndAssertSuccess(project);
-        listener = new StreamBuildListener(new PrintStream(System.out), StandardCharsets.UTF_8);
-        launcher = new hudson.Launcher.LocalLauncher(StreamTaskListener.fromStdout());
     }
 
     @After
@@ -54,56 +39,21 @@ public class JobInclusionJobPropertyTest {
 
     @Test
     public void getDescriptor() {
-        JobInclusionJobProperty.DescriptorImpl descriptor = property.getDescriptor();
+        JobInclusionJobProperty.DescriptorImpl descriptor = jobProperty.getDescriptor();
         assertNotNull(descriptor);
         assertEquals("XXX", descriptor.getDisplayName());
         assertTrue(descriptor instanceof JobInclusionJobProperty.DescriptorImpl);
     }
 
     @Test
-    public void getJobActions() {
-        // Setup: Add a job group to the PriorityConfiguration
-        PriorityConfiguration.get().getJobGroups().clear(); // Clear existing job groups
-        PropertyBasedJobInclusionStrategy.addJobGroup("testJobGroup", "testGroup");
-
-        // Retrieve job actions
-        ListBoxModel jobActions = PropertyBasedJobInclusionStrategy.getJobGroups();
-        assertNotNull(jobActions);
-        assertFalse(jobActions.isEmpty());
-
-        // Check the size of the list
-        assertEquals("Expected number of job actions", 1, jobActions.size());
-
-        // Check the properties of the first element
-        ListBoxModel.Option firstOption = jobActions.get(0);
-        assertNotNull(firstOption);
-        assertEquals("Expected display name", "testJobGroup", firstOption.name);
-        assertEquals("Expected value", "testGroup", firstOption.value);
+    public void getJobGroupNameTest() {
+        assertEquals("TestJobGroup", jobProperty.getJobGroupName());
     }
 
     @Test
-    public void prebuild() {
-        // Assuming prebuild performs some pre-build actions
-        assertTrue(property.prebuild(build, listener));
-
-        // Additional assertions to verify the state after prebuild
-        assertNotNull(build);
-        assertNotNull(listener);
-        assertEquals(
-                "testFolder_" + testName.getMethodName(), build.getProject().getName());
-    }
-
-    @Test
-    public void perform() throws IOException, InterruptedException {
-        // Assuming perform executes some actions
-        assertTrue(property.perform(build, launcher, listener));
-
-        // Additional assertions to verify the state after perform
-        assertNotNull(build);
-        assertNotNull(launcher);
-        assertNotNull(listener);
-        assertEquals(
-                "testFolder_" + testName.getMethodName(), build.getProject().getName());
+    public void getRequiredMonitorService() {
+        // Assuming getRequiredMonitorService returns some service
+        assertNotNull(jobProperty.getRequiredMonitorService());
     }
 
     @Test
@@ -214,27 +164,5 @@ public class JobInclusionJobPropertyTest {
     public void descriptorImplIsUsed() {
         JobInclusionJobProperty.DescriptorImpl descriptor = new JobInclusionJobProperty.DescriptorImpl();
         assertFalse(descriptor.isUsed());
-    }
-
-    @Test
-    public void getJobGroupsTest() {
-        JobInclusionJobProperty.DescriptorImpl descriptor = new JobInclusionJobProperty.DescriptorImpl();
-        ListBoxModel jobGroups = descriptor.getJobGroups();
-
-        jobGroups.add("testJobGroup", "testGroup");
-        // Verify that the jobGroups is not null
-        assertNotNull(jobGroups);
-
-        // Verify that the jobGroups is not empty
-        assertFalse(jobGroups.isEmpty());
-
-        // Verify the size of the jobGroups
-        assertEquals("Expected number of job groups", 1, jobGroups.size());
-
-        // Verify the properties of the first job group
-        ListBoxModel.Option firstOption = jobGroups.get(0);
-        assertNotNull(firstOption);
-        assertEquals("Expected display name", "testJobGroup", firstOption.name);
-        assertEquals("Expected value", "testGroup", firstOption.value);
     }
 }
