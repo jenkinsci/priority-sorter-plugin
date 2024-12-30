@@ -53,6 +53,8 @@ public abstract class JobInclusionStrategy implements ExtensionPoint, Describabl
     }
     ;
 
+    // Suppress unchecked cast warning because Jenkins.get().getDescriptor(this.getClass())
+    // returns a Descriptor of the specific JobInclusionStrategy subclass, which is safe to cast
     @SuppressWarnings("unchecked")
     public Descriptor<JobInclusionStrategy> getDescriptor() {
         return Jenkins.get().getDescriptor(this.getClass());
