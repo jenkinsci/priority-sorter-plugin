@@ -24,17 +24,17 @@ public class JobInclusionJobPropertyTest {
     public TestName testName = new TestName();
 
     private JobInclusionJobProperty jobProperty;
-    private FreeStyleProject project;
+    private FreeStyleProject jobProject;
 
     @Before
     public void setUp() throws Exception {
         jobProperty = new JobInclusionJobProperty(true, "testJobGroup");
-        project = j.createFreeStyleProject("testFolder_" + testName.getMethodName());
+        jobProject = j.createFreeStyleProject("testFolder_" + testName.getMethodName());
     }
 
     @After
     public void deleteProject() throws Exception {
-        project.delete();
+        jobProject.delete();
     }
 
     @Test
@@ -47,7 +47,7 @@ public class JobInclusionJobPropertyTest {
 
     @Test
     public void getJobGroupNameTest() {
-        assertEquals("TestJobGroup", jobProperty.getJobGroupName());
+        assertEquals("testJobGroup", jobProperty.getJobGroupName());
     }
 
     @Test
