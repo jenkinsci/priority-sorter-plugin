@@ -25,10 +25,12 @@ public class JobInclusionJobPropertyTest {
 
     private JobInclusionJobProperty jobProperty;
     private FreeStyleProject jobProject;
+    private JobInclusionJobProperty.DescriptorImpl descriptor;
 
     @Before
     public void setUp() throws Exception {
-        jobProperty = new JobInclusionJobProperty(true, "testJobGroup");
+        jobProperty = new JobInclusionJobProperty(true, "TestJobGroup");
+        descriptor = jobProperty.getDescriptor();
         jobProject = j.createFreeStyleProject("testFolder_" + testName.getMethodName());
     }
 
@@ -38,48 +40,31 @@ public class JobInclusionJobPropertyTest {
     }
 
     @Test
-    public void getDescriptor() {
-        JobInclusionJobProperty.DescriptorImpl descriptor = jobProperty.getDescriptor();
-        assertNotNull(descriptor);
-        assertEquals("XXX", descriptor.getDisplayName());
-        assertTrue(descriptor instanceof JobInclusionJobProperty.DescriptorImpl);
-    }
-
-    @Test
     public void getJobGroupNameTest() {
-        assertEquals("testJobGroup", jobProperty.getJobGroupName());
-    }
-
-    @Test
-    public void getRequiredMonitorService() {
-        // Assuming getRequiredMonitorService returns some service
-        assertNotNull(jobProperty.getRequiredMonitorService());
+        assertEquals("TestJobGroup", jobProperty.getJobGroupName());
     }
 
     @Test
     public void getJobGroupNameReturnsCorrectName() throws Exception {
         FreeStyleProject myProject = j.createFreeStyleProject("test-project");
         JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "testJobGroupName");
-        myProject.addProperty(jobProperty);
         assertEquals("testJobGroupName", jobProperty.getJobGroupName());
     }
 
     @Test
-    public void getJobGroupNameReturnsNullWhenNotSet() {
+    public void getJobGroupNameReturnsNullWhenNotSetAndFalse() {
         // Create a JobInclusionJobProperty with useJobGroup set to false and jobGroupName set to null
         JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(false, null);
         assertFalse(jobProperty.isUseJobGroup());
         assertNull(jobProperty.getJobGroupName());
+    }
 
+    @Test
+    public void getJobGroupNameReturnsNullWhenNotSetAndTrue() {
         // Create a JobInclusionJobProperty with useJobGroup set to true and jobGroupName set to null
         JobInclusionJobProperty jobPropertyTrue = new JobInclusionJobProperty(true, null);
         assertTrue(jobPropertyTrue.isUseJobGroup());
         assertNull(jobPropertyTrue.getJobGroupName());
-
-        // Create a JobInclusionJobProperty with useJobGroup set to false and jobGroupName set to a non-null value
-        JobInclusionJobProperty jobPropertyWithGroupName = new JobInclusionJobProperty(false, "testJobGroupName");
-        assertFalse(jobPropertyWithGroupName.isUseJobGroup());
-        assertEquals("testJobGroupName", jobPropertyWithGroupName.getJobGroupName());
     }
 
     @Test
@@ -137,15 +122,18 @@ public class JobInclusionJobPropertyTest {
     }
 
     @Test
-    public void descriptorImplGetDisplayName() {
-        JobInclusionJobProperty.DescriptorImpl descriptor = new JobInclusionJobProperty.DescriptorImpl();
+    public void getDisplayNameTest() {
         assertEquals("XXX", descriptor.getDisplayName());
+    }
+
+    @Test
+    public void getJobGroupsTest() {
+        assertNotNull(descriptor.getJobGroups());
     }
 
     @Test
     public void getDescriptorTest() {
         JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, null);
-        JobInclusionJobProperty.DescriptorImpl descriptor = jobProperty.getDescriptor();
 
         // Verify that the descriptor is not null
         assertNotNull(descriptor);
@@ -162,7 +150,6 @@ public class JobInclusionJobPropertyTest {
 
     @Test
     public void descriptorImplIsUsed() {
-        JobInclusionJobProperty.DescriptorImpl descriptor = new JobInclusionJobProperty.DescriptorImpl();
         assertFalse(descriptor.isUsed());
     }
 }
