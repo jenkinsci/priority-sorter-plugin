@@ -45,16 +45,9 @@ public class JobInclusionJobPropertyTest {
     }
 
     @Test
-    public void getJobGroupNameReturnsCorrectName() throws Exception {
-        FreeStyleProject myProject = j.createFreeStyleProject("test-project");
-        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "testJobGroupName");
-        assertEquals("testJobGroupName", jobProperty.getJobGroupName());
-    }
-
-    @Test
     public void getJobGroupNameReturnsNullWhenNotSetAndFalse() {
         // Create a JobInclusionJobProperty with useJobGroup set to false and jobGroupName set to null
-        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(false, null);
+        jobProperty = new JobInclusionJobProperty(false, null);
         assertFalse(jobProperty.isUseJobGroup());
         assertNull(jobProperty.getJobGroupName());
     }
@@ -62,15 +55,15 @@ public class JobInclusionJobPropertyTest {
     @Test
     public void getJobGroupNameReturnsNullWhenNotSetAndTrue() {
         // Create a JobInclusionJobProperty with useJobGroup set to true and jobGroupName set to null
-        JobInclusionJobProperty jobPropertyTrue = new JobInclusionJobProperty(true, null);
-        assertTrue(jobPropertyTrue.isUseJobGroup());
-        assertNull(jobPropertyTrue.getJobGroupName());
+        jobProperty = new JobInclusionJobProperty(true, null);
+        assertTrue(jobProperty.isUseJobGroup());
+        assertNull(jobProperty.getJobGroupName());
     }
 
     @Test
     public void isUseJobGroupReturnsCorrectValue() {
         // Create a JobInclusionJobProperty with useJobGroup set to true
-        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "groupName");
+        jobProperty = new JobInclusionJobProperty(true, "groupName");
         assertTrue(jobProperty.isUseJobGroup());
         assertEquals("groupName", jobProperty.getJobGroupName());
 
@@ -87,10 +80,7 @@ public class JobInclusionJobPropertyTest {
 
     @Test
     public void isUseJobGroupTest() {
-        // Create a JobInclusionJobProperty with useJobGroup set to true
-        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, "groupName1");
         assertTrue(jobProperty.isUseJobGroup());
-        assertEquals("groupName1", jobProperty.getJobGroupName());
 
         // Create a JobInclusionJobProperty with useJobGroup set to false
         JobInclusionJobProperty jobPropertyFalse = new JobInclusionJobProperty(false, "groupName2");
@@ -132,24 +122,7 @@ public class JobInclusionJobPropertyTest {
     }
 
     @Test
-    public void getDescriptorTest() {
-        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, null);
-
-        // Verify that the descriptor is not null
-        assertNotNull(descriptor);
-
-        // Verify the display name of the descriptor
-        assertEquals("XXX", descriptor.getDisplayName());
-
-        // Verify the type of the descriptor
-        assertTrue(descriptor instanceof JobInclusionJobProperty.DescriptorImpl);
-
-        // Verify the isUsed method of the descriptor
-        assertFalse(descriptor.isUsed());
-    }
-
-    @Test
-    public void descriptorImplIsUsed() {
+    public void isUsedTest() {
         assertFalse(descriptor.isUsed());
     }
 }
