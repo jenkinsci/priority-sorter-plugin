@@ -125,8 +125,8 @@ public class PropertyBasedJobInclusionStrategy extends JobInclusionStrategy {
         ListBoxModel strategies = new ListBoxModel();
         for (JobGroup jobGroup : jobGroups) {
             JobInclusionStrategy inclusionStrategy = jobGroup.getJobGroupStrategy();
-            if (inclusionStrategy instanceof PropertyBasedJobInclusionStrategy) {
-                strategies.add(((PropertyBasedJobInclusionStrategy) inclusionStrategy).getName());
+            if (inclusionStrategy instanceof PropertyBasedJobInclusionStrategy strategy) {
+                strategies.add(strategy.getName());
             }
         }
         return strategies;

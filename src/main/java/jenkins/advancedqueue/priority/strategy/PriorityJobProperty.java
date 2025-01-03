@@ -41,7 +41,7 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * @author Magnus Sandberg
@@ -55,7 +55,7 @@ public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
     public final int priority;
 
     @Override
-    public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
+    public JobProperty<?> reconfigure(StaplerRequest2 req, JSONObject form) throws FormException {
         return super.reconfigure(req, form);
     }
 

@@ -92,19 +92,21 @@ public class AdvancedQueueSorter extends QueueSorter {
         //
         if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
             StringBuilder queueStr = new StringBuilder(items.get(0).getClass().getName());
-            queueStr.append(" Queue:\n"
-                    + "+----------------------------------------------------------------------+\n"
-                    + "|   Item Id  |        Job Name       | Priority |        Weight        |\n"
-                    + "+----------------------------------------------------------------------+\n");
+            queueStr.append(
+                    """
+                     Queue:
+                    +----------------------------------------------------------------------+
+                    |   Item Id  |        Job Name       | Priority |        Weight        |
+                    +----------------------------------------------------------------------+
+                    """);
             for (Queue.NotWaitingItem item : items) {
                 ItemInfo itemInfo = QueueItemCache.get().getItem(item.getId());
                 String jobName = itemInfo.getJobName();
                 if (jobName.length() > 21) {
                     jobName = jobName.substring(0, 9) + "..." + jobName.substring(jobName.length() - 9);
                 }
-                queueStr.append(String.format(
-                        "| %10d | %20s | %8d | %20.5f |%n",
-                        item.getId(), jobName, itemInfo.getPriority(), itemInfo.getWeight()));
+                queueStr.append("| %10d | %20s | %8d | %20.5f |%n"
+                        .formatted(item.getId(), jobName, itemInfo.getPriority(), itemInfo.getWeight()));
             }
             queueStr.append("+----------------------------------------------------------------------+");
             LOGGER.log(Level.FINER, queueStr.toString());
