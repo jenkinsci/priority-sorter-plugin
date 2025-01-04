@@ -64,7 +64,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
         return defaultPriority;
     }
 
-    public ListBoxModel doFillDefaultPriorityItemsDynamicRetrieval() {
+    public ListBoxModel doFillDefaultPriorityItems() {
         // TODO: replace by dynamic retrieval
         throw new RuntimeException();
     }
