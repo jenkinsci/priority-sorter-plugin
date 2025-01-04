@@ -64,7 +64,7 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
         return defaultPriority;
     }
 
-    public ListBoxModel doFillDefaultPriorityItems() {
+    public ListBoxModel doFillDefaultPriorityItemsDynamicRetrieval() {
         // TODO: replace by dynamic retrieval
         throw new RuntimeException();
     }
@@ -75,6 +75,9 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
             int value = DEFAULT_PRIORITY;
             try {
                 value = Integer.parseInt(strValue);
+                if (value < 0) {
+                    value = DEFAULT_PRIORITY;
+                }
             } catch (NumberFormatException e) {
                 // Use default value
             }
@@ -95,8 +98,9 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
             return items;
         }
 
+        /* package-protected */
         @CheckForNull
-        private MultiBucketStrategy getStrategy() {
+        MultiBucketStrategy getStrategy() {
             SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
             if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {
                 return null;
