@@ -56,11 +56,6 @@ public class SorterStrategyDescriptorTest {
         assertEquals(STRATEGY_NAME, descriptor.getKey());
     }
 
-    @Test
-    public void getDescriptorReturnsNonNull() {
-        assertNotNull("Descriptor should not be null", descriptor);
-    }
-
     private static class TestSorterStrategy extends SorterStrategy {
         @Override
         public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
