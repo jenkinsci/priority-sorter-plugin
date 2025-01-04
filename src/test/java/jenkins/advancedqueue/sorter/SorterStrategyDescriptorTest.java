@@ -3,6 +3,7 @@ package jenkins.advancedqueue.sorter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
@@ -47,7 +48,7 @@ public class SorterStrategyDescriptorTest {
 
     private static class TestSorterStrategy extends SorterStrategy {
         @Override
-        public SorterStrategyCallback onNewItem(@NotNull Queue.Item item, SorterStrategyCallback weightCallback) {
+        public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
             return weightCallback;
         }
 
