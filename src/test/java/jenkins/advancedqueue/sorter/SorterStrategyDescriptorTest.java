@@ -1,7 +1,6 @@
 package jenkins.advancedqueue.sorter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
