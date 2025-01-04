@@ -8,23 +8,24 @@ import hudson.Extension;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class SorterStrategyDescriptorTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    @ClassRule
+    public static JenkinsRule j = new JenkinsRule();
 
-    private FreeStyleProject project;
-    private FreeStyleBuild build;
-    private SorterStrategyDescriptor descriptor;
+    private static FreeStyleProject project;
+    private static FreeStyleBuild build;
+    private static SorterStrategyDescriptor descriptor;
 
-    @Before
-    public void setUp() throws Exception {
+    private static final String STRATEGY_NAME = "strategy short name";
+
+    @BeforeClass
+    public static void runJob() throws Exception {
         project = j.createFreeStyleProject();
         build = project.scheduleBuild2(0).get();
         descriptor = new TestSorterStrategy().getDescriptor();
@@ -33,12 +34,12 @@ public class SorterStrategyDescriptorTest {
 
     @Test
     public void getShortNameReturnsCorrectValue() {
-        assertEquals("testShortName", descriptor.getShortName());
+        assertEquals(STRATEGY_NAME, descriptor.getShortName());
     }
 
     @Test
     public void getKeyReturnsShortName() {
-        assertEquals("testShortName", descriptor.getKey());
+        assertEquals(STRATEGY_NAME, descriptor.getKey());
     }
 
     @Test
@@ -69,7 +70,7 @@ public class SorterStrategyDescriptorTest {
     private static class TestSorterStrategyDescriptor extends SorterStrategyDescriptor {
         @Override
         public String getShortName() {
-            return "testShortName";
+            return STRATEGY_NAME;
         }
     }
 }
