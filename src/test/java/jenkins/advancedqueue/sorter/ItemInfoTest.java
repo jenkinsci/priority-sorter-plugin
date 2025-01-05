@@ -1,25 +1,25 @@
 package jenkins.advancedqueue.sorter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import hudson.model.Queue;
 import hudson.model.queue.CauseOfBlockage;
 import hudson.model.queue.SubTask;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 public class ItemInfoTest {
 
     @ClassRule
     public static JenkinsRule j = new JenkinsRule();
+
     private Queue.Item item;
     private ItemInfo itemInfo;
 
@@ -42,8 +42,7 @@ public class ItemInfoTest {
             }
 
             @Override
-            public void checkAbortPermission() {
-            }
+            public void checkAbortPermission() {}
 
             @Override
             public boolean hasAbortPermission() {
@@ -155,8 +154,13 @@ public class ItemInfoTest {
     public void toStringReturnsCorrectFormat() {
         String expected = String.format(
                 "Id: %s, JobName: %s, jobGroupId: %s, reason: %s, priority: %s, weight: %s, status: %s",
-                itemInfo.getItemId(), itemInfo.getJobName(), itemInfo.getJobGroupId(), "<none>",
-                itemInfo.getPriority(), itemInfo.getWeight(), itemInfo.getItemStatus());
+                itemInfo.getItemId(),
+                itemInfo.getJobName(),
+                itemInfo.getJobGroupId(),
+                "<none>",
+                itemInfo.getPriority(),
+                itemInfo.getWeight(),
+                itemInfo.getItemStatus());
         assertEquals(expected, itemInfo.toString());
     }
 
