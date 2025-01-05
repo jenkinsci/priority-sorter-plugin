@@ -196,7 +196,7 @@ public class ItemInfo
                 itemId, jobName, jobGroupId, reason, priority, weight, itemStatus);
     }
 
-    public String getDescisionLog() {
+    public String getDecisionLog() {
         StringBuilder buffer = new StringBuilder();
         for (String log : decisionLog) {
             buffer.append(log).append("\n");
