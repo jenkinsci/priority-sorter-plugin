@@ -68,7 +68,6 @@ public class BuildParameterStrategyTest {
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
 
-        BuildParameterStrategy strategy = new BuildParameterStrategy("priority");
         assertTrue(strategy.isApplicable(item));
     }
 
