@@ -32,7 +32,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void getPriority_returnsPriorityFromParameter() throws Exception {
+    public void getPriority_returnsPriorityFromParameter() {
         StringParameterValue param = new StringParameterValue("priority", "5");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
@@ -43,7 +43,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void getPriority_returnsDefaultPriorityWhenParameterIsMissing() throws Exception {
+    public void getPriority_returnsDefaultPriorityWhenParameterIsMissing() {
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
 
         int priority = strategy.getPriority(item);
@@ -52,7 +52,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void getPriority_returnsDefaultPriorityWhenParameterIsNotANumber() throws Exception {
+    public void getPriority_returnsDefaultPriorityWhenParameterIsNotANumber() {
         StringParameterValue param = new StringParameterValue("priority", "not-a-number");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
@@ -63,7 +63,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void isApplicable_returnsTrueWhenParameterIsPresentAndValid() throws Exception {
+    public void isApplicable_returnsTrueWhenParameterIsPresentAndValid() {
         StringParameterValue param = new StringParameterValue("priority", "5");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
@@ -72,14 +72,14 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void isApplicable_returnsFalseWhenParameterIsMissing() throws Exception {
+    public void isApplicable_returnsFalseWhenParameterIsMissing() {
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
 
         assertFalse(strategy.isApplicable(item));
     }
 
     @Test
-    public void isApplicable_returnsFalseWhenParameterIsNotANumber() throws Exception {
+    public void isApplicable_returnsFalseWhenParameterIsNotANumber() {
         StringParameterValue param = new StringParameterValue("priority", "not-a-number");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
