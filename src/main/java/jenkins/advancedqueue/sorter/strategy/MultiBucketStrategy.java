@@ -75,9 +75,6 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
             int value = DEFAULT_PRIORITY;
             try {
                 value = Integer.parseInt(strValue);
-                if (value < 0) {
-                    value = DEFAULT_PRIORITY;
-                }
             } catch (NumberFormatException e) {
                 // Use default value
             }

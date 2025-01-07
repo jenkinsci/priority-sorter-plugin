@@ -95,10 +95,7 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     @Test
     public void doUpdateDefaultPriorityItemsHandlesNegativeInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("-1");
-        assertEquals(3, items.size());
-        for (int i = 0; i < 3; i++) {
-            assertEquals(String.valueOf(i + 1), items.get(i).value);
-        }
+        assertEquals(0, items.size());
     }
 
     @Test
