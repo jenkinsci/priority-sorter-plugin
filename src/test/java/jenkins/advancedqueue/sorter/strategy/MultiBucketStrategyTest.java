@@ -24,12 +24,12 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
 
     private static MultiBucketStrategy strategy;
     private static MultiBucketStrategy.MultiBucketStrategyDescriptor descriptor;
-    private static final int DEFAULT_PRIORITIES_NUMBER = 10;
-    private static final int DEFAULT_PRIORITY = 5;
+    private static final int TEST_PRIORITY_COUNT = 10;
+    private static final int TEST_PRIORITY_DEFAULT = 5;
 
     @Before
     public void setUp() {
-        strategy = new MultiBucketStrategy(DEFAULT_PRIORITIES_NUMBER, DEFAULT_PRIORITY) {
+        strategy = new MultiBucketStrategy(TEST_PRIORITY_COUNT, TEST_PRIORITY_DEFAULT) {
             @Override
             public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
                 return weightCallback;
@@ -51,19 +51,19 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
 
     @Test
     public void getNumberOfPrioritiesReturnsCorrectValue() {
-        assertEquals(10, strategy.getNumberOfPriorities());
+        assertEquals(TEST_PRIORITY_COUNT, strategy.getNumberOfPriorities());
     }
 
     @Test
     public void getDefaultPriorityReturnsCorrectValue() {
-        assertEquals(5, strategy.getDefaultPriority());
+        assertEquals(TEST_PRIORITY_DEFAULT, strategy.getDefaultPriority());
     }
 
     @Test
     public void doFillDefaultPriorityItemsReturnsCorrectItems() {
         ListBoxModel items = descriptor.doFillDefaultPriorityItems();
-        assertEquals(10, items.size());
-        for (int i = 0; i < 10; i++) {
+        assertEquals(TEST_PRIORITY_COUNT, items.size());
+        for (int i = 0; i < TEST_PRIORITY_COUNT; i++) {
             assertEquals(String.valueOf(i + 1), items.get(i).value);
         }
     }
@@ -71,8 +71,8 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     @Test
     public void doUpdateDefaultPriorityItemsHandlesInvalidInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("invalid");
-        assertEquals(3, items.size());
-        for (int i = 0; i < 3; i++) {
+        assertEquals(MultiBucketStrategy.DEFAULT_PRIORITY, items.size());
+        for (int i = 0; i < MultiBucketStrategy.DEFAULT_PRIORITY; i++) {
             assertEquals(String.valueOf(i + 1), items.get(i).value);
         }
     }
