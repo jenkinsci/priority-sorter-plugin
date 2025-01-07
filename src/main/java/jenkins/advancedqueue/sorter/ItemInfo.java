@@ -63,8 +63,7 @@ public class ItemInfo
 
     private List<String> decisionLog = new ArrayList<String>(10);
 
-    /* Constructor made public to allow instantiation from other classes */
-    public ItemInfo(Item item) {
+    ItemInfo(Item item) {
         this.itemId = item.getId();
         this.inQueueSince = item.getInQueueSince();
         this.jobName = item.task.getName();
