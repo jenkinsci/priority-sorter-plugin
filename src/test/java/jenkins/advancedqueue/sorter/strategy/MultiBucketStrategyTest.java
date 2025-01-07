@@ -2,10 +2,10 @@ package jenkins.advancedqueue.sorter.strategy;
 
 import static org.junit.Assert.assertEquals;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Queue;
 import hudson.util.ListBoxModel;
 import jenkins.advancedqueue.sorter.SorterStrategyCallback;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
      * @return
      */
     @Override
-    public SorterStrategyCallback onNewItem(@NotNull Queue.Item item, SorterStrategyCallback weightCallback) {
+    public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
         return weightCallback;
     }
 
@@ -37,7 +37,7 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     public void setUp() {
         strategy = new MultiBucketStrategy(DEFAULT_PRIORITIES_NUMBER, DEFAULT_PRIORITY) {
             @Override
-            public SorterStrategyCallback onNewItem(@NotNull Queue.Item item, SorterStrategyCallback weightCallback) {
+            public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
                 return weightCallback;
             }
         };
