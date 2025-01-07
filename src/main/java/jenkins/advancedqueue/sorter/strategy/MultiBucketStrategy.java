@@ -95,8 +95,9 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
             return items;
         }
 
+        /* package-protected for testing */
         @CheckForNull
-        private MultiBucketStrategy getStrategy() {
+        MultiBucketStrategy getStrategy() {
             SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
             if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {
                 return null;
