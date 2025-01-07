@@ -13,13 +13,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 public class MultiBucketStrategyTest extends MultiBucketStrategy {
 
-    /**
-     * @param item           the {@link hudson.model.Queue.WaitingItem} or {@link hudson.model.BuildableItem} that
-     *                       enters the queue
-     * @param weightCallback the callback holds the priority to use anded the called method must set
-     *                       the weight before returning
-     * @return
-     */
+    /** @{inheritDoc} */
     @Override
     public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
         return weightCallback;
