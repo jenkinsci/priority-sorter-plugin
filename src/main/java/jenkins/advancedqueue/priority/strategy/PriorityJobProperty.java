@@ -56,6 +56,9 @@ public class PriorityJobProperty extends JobProperty<Job<?, ?>> {
 
     @Override
     public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
+        if (form == null || form.isEmpty()) {
+            return this;
+        }
         return super.reconfigure(req, form);
     }
 
