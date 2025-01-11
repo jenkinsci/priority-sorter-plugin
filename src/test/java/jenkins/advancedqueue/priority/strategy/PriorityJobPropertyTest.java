@@ -79,14 +79,13 @@ public class PriorityJobPropertyTest {
         JobGroup jobGroup = new JobGroup();
         jobGroup.setDescription("testGroup-" + testName.getMethodName());
         jobGroup.setRunExclusive(random.nextBoolean());
-        jobGroup.setUsePriorityStrategies(random.nextBoolean());
         jobGroup.setId(random.nextInt());
         jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy(viewName));
         return jobGroup;
     }
 
     @Test
-    public void descriptorImpl_isUsedReturnsTrueWhenJobGroupUsesPriorityStrategies() throws IOException {
+    public void isUsedWhenViewExists() throws IOException {
         // Create a new FreeStyleProject
         FreeStyleProject project = j.createFreeStyleProject();
 
@@ -115,16 +114,36 @@ public class PriorityJobPropertyTest {
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
 
-        // Assert the descriptor is used
+        // Assert the strategy is used when priority strategies are used and view exists
         assertTrue(descriptor.isUsed(project));
+
+        // Replace the jobGroup with one that does not use priority strategies
+        jobGroups.remove(jobGroup);
+        jobGroup.setUsePriorityStrategies(false);
+        jobGroups.add(jobGroup);
+        configuration.setJobGroups(jobGroups);
+
+        // Assert the strategy is not used when priority strategies are not used even if view exists
+        assertFalse(descriptor.isUsed(project));
     }
 
     @Test
-    public void descriptorImpl_isUsedReturnsFalseWhenJobGroupDoesNotUsePriorityStrategies() throws IOException {
+    public void isUsedWhenViewDoesNotExist() throws IOException {
         FreeStyleProject project = j.createFreeStyleProject();
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
-        JobGroup jobGroup = createJobGroup("defaultView");
+        JobGroup jobGroup = createJobGroup("intentionally-non-existent-view");
+
+        // Use priority strategies does not make a non-existing view used
+        jobGroup.setUsePriorityStrategies(true);
+        jobGroups.add(jobGroup);
+        configuration.setJobGroups(jobGroups);
+        assertFalse(descriptor.isUsed(project));
+
+        // Not using priority strategies does not make a non-existing view used
+        // Replace the jobGroup with one that does not use priority strategies
+        jobGroups.remove(jobGroup);
+        jobGroup.setUsePriorityStrategies(false);
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
         assertFalse(descriptor.isUsed(project));
