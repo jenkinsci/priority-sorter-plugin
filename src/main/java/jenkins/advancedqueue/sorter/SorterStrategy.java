@@ -66,7 +66,15 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
     /**
      * Called when a {@link hudson.model.Item} leaves the queue and it is canceled.
      */
-    public void onCanceledItem(@NonNull LeftItem item) {}
+    public void onCanceledItem(@NonNull LeftItem item) {
+        if (item.isCancelled()) {
+            ExtensionList<SorterStrategy> all = all();
+            for (SorterStrategy prioritySorterStrategy : all) {
+                SorterStrategyDescriptor descriptor = prioritySorterStrategy.getDescriptor();
+                descriptor.getId();
+            }
+        }
+    }
     ;
 
     /**
