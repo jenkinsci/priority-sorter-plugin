@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import static org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.GroovySandbox.LOGGER;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -70,10 +72,7 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
     @CheckReturnValue
     public void onCanceledItem(@NonNull LeftItem item) {
         if (item.isCancelled()) {
-            ExtensionList<SorterStrategy> all = all();
-            for (SorterStrategy prioritySorterStrategy : all) {
-                SorterStrategyDescriptor descriptor = prioritySorterStrategy.getDescriptor();
-            }
+            LOGGER.info("Item is cancelled: " + item);
         }
     }
     ;
