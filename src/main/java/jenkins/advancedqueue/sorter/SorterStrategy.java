@@ -73,7 +73,6 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
             ExtensionList<SorterStrategy> all = all();
             for (SorterStrategy prioritySorterStrategy : all) {
                 SorterStrategyDescriptor descriptor = prioritySorterStrategy.getDescriptor();
-                descriptor.getId();
             }
         }
     }
