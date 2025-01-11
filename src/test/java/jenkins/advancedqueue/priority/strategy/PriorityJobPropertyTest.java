@@ -36,20 +36,20 @@ public class PriorityJobPropertyTest {
 
     private static PriorityJobProperty property;
     private static PriorityJobProperty.DescriptorImpl descriptor;
-    private static FreeStyleProject project;
+
+    private static final int PRIORITY = 7;
 
     @BeforeClass
     public static void setUp() throws IOException {
-        project = j.createFreeStyleProject();
-
-        property = new PriorityJobProperty(true, 7);
-        req = mock(StaplerRequest.class);
-        descriptor = new PriorityJobProperty.DescriptorImpl();
+        // Initialize PrioritySorterConfiguration
+        PrioritySorterConfiguration.get().load();
+        property = new PriorityJobProperty(true, PRIORITY);
+        descriptor = property.getDescriptor();
     }
 
     @Test
     public void priorityJobProperty_returnsCorrectPriority() {
-        assertEquals(7, property.getPriority());
+        assertEquals(PRIORITY, property.getPriority());
     }
 
     @Test
@@ -87,9 +87,6 @@ public class PriorityJobPropertyTest {
 
     @Test
     public void descriptorImpl_isUsedReturnsTrueWhenJobGroupUsesPriorityStrategies() throws IOException {
-        // Initialize PrioritySorterConfiguration
-        PrioritySorterConfiguration.get().load();
-
         // Create a new FreeStyleProject
         FreeStyleProject project = j.createFreeStyleProject();
 
@@ -118,13 +115,13 @@ public class PriorityJobPropertyTest {
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
 
-        // Print the strategy and assert the descriptor is used
+        // Assert the descriptor is used
         assertTrue(descriptor.isUsed(project));
     }
 
     @Test
     public void descriptorImpl_isUsedReturnsFalseWhenJobGroupDoesNotUsePriorityStrategies() throws IOException {
-        descriptor = new PriorityJobProperty.DescriptorImpl();
+        FreeStyleProject project = j.createFreeStyleProject();
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
         JobGroup jobGroup = createJobGroup();
