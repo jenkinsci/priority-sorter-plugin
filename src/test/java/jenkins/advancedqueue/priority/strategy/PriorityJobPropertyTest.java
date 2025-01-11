@@ -75,13 +75,13 @@ public class PriorityJobPropertyTest {
 
     private final Random random = new Random();
 
-    private JobGroup createJobGroup() {
+    private JobGroup createJobGroup(String viewName) {
         JobGroup jobGroup = new JobGroup();
         jobGroup.setDescription("testGroup-" + testName.getMethodName());
         jobGroup.setRunExclusive(random.nextBoolean());
         jobGroup.setUsePriorityStrategies(random.nextBoolean());
         jobGroup.setId(random.nextInt());
-        jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy("existingView")); // Use the newly created view
+        jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy(viewName));
         return jobGroup;
     }
 
@@ -103,7 +103,7 @@ public class PriorityJobPropertyTest {
         // Set up the PriorityJobProperty.DescriptorImpl
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
-        JobGroup jobGroup = createJobGroup();
+        JobGroup jobGroup = createJobGroup(view.getViewName());
         jobGroup.setUsePriorityStrategies(true);
 
         // Add a PriorityStrategyHolder with a JobPropertyStrategy to the JobGroup
@@ -124,7 +124,7 @@ public class PriorityJobPropertyTest {
         FreeStyleProject project = j.createFreeStyleProject();
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
-        JobGroup jobGroup = createJobGroup();
+        JobGroup jobGroup = createJobGroup("defaultView");
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
         assertFalse(descriptor.isUsed(project));
