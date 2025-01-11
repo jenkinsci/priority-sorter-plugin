@@ -3,6 +3,7 @@ package jenkins.advancedqueue.priority.strategy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -28,7 +29,6 @@ public class PriorityJobPropertyTest {
     public static JenkinsRule j = new JenkinsRule();
 
     private static PriorityJobProperty property;
-    private static StaplerRequest req;
     private static PriorityJobProperty.DescriptorImpl descriptor;
     private static FreeStyleProject project;
 
@@ -52,9 +52,9 @@ public class PriorityJobPropertyTest {
     }
 
     @Test
-    public void priorityJobProperty_reconfigureReturnsSameInstance() throws Descriptor.FormException {
-        JSONObject form = new JSONObject();
-        assertEquals(property, property.reconfigure(req, form));
+    public void priorityJobProperty_reconfigureNullOnEmpty() throws Descriptor.FormException {
+        StaplerRequest req = mock(StaplerRequest.class);
+        assertNull(property.reconfigure(req, new JSONObject()));
     }
 
     @Test
