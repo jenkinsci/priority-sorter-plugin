@@ -12,6 +12,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.ListView;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import jenkins.advancedqueue.JobGroup;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
@@ -19,7 +20,9 @@ import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy
 import net.sf.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -27,6 +30,9 @@ public class PriorityJobPropertyTest {
 
     @ClassRule
     public static JenkinsRule j = new JenkinsRule();
+
+    @Rule
+    public TestName testName = new TestName();
 
     private static PriorityJobProperty property;
     private static PriorityJobProperty.DescriptorImpl descriptor;
@@ -67,6 +73,18 @@ public class PriorityJobPropertyTest {
         assertFalse(descriptor.getPriorities().isEmpty());
     }
 
+    private final Random random = new Random();
+
+    private JobGroup createJobGroup() {
+        JobGroup jobGroup = new JobGroup();
+        jobGroup.setDescription("testGroup-" + testName.getMethodName());
+        jobGroup.setRunExclusive(random.nextBoolean());
+        jobGroup.setUsePriorityStrategies(random.nextBoolean());
+        jobGroup.setId(random.nextInt());
+        jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy("existingView")); // Use the newly created view
+        return jobGroup;
+    }
+
     @Test
     public void descriptorImpl_isUsedReturnsTrueWhenJobGroupUsesPriorityStrategies() throws IOException {
         // Initialize PrioritySorterConfiguration
@@ -86,15 +104,10 @@ public class PriorityJobPropertyTest {
         assertNotNull(j.jenkins.getView("existingView"));
 
         // Set up the PriorityJobProperty.DescriptorImpl
-        descriptor = new PriorityJobProperty.DescriptorImpl();
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
-        JobGroup jobGroup = new JobGroup();
-        jobGroup.setDescription("testGroup");
-        jobGroup.setRunExclusive(true);
+        JobGroup jobGroup = createJobGroup();
         jobGroup.setUsePriorityStrategies(true);
-        jobGroup.setId(1);
-        jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy("existingView")); // Use the newly created view
 
         // Add a PriorityStrategyHolder with a JobPropertyStrategy to the JobGroup
         JobPropertyStrategy jobPropertyStrategy = new JobPropertyStrategy();
@@ -114,12 +127,7 @@ public class PriorityJobPropertyTest {
         descriptor = new PriorityJobProperty.DescriptorImpl();
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
-        JobGroup jobGroup = new JobGroup();
-        jobGroup.setDescription("testGroup");
-        jobGroup.setRunExclusive(false);
-        jobGroup.setUsePriorityStrategies(false);
-        jobGroup.setId(1);
-        jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy("defaultView")); // Set a default strategy
+        JobGroup jobGroup = createJobGroup();
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
         assertFalse(descriptor.isUsed(project));
