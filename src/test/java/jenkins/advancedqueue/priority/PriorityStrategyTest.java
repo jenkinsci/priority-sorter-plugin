@@ -33,22 +33,17 @@ public class PriorityStrategyTest {
         project = j.createFreeStyleProject();
         strategy = new TestPriorityStrategy();
         action = new Action() {
-            /**
-             */
+
             @Override
             public String getIconFileName() {
                 return "";
             }
 
-            /**
-             */
             @Override
             public String getDisplayName() {
                 return "";
             }
 
-            /**
-             */
             @Override
             public String getUrlName() {
                 return "";
@@ -114,9 +109,6 @@ public class PriorityStrategyTest {
             return newNumberOfPriorities;
         }
 
-        /**
-         *
-         */
         @Override
         public Descriptor<PriorityStrategy> getDescriptor() {
             return null;
