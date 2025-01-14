@@ -5,10 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import hudson.DescriptorExtensionList;
-import hudson.model.Action;
-import hudson.model.Descriptor;
-import hudson.model.FreeStyleProject;
-import hudson.model.Queue;
+import hudson.model.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -79,6 +76,16 @@ public class PriorityStrategyTest {
     public void testAll() {
         DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> list = PriorityStrategy.all();
         assertNotNull("DescriptorExtensionList should not be null", list);
+        // The list.size() method returns 7 because the DescriptorExtensionList for PriorityStrategy contains 7
+        // descriptors. This means there are 7 different implementations of the PriorityStrategy class registered in the
+        // Jenkins instance.
+        assertEquals(7, list.size());
+    }
+
+    @Test
+    public void testItemTaskIsInstanceOfJob() {
+        item = new Queue.WaitingItem(Calendar.getInstance(), project, new ArrayList<>());
+        assertTrue(item.task instanceof Job);
     }
 
     private static class TestPriorityStrategy extends PriorityStrategy {
