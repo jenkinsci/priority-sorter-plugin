@@ -29,6 +29,10 @@ public class PriorityStrategyTest {
     public static void setUp() throws IOException {
         project = j.createFreeStyleProject();
         strategy = new TestPriorityStrategy();
+    }
+
+    @BeforeClass
+    public static void createActionAndItem() {
         action = new Action() {
 
             @Override
