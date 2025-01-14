@@ -8,6 +8,7 @@ import hudson.DescriptorExtensionList;
 import hudson.model.Action;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.Queue;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,23 +33,22 @@ public class PriorityStrategyTest {
     public static void setUp() throws IOException {
         project = j.createFreeStyleProject();
         strategy = new TestPriorityStrategy();
+    }
+
+    @BeforeClass
+    public static void createActionAndItem() {
         action = new Action() {
-            /**
-             */
+
             @Override
             public String getIconFileName() {
                 return "";
             }
 
-            /**
-             */
             @Override
             public String getDisplayName() {
                 return "";
             }
 
-            /**
-             */
             @Override
             public String getUrlName() {
                 return "";
@@ -84,6 +84,16 @@ public class PriorityStrategyTest {
     public void testAll() {
         DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> list = PriorityStrategy.all();
         assertNotNull("DescriptorExtensionList should not be null", list);
+        // The list.size() method returns 7 because the DescriptorExtensionList for PriorityStrategy contains 7
+        // descriptors. This means there are 7 different implementations of the PriorityStrategy class registered in the
+        // Jenkins instance.
+        assertEquals(7, list.size());
+    }
+
+    @Test
+    public void testItemTaskIsInstanceOfJob() {
+        item = new Queue.WaitingItem(Calendar.getInstance(), project, new ArrayList<>());
+        assertTrue(item.task instanceof Job);
     }
 
     private static class TestPriorityStrategy extends PriorityStrategy {
@@ -114,9 +124,6 @@ public class PriorityStrategyTest {
             return newNumberOfPriorities;
         }
 
-        /**
-         *
-         */
         @Override
         public Descriptor<PriorityStrategy> getDescriptor() {
             return null;
