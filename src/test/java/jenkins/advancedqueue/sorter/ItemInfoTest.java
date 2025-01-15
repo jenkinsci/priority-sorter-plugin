@@ -4,12 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.model.Action;
 import hudson.model.Queue;
+import hudson.model.Queue.Task;
 import hudson.model.queue.CauseOfBlockage;
+import hudson.model.queue.FutureImpl;
 import hudson.model.queue.SubTask;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -21,11 +26,12 @@ public class ItemInfoTest {
     public static JenkinsRule j = new JenkinsRule();
 
     private Queue.Item item;
+    private Queue.Task task;
     private ItemInfo itemInfo;
 
     @Before
     public void setUp() throws IOException {
-        Queue.Task task = new Queue.Task() {
+        task = new Queue.Task() {
             @Override
             public String getDisplayName() {
                 return "";
@@ -75,27 +81,21 @@ public class ItemInfoTest {
             }
         };
 
-        item = new Queue.Item(task, Collections.emptyList(), 0L, null) {
-            private Queue q;
+        item = new ConcreteItem(task, Collections.emptyList(), 0L, null) {
+            @Override
+            void enter(Queue q) {
+                System.out.println("Item " + this.getId() + " has entered the queue.");
+            }
+
+            @Override
+            boolean leave(Queue q) {
+                System.out.println("Item " + this.getId() + " has left the queue.");
+                return true;
+            }
 
             @Override
             public CauseOfBlockage getCauseOfBlockage() {
-                System.out.println("Cause of blockage" + this);
                 return null;
-            }
-
-            @Override
-            public void enter(Queue q) {
-                this.q = q;
-                // Implementation for enter method
-                System.out.println("Item entered the queue");
-            }
-
-            @Override
-            public boolean leave(Queue q) {
-                // Implementation for leave method
-                System.out.println("Item left the queue");
-                return true;
             }
         };
         itemInfo = new ItemInfo(item);
@@ -169,5 +169,39 @@ public class ItemInfoTest {
         itemInfo.addDecisionLog(1, "Test log");
         String expected = "  Test log\n";
         assertEquals(expected, itemInfo.getDescisionLog());
+    }
+
+    private abstract static class ConcreteItem extends Queue.Item {
+
+        public ConcreteItem(@NonNull Task task, @NonNull List<Action> actions, long id, FutureImpl future) {
+            super(task, actions, id, future);
+        }
+
+        public ConcreteItem(
+                @NonNull Task task, @NonNull List<Action> actions, long id, FutureImpl future, long inQueueSince) {
+            super(task, actions, id, future, inQueueSince);
+        }
+
+        public ConcreteItem(Queue.Item item) {
+            super(item);
+        }
+
+        void enter(Queue q) {
+            // Implementation for entering the queue
+            System.out.println("Item " + this.getId() + " has entered the queue.");
+        }
+
+
+        boolean leave(Queue q) {
+            // Implementation for leaving the queue
+            System.out.println("Item " + this.getId() + " has left the queue.");
+            return true;
+        }
+
+        @Override
+        public CauseOfBlockage getCauseOfBlockage() {
+            // Provide a dummy implementation for the abstract method
+            return null;
+        }
     }
 }
