@@ -23,10 +23,7 @@
  */
 package jenkins.advancedqueue.sorter;
 
-import static org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.GroovySandbox.LOGGER;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
@@ -35,6 +32,7 @@ import hudson.model.Queue;
 import hudson.model.Queue.LeftItem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 
 /**
@@ -69,10 +67,9 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
     /**
      * Called when a {@link hudson.model.Item} leaves the queue and it is canceled.
      */
-    @CheckReturnValue
     public void onCanceledItem(@NonNull LeftItem item) {
         if (item.isCancelled()) {
-            LOGGER.info("Item is cancelled: " + item);
+            Logger.getLogger("Item is cancelled: " + item);
         }
     }
     ;
@@ -109,7 +106,6 @@ public abstract class SorterStrategy implements ExtensionPoint, Describable<Sort
         return null;
     }
 
-    @CheckForNull
     public static SorterStrategy getPrioritySorterStrategy(SorterStrategyDescriptor sorterStrategy) {
         ExtensionList<SorterStrategy> all = all();
         for (SorterStrategy prioritySorterStrategy : all) {
