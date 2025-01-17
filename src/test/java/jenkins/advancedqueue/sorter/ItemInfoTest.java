@@ -12,12 +12,10 @@ import hudson.model.Queue.Task;
 import hudson.model.queue.CauseOfBlockage;
 import hudson.model.queue.FutureImpl;
 import hudson.model.queue.SubTask;
-import jenkins.advancedqueue.sorter.ConcreteQueueItem;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 import jenkins.model.Jenkins;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -32,7 +30,7 @@ public class ItemInfoTest {
     private static Item item;
     private static Task task;
     private static ItemInfo itemInfo;
-    private static List<Action> actions ;
+    private static List<Action> actions;
     private static Queue q;
 
     @BeforeClass
@@ -86,41 +84,26 @@ public class ItemInfoTest {
 
         actions = Collections.emptyList();
 
-//        item = new Queue.Item(task, actions, 0L, null) {
+        //        item = new Queue.Item(task, actions, 0L, null) {
 
-            Task mockTask = mock(Task.class);
-            List<Action> actions = Collections.emptyList();
-            FutureImpl future = mock(FutureImpl.class);
+        Task mockTask = mock(Task.class);
+        List<Action> actions = Collections.emptyList();
+        FutureImpl future = mock(FutureImpl.class);
 
-//            ConcreteQueueItem customItem = new ConcreteQueueItem(mockTask, actions, 12345L, future) {
-               item = new ConcreteQueueItem(mockTask, actions, 12345L, future) {
-                /**
-                 * @return 
-                 */
-                @Override
-                public boolean hasCancelPermission() {
-                    return super.hasCancelPermission();
-                }
+        //            ConcreteQueueItem customItem = new ConcreteQueueItem(mockTask, actions, 12345L, future) {
+        item = new Item(mockTask, actions, 12345L, future) {
 
-                /**
-                 * @return 
-                 */
-                @Override
-                public String getDisplayName() {
-                    return super.getDisplayName();
-                }
+            @Override
+            public void enter(Queue q) {
+                System.out.println("Entered queue: " + q);
+            }
 
-                @Override
-                public void enter(Queue q) {
-                    System.out.println("Entered queue: " + q);
-                }
-
-                @Override
-                public boolean leave(Queue q) {
-                    System.out.println("Leaving queue: " + q);
-                    return true;
-                }
-            };
+            @Override
+            public boolean leave(Queue q) {
+                System.out.println("Leaving queue: " + q);
+                return true;
+            }
+        };
 
         itemInfo = new ItemInfo(item);
     }
@@ -193,31 +176,5 @@ public class ItemInfoTest {
         itemInfo.addDecisionLog(1, "Test log");
         String expected = "  Test log\n";
         assertEquals(expected, itemInfo.getDescisionLog());
-    }
-
-    public static abstract class ConcreteQueueItem extends Item implements jenkins.advancedqueue.sorter.ConcreteQueueItem {
-
-        public ConcreteQueueItem(Task task, List<Action> actions, long id, FutureImpl future) {
-            super(task, actions, id, future);
-        }
-
-        @Override
-        public CauseOfBlockage getCauseOfBlockage() {
-            // Provide a specific implementation or a mock
-            return null;
-        }
-
-        @Override
-        public void enter(Queue q) {
-            // Custom implementation for entering the queue
-            System.out.println("Item " + this.getId() + " has entered the queue.");
-        }
-
-        @Override
-        public boolean leave(Queue q) {
-            // Custom implementation for leaving the queue
-            System.out.println("Item " + this.getId() + " has left the queue.");
-            return true;
-        }
     }
 }
