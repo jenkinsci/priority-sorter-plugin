@@ -81,44 +81,22 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
     @BeforeClass
     public static void createCallback() {
         callback = new PriorityConfigurationCallback() {
-            /**
-             * @param indent
-             * @param log
-             * @return
-             */
             @Override
             public DecisionLogger addDecisionLog(int indent, String log) {
                 return null;
             }
 
-            /**
-             * @param priority
-             * @return
-             */
             @Override
             public PriorityConfigurationCallback setPrioritySelection(int priority) {
                 return null;
             }
 
-            /**
-             * @param priority
-             * @param jobGroupId
-             * @param reason
-             * @return
-             */
             @Override
             public PriorityConfigurationCallback setPrioritySelection(
                     int priority, int jobGroupId, PriorityStrategy reason) {
                 return null;
             }
 
-            /**
-             * @param priority
-             * @param sortAsInQueueSince
-             * @param jobGroupId
-             * @param reason
-             * @return
-             */
             @Override
             public PriorityConfigurationCallback setPrioritySelection(
                     int priority, long sortAsInQueueSince, int jobGroupId, PriorityStrategy reason) {
