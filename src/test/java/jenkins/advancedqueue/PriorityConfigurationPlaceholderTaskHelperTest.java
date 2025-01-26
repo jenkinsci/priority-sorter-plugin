@@ -103,8 +103,8 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
 
     @Test
     public void testIsPlaceholderTask() {
-        Queue.Task task = mock(ExecutorStepExecution.PlaceholderTask.class);
-        assertTrue(helper.isPlaceholderTask(task));
+        Queue.Task myTask = mock(ExecutorStepExecution.PlaceholderTask.class);
+        assertTrue(helper.isPlaceholderTask(myTask));
     }
 
     @Test
