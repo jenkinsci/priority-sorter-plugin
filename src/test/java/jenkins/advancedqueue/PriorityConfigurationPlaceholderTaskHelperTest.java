@@ -9,7 +9,9 @@ import static org.mockito.Mockito.when;
 import hudson.model.Action;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
+import hudson.model.ParametersAction;
 import hudson.model.Queue;
+import hudson.model.StringParameterValue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,23 +48,8 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
 
     @BeforeClass
     public static void createActionAndItem() {
-        action = new Action() {
-
-            @Override
-            public String getIconFileName() {
-                return "";
-            }
-
-            @Override
-            public String getDisplayName() {
-                return "";
-            }
-
-            @Override
-            public String getUrlName() {
-                return "";
-            }
-        };
+        StringParameterValue param = new StringParameterValue("priority", "5");
+        action = new ParametersAction(param);
         List<Action> actions = new ArrayList<>();
         actions.add(action);
         item = new Queue.WaitingItem(Calendar.getInstance(), project, actions);
