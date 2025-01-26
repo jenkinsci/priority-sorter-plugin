@@ -13,9 +13,8 @@ import hudson.model.ParametersAction;
 import hudson.model.Queue;
 import hudson.model.StringParameterValue;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
@@ -48,11 +47,8 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
 
     @BeforeClass
     public static void createActionAndItem() {
-        StringParameterValue param = new StringParameterValue("priority", "5");
-        action = new ParametersAction(param);
-        List<Action> actions = new ArrayList<>();
-        actions.add(action);
-        item = new Queue.WaitingItem(Calendar.getInstance(), project, actions);
+        action = new ParametersAction(new StringParameterValue("priority", "5"));
+        item = new Queue.WaitingItem(Calendar.getInstance(), project, Arrays.asList(action));
     }
 
     @BeforeClass
