@@ -167,8 +167,8 @@ public class JobGroup {
     @Deprecated
     @CheckForNull
     public String getView() {
-        if (jobGroupStrategy instanceof ViewBasedJobInclusionStrategy) {
-            return ((ViewBasedJobInclusionStrategy) jobGroupStrategy).getViewName();
+        if (jobGroupStrategy instanceof ViewBasedJobInclusionStrategy strategy) {
+            return strategy.getViewName();
         }
         return null;
     }

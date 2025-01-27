@@ -24,7 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public class PriorityJobPropertyTest {
 
@@ -59,7 +59,7 @@ public class PriorityJobPropertyTest {
 
     @Test
     public void priorityJobProperty_reconfigureNullOnEmpty() throws Descriptor.FormException {
-        StaplerRequest req = mock(StaplerRequest.class);
+        StaplerRequest2 req = mock(StaplerRequest2.class);
         assertNull(property.reconfigure(req, new JSONObject()));
     }
 

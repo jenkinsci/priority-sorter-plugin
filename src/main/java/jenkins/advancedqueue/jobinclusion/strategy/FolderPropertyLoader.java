@@ -44,14 +44,12 @@ public class FolderPropertyLoader {
         ItemGroup<?> parent = job.getParent();
         decisionLogger.addDecisionLog(2, "Checking for Cloudbees Folder inclusion ...");
         while (parent != null) {
-            if (parent instanceof AbstractFolder) {
-                AbstractFolder folder = (AbstractFolder) parent;
+            if (parent instanceof AbstractFolder<?> folder) {
                 decisionLogger.addDecisionLog(3, "Evaluating Folder [" + folder.getFullName() + "] ...");
                 DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor> properties =
                         folder.getProperties();
                 for (AbstractFolderProperty<?> property : properties) {
-                    if (property instanceof JobInclusionFolderProperty) {
-                        JobInclusionFolderProperty incProperty = (JobInclusionFolderProperty) property;
+                    if (property instanceof JobInclusionFolderProperty incProperty) {
                         if (incProperty.isUseJobGroup()) {
                             String name = incProperty.getJobGroupName();
                             decisionLogger.addDecisionLog(4, "JobGroup is enabled, with JobGroup [" + name + "] ...");
@@ -60,8 +58,8 @@ public class FolderPropertyLoader {
                     }
                 }
             }
-            if (parent instanceof TopLevelItem) {
-                parent = ((TopLevelItem) parent).getParent();
+            if (parent instanceof TopLevelItem item) {
+                parent = item.getParent();
             } else {
                 parent = null;
             }
