@@ -40,6 +40,7 @@ import hudson.model.ViewGroup;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +51,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.servlet.ServletException;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.model.GlobalConfiguration;
@@ -62,8 +62,8 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.jenkins.ui.icon.IconSpec;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
 /**
  * @author Magnus Sandberg
@@ -165,7 +165,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
         return items;
     }
 
-    public void doPriorityConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+    public void doPriorityConfigSubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException {
         jobGroups = new LinkedList<JobGroup>();
         id2jobGroup = new HashMap<Integer, JobGroup>();
         //
