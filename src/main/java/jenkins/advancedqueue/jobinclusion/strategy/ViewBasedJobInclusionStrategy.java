@@ -68,8 +68,8 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
         private void addViews(String parent, ListBoxModel items, Collection<View> views) {
             for (View view : views) {
                 items.add(parent + view.getDisplayName(), parent + view.getViewName());
-                if (view instanceof ViewGroup) {
-                    addViews(parent + view.getDisplayName() + "/", items, ((ViewGroup) view).getViews());
+                if (view instanceof ViewGroup group) {
+                    addViews(parent + view.getDisplayName() + "/", items, group.getViews());
                 }
             }
         }
@@ -203,8 +203,8 @@ public class ViewBasedJobInclusionStrategy extends JobInclusionStrategy {
             return true;
         }
         // Then try to iterate over the ViewGroup (Nested View)
-        if (view instanceof ViewGroup) {
-            return isJobInViewGroup(job, (ViewGroup) view);
+        if (view instanceof ViewGroup group) {
+            return isJobInViewGroup(job, group);
         }
         return false;
     }
