@@ -26,11 +26,11 @@ package org.kohsuke.stapler;
 import static org.mockito.Mockito.mock;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class MockStaplerRequest {
@@ -63,14 +63,14 @@ public class MockStaplerRequest {
             return this;
         }
 
-        public StaplerRequest build() throws AssertionError {
+        public StaplerRequest2 build() throws AssertionError {
             HttpServletRequest rawRequest = mock(HttpServletRequest.class);
             return new RequestImpl(stapler != null ? stapler : getStapler(), rawRequest, ancestors, tokens);
         }
 
         private Stapler getStapler() {
             final Stapler stapler = new Stapler();
-            stapler.setWebApp(new WebApp(r.jenkins.servletContext));
+            stapler.setWebApp(new WebApp(r.jenkins.getServletContext()));
             return stapler;
         }
     }
