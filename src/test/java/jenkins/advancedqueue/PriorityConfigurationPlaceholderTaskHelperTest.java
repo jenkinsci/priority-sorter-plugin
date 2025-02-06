@@ -5,10 +5,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,23 +20,24 @@ import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class PriorityConfigurationPlaceholderTaskHelperTest {
+@WithJenkins
+class PriorityConfigurationPlaceholderTaskHelperTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static Queue.Item pipelineItemInQuietPeriod;
     private static DecisionLogger decisionLogger;
     private static List<String> loggedMessages;
 
-    @BeforeClass
-    public static void startPipelineJobWithQuietPeriod() throws Exception {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
         // Start a Pipeline with a quiet period of 37 seconds before it runs
         String pipelineName = "my-pipeline-in-the-quiet-period";
         WorkflowJob pipeline = j.createProject(WorkflowJob.class, pipelineName);
@@ -53,11 +51,19 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
         pipeline.setDefinition(new CpsFlowDefinition(pipelineDefinition, true));
         pipeline.scheduleBuild(37, new Cause.UserIdCause());
         pipelineItemInQuietPeriod = findQueueItem(pipelineName);
-        assertNotNull("Pipeline in quiet period not in Queue", pipelineItemInQuietPeriod);
+        assertNotNull(pipelineItemInQuietPeriod, "Pipeline in quiet period not in Queue");
         // Check the item is blocked due to the 37 second quiet period
         assertThat(
                 pipelineItemInQuietPeriod.getCauseOfBlockage().getShortDescription(),
                 startsWith("In the quiet period."));
+
+        decisionLogger = new DecisionLogger() {
+            @Override
+            public DecisionLogger addDecisionLog(int indent, String log) {
+                loggedMessages.add(log);
+                return this;
+            }
+        };
     }
 
     private static Queue.Item findQueueItem(String name) {
@@ -71,24 +77,13 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
         return found;
     }
 
-    @BeforeClass
-    public static void createDecisionLogger() {
-        decisionLogger = new DecisionLogger() {
-            @Override
-            public DecisionLogger addDecisionLog(int indent, String log) {
-                loggedMessages.add(log);
-                return this;
-            }
-        };
-    }
-
-    @Before
-    public void clearLoggedMessages() throws Exception {
+    @BeforeEach
+    void beforeEach() throws Exception {
         loggedMessages = new ArrayList<>();
     }
 
     @Test
-    public void testGetPriorityAssignsGlobalDefault() {
+    void testGetPriorityAssignsGlobalDefault() {
         PriorityConfiguration configuration = new PriorityConfiguration();
         PriorityConfigurationCallbackImpl callback = new PriorityConfigurationCallbackImpl();
         assertThat(callback.getPrioritySelection(), is(-1)); // Before callback is used
@@ -98,14 +93,14 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
     }
 
     @Test
-    public void testIsPlaceholderTask() {
+    void testIsPlaceholderTask() {
         PriorityConfigurationPlaceholderTaskHelper helper = new PriorityConfigurationPlaceholderTaskHelper();
         // Pipeline task is not a placeholder task
         assertFalse(helper.isPlaceholderTask(pipelineItemInQuietPeriod.getTask()));
     }
 
     @Test
-    public void testGetPriority() {
+    void testGetPriority() {
         // Could not find an easy way to generate a placeholder task
         // Use a mock object for better test coverage
         ExecutorStepExecution.PlaceholderTask task = mock(ExecutorStepExecution.PlaceholderTask.class);
@@ -123,7 +118,7 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
     }
 
     @Test
-    public void testGetPriorityNonJobTask() {
+    void testGetPriorityNonJobTask() {
         // Could not find an easy way to generate a placeholder task
         // Use a mock object for better test coverage
         ExecutorStepExecution.PlaceholderTask task = mock(ExecutorStepExecution.PlaceholderTask.class);
@@ -148,7 +143,7 @@ public class PriorityConfigurationPlaceholderTaskHelperTest {
     }
 
     @Test
-    public void testIsPlaceholderTaskUsed() {
+    void testIsPlaceholderTaskUsed() {
         assertTrue(PriorityConfigurationPlaceholderTaskHelper.isPlaceholderTaskUsed());
     }
 

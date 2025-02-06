@@ -11,20 +11,27 @@ import java.util.List;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
 import jenkins.advancedqueue.testutil.TestRunListener;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-public class UpstreamTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class UpstreamTest {
 
-    private final JobHelper jobHelper = new JobHelper(j);
+    private JenkinsRule j;
+    private JobHelper jobHelper;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule j) throws Exception {
+        this.j = j;
+        jobHelper = new JobHelper(j);
+    }
 
     @Test
     @LocalData
-    public void testOrphanDownstreamJob() throws Exception {
+    void testOrphanDownstreamJob() throws Exception {
         // Job 0 should run with default priority, as upstream build is unknown
         TestRunListener.init(new ExpectedItem("Job 0", 5));
         jobHelper.scheduleProjects(createUpstreamCause("Job X", 987)).go();
@@ -35,7 +42,7 @@ public class UpstreamTest {
 
     @Test
     @LocalData
-    public void testUserJobAndAssociatedDownstreamJob() throws Exception {
+    void testUserJobAndAssociatedDownstreamJob() throws Exception {
         // Upstream job should run with high priority (user triggered)
         TestRunListener.init(new ExpectedItem("Upstream", 1));
         jobHelper.scheduleProject("Upstream", new UserIdCause()).go();

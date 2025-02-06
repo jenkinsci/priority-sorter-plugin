@@ -15,22 +15,21 @@ import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.strategy.UserIdCauseStrategy;
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.kohsuke.stapler.MockStaplerRequest;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
 
-public class SubmitTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class SubmitTest {
 
     @Test
     @LocalData
-    public void shouldGeneratePriorityConfigurationUsingDataBoundConstructor() throws IOException, ServletException {
+    void shouldGeneratePriorityConfigurationUsingDataBoundConstructor(JenkinsRule j)
+            throws IOException, ServletException {
         PriorityConfiguration priorityConfiguration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
         StaplerResponse2 staplerResponse = mock(StaplerResponse2.class);

@@ -3,27 +3,26 @@ package jenkins.advancedqueue.jobinclusion.strategy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Run;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class JobInclusionFolderPropertyTest {
+@WithJenkins
+class JobInclusionFolderPropertyTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static FreeStyleProject project;
     private static JobInclusionFolderProperty property;
 
-    @BeforeClass
-    public static void createProject() throws Exception {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
         project = j.createFreeStyleProject();
         Run r = project.scheduleBuild2(0).get(); // Schedule a build to ensure the queue item is created
         j.assertBuildStatusSuccess(r);
@@ -31,22 +30,22 @@ public class JobInclusionFolderPropertyTest {
     }
 
     @Test
-    public void testGetJobGroupName() {
+    void testGetJobGroupName() {
         assertEquals("testGroup", property.getJobGroupName());
     }
 
     @Test
-    public void testIsUseJobGroup() {
+    void testIsUseJobGroup() {
         assertTrue(property.isUseJobGroup());
     }
 
     @Test
-    public void testGetDescriptor() {
+    void testGetDescriptor() {
         assertThat(property.getDescriptor().getId(), is(JobInclusionFolderProperty.class.getName()));
     }
 
     @Test
-    public void testDescriptorImpl() {
+    void testDescriptorImpl() {
         JobInclusionFolderProperty.DescriptorImpl descriptor = new JobInclusionFolderProperty.DescriptorImpl();
         assertThat(descriptor.getDisplayName(), is("XXX"));
         assertThat(descriptor.getJobGroups(), is(empty()));
@@ -54,7 +53,7 @@ public class JobInclusionFolderPropertyTest {
     }
 
     @Test
-    public void testAllJobsJobInclusionStrategy() {
+    void testAllJobsJobInclusionStrategy() {
         AllJobsJobInclusionStrategy strategy = new AllJobsJobInclusionStrategy();
         assertTrue(strategy.contains(null, project));
     }
