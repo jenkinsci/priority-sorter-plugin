@@ -25,20 +25,20 @@ package jenkins.advancedqueue;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import io.jenkins.plugins.casc.misc.RoundTripAbstractTest;
+import io.jenkins.plugins.casc.misc.junit.jupiter.AbstractRoundTripTest;
 import java.util.List;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
-import org.jvnet.hudson.test.RestartableJenkinsRule;
+import org.jvnet.hudson.test.JenkinsRule;
 
-public class JCasCFivePrioritiesTest extends RoundTripAbstractTest {
+public class JCasCFivePrioritiesTest extends AbstractRoundTripTest {
 
     @Override
-    protected void assertConfiguredAsExpected(RestartableJenkinsRule j, String configContent) {
+    protected void assertConfiguredAsExpected(JenkinsRule j, String configContent) {
         PrioritySorterConfiguration globalConfig = PrioritySorterConfiguration.get();
-        assertFalse("Non-admins cannot edit priority", globalConfig.getOnlyAdminsMayEditPriorityConfiguration());
+        assertFalse(globalConfig.getOnlyAdminsMayEditPriorityConfiguration(), "Non-admins cannot edit priority");
         assertThat("Wrong strategy class", globalConfig.getStrategy().getClass(), is(AbsoluteStrategy.class));
         assertThat("Wrong number of priorities", globalConfig.getStrategy().getNumberOfPriorities(), is(5));
         assertThat("Wrong default priority", globalConfig.getStrategy().getDefaultPriority(), is(3));

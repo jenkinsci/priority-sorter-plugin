@@ -1,6 +1,6 @@
 package jenkins.advancedqueue.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import hudson.util.ListBoxModel;
@@ -9,28 +9,30 @@ import java.util.List;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.mockito.MockedStatic;
 
-public class PrioritySorterConfigurationTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class PrioritySorterConfigurationTest {
+
+    private JenkinsRule j;
 
     private PrioritySorterConfiguration prioritySorterConfiguration;
     private SorterStrategyDescriptor sorterStrategyDescriptor1, sorterStrategyDescriptor2;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach(JenkinsRule j) {
+        this.j = j;
         prioritySorterConfiguration = new PrioritySorterConfiguration();
         sorterStrategyDescriptor1 = mock(SorterStrategyDescriptor.class);
         sorterStrategyDescriptor2 = mock(SorterStrategyDescriptor.class);
     }
 
     @Test
-    public void testDoFillStrategyItems() {
+    void testDoFillStrategyItems() {
         when(sorterStrategyDescriptor1.getDisplayName()).thenReturn("DisplayName1");
         when(sorterStrategyDescriptor1.getKey()).thenReturn("Key1");
         when(sorterStrategyDescriptor2.getDisplayName()).thenReturn("DisplayName2");

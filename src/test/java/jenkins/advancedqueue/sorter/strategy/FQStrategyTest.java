@@ -1,23 +1,25 @@
 package jenkins.advancedqueue.sorter.strategy;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FQStrategyTest {
+import org.junit.jupiter.api.Test;
+
+class FQStrategyTest {
 
     @Test
-    public void testStepSize() {
-        Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(1), 0F);
-        Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(2), 0F);
-        Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(3), 0F);
-        Assert.assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(4), 0F);
+    void testStepSize() {
+        assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(1), 0F);
+        assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(2), 0F);
+        assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(3), 0F);
+        assertEquals(FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getStepSize(4), 0F);
     }
 
     @Test
-    public void testGetWeightToUse() {
-        Assert.assertEquals(1.00000F + FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getWeightToUse(1, 1.00000F), 0F);
-        Assert.assertEquals(1.00001F + FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getWeightToUse(1, 1.00001F), 0F);
-        Assert.assertEquals(1F, new FQStrategy().getWeightToUse(1, Float.MAX_VALUE), 0F);
+    void testGetWeightToUse() {
+        assertEquals(1.00000F + FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getWeightToUse(1, 1.00000F), 0F);
+        assertEquals(1.00001F + FQBaseStrategy.MIN_STEP_SIZE, new FQStrategy().getWeightToUse(1, 1.00001F), 0F);
+        assertEquals(1F, new FQStrategy().getWeightToUse(1, Float.MAX_VALUE), 0F);
         assertIncreasingWeight(1F);
         assertIncreasingWeight(100000F);
     }
@@ -26,9 +28,9 @@ public class FQStrategyTest {
         float previousWeight = initialWeight;
         for (int i = 0; i < 10; ++i) {
             float newWeight = new FQStrategy().getWeightToUse(1, previousWeight);
-            Assert.assertTrue(
-                    "New weight %s should be greater than previous weight %s".formatted(newWeight, previousWeight),
-                    newWeight > previousWeight);
+            assertTrue(
+                    newWeight > previousWeight,
+                    "New weight %s should be greater than previous weight %s".formatted(newWeight, previousWeight));
             previousWeight = newWeight;
         }
     }

@@ -1,10 +1,6 @@
 package jenkins.advancedqueue.priority.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import hudson.model.Descriptor;
@@ -18,58 +14,63 @@ import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import net.sf.json.JSONObject;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.StaplerRequest2;
 
-public class PriorityJobPropertyTest {
+@WithJenkins
+class PriorityJobPropertyTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
-    @Rule
-    public TestName testName = new TestName();
+    private String testName;
 
     private static PriorityJobProperty property;
     private static PriorityJobProperty.DescriptorImpl descriptor;
 
     private static final int PRIORITY = 7;
 
-    @BeforeClass
-    public static void setUp() throws IOException {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
         // Initialize PrioritySorterConfiguration
         PrioritySorterConfiguration.get().load();
         property = new PriorityJobProperty(true, PRIORITY);
         descriptor = property.getDescriptor();
     }
 
+    @BeforeEach
+    void beforeEach(TestInfo info) throws Exception {
+        testName = info.getTestMethod().orElseThrow().getName();
+    }
+
     @Test
-    public void priorityJobProperty_returnsCorrectPriority() {
+    void priorityJobProperty_returnsCorrectPriority() {
         assertEquals(PRIORITY, property.getPriority());
     }
 
     @Test
-    public void priorityJobProperty_returnsCorrectUseJobPriority() {
+    void priorityJobProperty_returnsCorrectUseJobPriority() {
         assertTrue(property.getUseJobPriority());
     }
 
     @Test
-    public void priorityJobProperty_reconfigureNullOnEmpty() throws Descriptor.FormException {
+    void priorityJobProperty_reconfigureNullOnEmpty() throws Descriptor.FormException {
         StaplerRequest2 req = mock(StaplerRequest2.class);
         assertNull(property.reconfigure(req, new JSONObject()));
     }
 
     @Test
-    public void descriptorImpl_getDefaultReturnsDefaultPriority() {
+    void descriptorImpl_getDefaultReturnsDefaultPriority() {
         assertEquals(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority(), descriptor.getDefault());
     }
 
     @Test
-    public void descriptorImpl_getPrioritiesReturnsNonEmptyList() {
+    void descriptorImpl_getPrioritiesReturnsNonEmptyList() {
         assertFalse(descriptor.getPriorities().isEmpty());
     }
 
@@ -77,7 +78,7 @@ public class PriorityJobPropertyTest {
 
     private JobGroup createJobGroup(String viewName) {
         JobGroup jobGroup = new JobGroup();
-        jobGroup.setDescription("testGroup-" + testName.getMethodName());
+        jobGroup.setDescription("testGroup-" + testName);
         jobGroup.setRunExclusive(random.nextBoolean());
         jobGroup.setId(random.nextInt());
         jobGroup.setJobGroupStrategy(new ViewBasedJobInclusionStrategy(viewName));
@@ -85,7 +86,7 @@ public class PriorityJobPropertyTest {
     }
 
     @Test
-    public void isUsedWhenViewExists() throws IOException {
+    void isUsedWhenViewExists() throws IOException {
         // Create a new FreeStyleProject
         FreeStyleProject project = j.createFreeStyleProject();
 
@@ -128,7 +129,7 @@ public class PriorityJobPropertyTest {
     }
 
     @Test
-    public void isUsedWhenViewDoesNotExist() throws IOException {
+    void isUsedWhenViewDoesNotExist() throws IOException {
         FreeStyleProject project = j.createFreeStyleProject();
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();

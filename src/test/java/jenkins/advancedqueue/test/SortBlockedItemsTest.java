@@ -5,19 +5,17 @@ import hudson.model.Queue;
 import hudson.tasks.BuildTrigger;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.TestRunListener;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-public class SortBlockedItemsTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class SortBlockedItemsTest {
 
     @Test
     @LocalData
-    public void blockedItemsAreSortedByPriority() throws Exception {
+    void blockedItemsAreSortedByPriority(JenkinsRule j) throws Exception {
         // Priority value is configured in jenkins.advancedqueue.PrioritySorterConfiguration. Value is 2.
         FreeStyleProject upstreamProject = j.createFreeStyleProject("upstreamProject");
         // Priority value is configured in jenkins.advancedqueue.PrioritySorterConfiguration. Value is 1.

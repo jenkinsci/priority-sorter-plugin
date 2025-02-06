@@ -23,7 +23,7 @@ class PrioritySorterRestrictionTest {
     private static final int UPPER_PRIORITY = 1;
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         this.restriction = new PrioritySorterRestriction(LOWER_PRIORITY, UPPER_PRIORITY);
         this.mockedBuildableItem = mock(BuildableItem.class);
         when(mockedBuildableItem.getId()).thenReturn(MOCKED_BUILDABLE_ITEM_ID);
