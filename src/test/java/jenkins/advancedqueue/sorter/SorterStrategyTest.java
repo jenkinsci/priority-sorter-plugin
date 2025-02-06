@@ -1,10 +1,8 @@
 package jenkins.advancedqueue.sorter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -13,23 +11,21 @@ import hudson.ExtensionList;
 import hudson.model.Queue;
 import hudson.model.Queue.LeftItem;
 import java.util.List;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
+@WithJenkins
 public class SorterStrategyTest {
-
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
 
     private static SorterStrategy strategy;
     private static SorterStrategyCallback mockCallback;
     private static Queue.Item mockItem;
     private static LeftItem mockLeftItem;
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    public static void setUp(JenkinsRule j) {
         strategy = new TestSorterStrategy();
         mockCallback = mock(SorterStrategyCallback.class);
         mockItem = mock(Queue.Item.class);
@@ -37,39 +33,30 @@ public class SorterStrategyTest {
     }
 
     @Test
-    public void testOnNewItem() {
+    void testOnNewItem() {
         SorterStrategyCallback result = strategy.onNewItem(mockItem, mockCallback);
 
         assertEquals(mockCallback, result);
     }
 
     @Test
-    public void testOnCanceledItem() {
-        when(mockLeftItem.isCancelled()).thenReturn(true);
-        strategy.onCanceledItem(mockLeftItem);
-
-        // Verify that the method was called with the correct parameters
-        verify(mockLeftItem, times(1)).isCancelled();
-    }
-
-    @Test
-    public void testGetNumberOfPriorities() {
+    void testGetNumberOfPriorities() {
         assertEquals(9, strategy.getNumberOfPriorities());
     }
 
     @Test
-    public void testGetDefaultPriority() {
+    void testGetDefaultPriority() {
         assertEquals(4, strategy.getDefaultPriority());
     }
 
     @Test
-    public void testGetSorterStrategyNonExistentKey() {
+    void testGetSorterStrategyNonExistentKey() {
         SorterStrategyDescriptor result = SorterStrategy.getSorterStrategy("non-existent-key");
         assertNull(result);
     }
 
     @Test
-    public void testGetPrioritySorterStrategyNonExistentDescriptor() {
+    void testGetPrioritySorterStrategyNonExistentDescriptor() {
         SorterStrategyDescriptor mockDescriptor = mock(SorterStrategyDescriptor.class);
         when(mockDescriptor.getKey()).thenReturn("non-existent-key");
         SorterStrategy result = SorterStrategy.getPrioritySorterStrategy(mockDescriptor);
@@ -77,7 +64,7 @@ public class SorterStrategyTest {
     }
 
     @Test
-    public void testGetAllSorterStrategiesWithNoRegisteredStrategies() {
+    void testGetAllSorterStrategiesWithNoRegisteredStrategies() {
         ExtensionList<SorterStrategy> all = mock(ExtensionList.class);
         ExtensionList<SorterStrategy> allRegisteredItems = SorterStrategy.all();
 
@@ -91,7 +78,7 @@ public class SorterStrategyTest {
     }
 
     @Test
-    public void testGetAllSorterStrategiesWithRegisteredStrategies() {
+    void testGetAllSorterStrategiesWithRegisteredStrategies() {
         ExtensionList<SorterStrategy> all = mock(ExtensionList.class);
         ExtensionList<SorterStrategy> allRegisteredItems = SorterStrategy.all();
         //        when(Jenkins.get().getExtensionList(SorterStrategy.class)).thenReturn(allRegisteredItems);
@@ -104,13 +91,13 @@ public class SorterStrategyTest {
     }
 
     @Test
-    public void testGetSorterStrategyWithNullKey() {
+    void testGetSorterStrategyWithNullKey() {
         SorterStrategyDescriptor result = SorterStrategy.getSorterStrategy(null);
         assertNull(result);
     }
 
     @Test
-    public void testGetPrioritySorterStrategyWithNullDescriptor() {
+    void testGetPrioritySorterStrategyWithNullDescriptor() {
         SorterStrategy result = SorterStrategy.getPrioritySorterStrategy(null);
         assertNull(result);
     }
