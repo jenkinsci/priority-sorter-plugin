@@ -25,8 +25,7 @@ class PriorityConfigurationPlaceholderTaskHelper {
             @NonNull ExecutorStepExecution.PlaceholderTask task,
             @NonNull PriorityConfigurationCallback priorityCallback) {
         Queue.Task ownerTask = task.getOwnerTask();
-        if (ownerTask instanceof Job<?, ?>) {
-            Job<?, ?> job = (Job<?, ?>) ownerTask;
+        if (ownerTask instanceof Job<?, ?> job) {
             ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
             if (itemInfo != null) {
                 priorityCallback.setPrioritySelection(itemInfo.getPriority());

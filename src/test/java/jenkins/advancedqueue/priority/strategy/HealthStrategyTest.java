@@ -1,7 +1,7 @@
 package jenkins.advancedqueue.priority.strategy;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -13,266 +13,62 @@ import hudson.model.Queue.Task;
 import hudson.util.RunList;
 import java.lang.reflect.Field;
 import java.util.Iterator;
-import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class HealthStrategyTest {
+class HealthStrategyTest {
     private BuildableItem mockedBuildableItem;
     private Job<?, ?> mockedJob;
 
-    @Test
-    public void assertHealthOver80SameSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_OVER_80");
-        setMockedJobHealthTo(85);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
+    static Object[][] data() {
+        return new Object[][] {
+            {"SAME", "HEALTH_OVER_80", 85, true},
+            {"SAME", "HEALTH_OVER_80", 75, false},
+            {"BETTER", "HEALTH_OVER_80", 85, true},
+            {"BETTER", "HEALTH_OVER_80", 75, false},
+            {"SAME", "HEALTH_61_TO_80", 75, true},
+            {"SAME", "HEALTH_61_TO_80", 81, false},
+            {"SAME", "HEALTH_61_TO_80", 60, false},
+            {"BETTER", "HEALTH_61_TO_80", 75, true},
+            {"BETTER", "HEALTH_61_TO_80", 60, false},
+            {"WORSE", "HEALTH_61_TO_80", 80, true},
+            {"WORSE", "HEALTH_61_TO_80", 81, false},
+            {"SAME", "HEALTH_41_TO_60", 55, true},
+            {"SAME", "HEALTH_41_TO_60", 61, false},
+            {"SAME", "HEALTH_41_TO_60", 40, false},
+            {"BETTER", "HEALTH_41_TO_60", 50, true},
+            {"BETTER", "HEALTH_41_TO_60", 40, false},
+            {"WORSE", "HEALTH_41_TO_60", 60, true},
+            {"WORSE", "HEALTH_41_TO_60", 61, false},
+            {"SAME", "HEALTH_21_TO_40", 35, true},
+            {"SAME", "HEALTH_21_TO_40", 41, false},
+            {"SAME", "HEALTH_21_TO_40", 20, false},
+            {"BETTER", "HEALTH_21_TO_40", 30, true},
+            {"BETTER", "HEALTH_21_TO_40", 20, false},
+            {"WORSE", "HEALTH_21_TO_40", 40, true},
+            {"WORSE", "HEALTH_21_TO_40", 41, false},
+            {"SAME", "HEALTH_0_TO_20", 15, true},
+            {"SAME", "HEALTH_0_TO_20", 21, false},
+            {"SAME", "HEALTH_0_TO_20", -1, false},
+            {"BETTER", "HEALTH_0_TO_20", 15, true},
+            {"BETTER", "HEALTH_0_TO_20", -1, false},
+            {"WORSE", "HEALTH_0_TO_20", 20, true},
+            {"WORSE", "HEALTH_0_TO_20", 21, false}
+        };
     }
 
-    @Test
-    public void assertHealthOver80SameSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_OVER_80");
-        setMockedJobHealthTo(75);
+    @ParameterizedTest(name = "{0} - {1} - actual: {2} - concludes: {3}")
+    @MethodSource("data")
+    void assertHealth(String selection, String health, int mockedHealth, boolean expected) throws Exception {
+        HealthStrategy strategy = new HealthStrategy(0, selection, health);
+        setMockedJobHealthTo(mockedHealth);
         initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
 
-    @Test
-    public void assertHealthOver80BetterSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_OVER_80");
-        setMockedJobHealthTo(85);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealthOver80BetterSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_OVER_80");
-        setMockedJobHealthTo(75);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80SameSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(75);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80SameSelectionFailsWithGreater() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(81);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80SameSelectionFailsWithLower() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(60);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80BetterSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(75);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80BetterSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(60);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80WorseSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(80);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth61To80WorseSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_61_TO_80");
-        setMockedJobHealthTo(81);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60SameSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(55);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60SameSelectionFailsWithGreater() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(61);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60SameSelectionFailsWithLower() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(40);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60BetterSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(50);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60BetterSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(40);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60WorseSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(60);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth41to60WorseSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_41_TO_60");
-        setMockedJobHealthTo(61);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40SameSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(35);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40SameSelectionFailsWithGreater() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(41);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40SameSelectionFailsWithLower() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(20);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40BetterSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(30);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40BetterSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(20);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40WorseSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(40);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth21to40WorseSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_21_TO_40");
-        setMockedJobHealthTo(41);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20SameSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(15);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20SameSelectionFailsWithGreater() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(21);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20SameSelectionFailsWithLower() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "SAME", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(-1);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20BetterSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(15);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20BetterSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "BETTER", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(-1);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20WorseSelectionConcludes() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(20);
-        initializeJobRunList();
-        assertTrue(strategy.isApplicable(this.mockedBuildableItem));
-    }
-
-    @Test
-    public void assertHealth0to20WorseSelectionFails() throws NoSuchFieldException, IllegalAccessException {
-        HealthStrategy strategy = new HealthStrategy(0, "WORSE", "HEALTH_0_TO_20");
-        setMockedJobHealthTo(21);
-        initializeJobRunList();
-        assertFalse(strategy.isApplicable(this.mockedBuildableItem));
+        if (expected) {
+            assertTrue(strategy.isApplicable(this.mockedBuildableItem));
+        } else {
+            assertFalse(strategy.isApplicable(this.mockedBuildableItem));
+        }
     }
 
     private void setMockedJobHealthTo(int health) throws NoSuchFieldException, IllegalAccessException {

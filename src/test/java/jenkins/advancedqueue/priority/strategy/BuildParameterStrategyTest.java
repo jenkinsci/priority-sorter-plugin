@@ -1,8 +1,6 @@
 package jenkins.advancedqueue.priority.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersAction;
@@ -12,27 +10,28 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collections;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class BuildParameterStrategyTest {
+@WithJenkins
+class BuildParameterStrategyTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static FreeStyleProject project;
     private static BuildParameterStrategy strategy;
 
-    @BeforeClass
-    public static void setUp() throws IOException {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws IOException {
+        j = rule;
         project = j.createFreeStyleProject();
         strategy = new BuildParameterStrategy("priority");
     }
 
     @Test
-    public void getPriority_returnsPriorityFromParameter() {
+    void getPriority_returnsPriorityFromParameter() {
         StringParameterValue param = new StringParameterValue("priority", "5");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
@@ -43,7 +42,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void getPriority_returnsDefaultPriorityWhenParameterIsMissing() {
+    void getPriority_returnsDefaultPriorityWhenParameterIsMissing() {
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
 
         int priority = strategy.getPriority(item);
@@ -52,7 +51,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void getPriority_returnsDefaultPriorityWhenParameterIsNotANumber() {
+    void getPriority_returnsDefaultPriorityWhenParameterIsNotANumber() {
         StringParameterValue param = new StringParameterValue("priority", "not-a-number");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
@@ -63,7 +62,7 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void isApplicable_returnsTrueWhenParameterIsPresentAndValid() {
+    void isApplicable_returnsTrueWhenParameterIsPresentAndValid() {
         StringParameterValue param = new StringParameterValue("priority", "5");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));
@@ -72,14 +71,14 @@ public class BuildParameterStrategyTest {
     }
 
     @Test
-    public void isApplicable_returnsFalseWhenParameterIsMissing() {
+    void isApplicable_returnsFalseWhenParameterIsMissing() {
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
 
         assertFalse(strategy.isApplicable(item));
     }
 
     @Test
-    public void isApplicable_returnsFalseWhenParameterIsNotANumber() {
+    void isApplicable_returnsFalseWhenParameterIsNotANumber() {
         StringParameterValue param = new StringParameterValue("priority", "not-a-number");
         ParametersAction action = new ParametersAction(param);
         Queue.Item item = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.singletonList(action));

@@ -3,10 +3,7 @@ package jenkins.advancedqueue.jobinclusion.strategy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
 import hudson.model.FreeStyleProject;
@@ -14,29 +11,26 @@ import hudson.util.ListBoxModel;
 import java.util.ArrayList;
 import java.util.List;
 import jenkins.advancedqueue.DecisionLogger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class FolderBasedJobInclusionStrategyTest {
+@WithJenkins
+class FolderBasedJobInclusionStrategyTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static FolderBasedJobInclusionStrategy strategy;
     private static DecisionLogger decisionLogger;
     private static List<String> loggedMessages;
 
-    @BeforeClass
-    public static void createStrategy() throws Exception {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
         strategy = new FolderBasedJobInclusionStrategy("testFolder");
-    }
-
-    @BeforeClass
-    public static void createDecisionLogger() throws Exception {
         decisionLogger = new DecisionLogger() {
             @Override
             public DecisionLogger addDecisionLog(int indent, String log) {
@@ -46,57 +40,57 @@ public class FolderBasedJobInclusionStrategyTest {
         };
     }
 
-    @Before
-    public void clearLoggedMessages() throws Exception {
+    @BeforeEach
+    void beforeEach() throws Exception {
         loggedMessages = new ArrayList<>();
     }
 
-    @After
-    public void checkLoggedMessages() throws Exception {
+    @AfterEach
+    void afterEach() throws Exception {
         assertThat(loggedMessages, is(empty()));
     }
 
     @Test
-    public void getDescriptor() {
+    void getDescriptor() {
         assertNotNull(strategy.getDescriptor());
-        assertTrue(
-                strategy.getDescriptor()
-                        instanceof FolderBasedJobInclusionStrategy.FolderBasedJobInclusionStrategyDescriptor);
+        assertInstanceOf(
+                FolderBasedJobInclusionStrategy.FolderBasedJobInclusionStrategyDescriptor.class,
+                strategy.getDescriptor());
     }
 
     @Test
-    public void all() {
+    void all() {
         assertFalse(FolderBasedJobInclusionStrategy.all().isEmpty());
     }
 
     @Test
-    public void getFolderName() {
+    void getFolderName() {
         assertEquals("testFolder", strategy.getFolderName());
     }
 
     @Test
-    public void contains() throws Exception {
+    void contains() throws Exception {
         FreeStyleProject project = this.j.createFreeStyleProject("testFolder_jobName");
 
         assertTrue(strategy.contains(decisionLogger, project));
     }
 
     @Test
-    public void containsReturnsFalseForJobNotInFolder() throws Exception {
+    void containsReturnsFalseForJobNotInFolder() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("otherFolder_jobName");
 
         assertFalse(strategy.contains(decisionLogger, project));
     }
 
     @Test
-    public void containsReturnsTrueForJobInSubFolder() throws Exception {
+    void containsReturnsTrueForJobInSubFolder() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("testFolder_subFolder_jobName");
 
         assertTrue(strategy.contains(decisionLogger, project));
     }
 
     @Test
-    public void getListFolderItemsReturnsNonNullListBoxModel() {
+    void getListFolderItemsReturnsNonNullListBoxModel() {
         FolderBasedJobInclusionStrategy.FolderBasedJobInclusionStrategyDescriptor descriptor =
                 new FolderBasedJobInclusionStrategy.FolderBasedJobInclusionStrategyDescriptor();
         ListBoxModel items = descriptor.getListFolderItems();
@@ -104,7 +98,7 @@ public class FolderBasedJobInclusionStrategyTest {
     }
 
     @Test
-    public void getListFolderItemsReturnsCorrectFolderNames() throws Exception {
+    void getListFolderItemsReturnsCorrectFolderNames() throws Exception {
 
         j.jenkins.createProject(Folder.class, "folder1");
         j.jenkins.createProject(Folder.class, "folder2");

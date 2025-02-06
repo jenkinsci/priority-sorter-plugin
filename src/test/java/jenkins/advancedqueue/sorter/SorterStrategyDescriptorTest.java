@@ -1,21 +1,21 @@
 package jenkins.advancedqueue.sorter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class SorterStrategyDescriptorTest {
+@WithJenkins
+class SorterStrategyDescriptorTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static FreeStyleProject project;
     private static FreeStyleBuild build;
@@ -26,8 +26,9 @@ public class SorterStrategyDescriptorTest {
     private static final int NUMBER_OF_PRIORITIES = 9;
     private static final int DEFAULT_PRIORITY = 4;
 
-    @BeforeClass
-    public static void runJob() throws Exception {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
         project = j.createFreeStyleProject();
         build = project.scheduleBuild2(0).get();
         strategy = new TestSorterStrategy();
@@ -36,22 +37,22 @@ public class SorterStrategyDescriptorTest {
     }
 
     @Test
-    public void getNumberOfPriorities() {
+    void getNumberOfPriorities() {
         assertEquals(NUMBER_OF_PRIORITIES, strategy.getNumberOfPriorities());
     }
 
     @Test
-    public void getDefaultPriority() {
+    void getDefaultPriority() {
         assertEquals(DEFAULT_PRIORITY, strategy.getDefaultPriority());
     }
 
     @Test
-    public void getShortNameReturnsCorrectValue() {
+    void getShortNameReturnsCorrectValue() {
         assertEquals(STRATEGY_NAME, descriptor.getShortName());
     }
 
     @Test
-    public void getKeyReturnsShortName() {
+    void getKeyReturnsShortName() {
         assertEquals(STRATEGY_NAME, descriptor.getKey());
     }
 
