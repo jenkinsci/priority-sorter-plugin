@@ -59,7 +59,6 @@
     <dependency>
       <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
       <artifactId>job-restrictions</artifactId>
-      <version>216.v0732cc7fb_076</version>
       <optional>true</optional>
     </dependency>
     <dependency>
