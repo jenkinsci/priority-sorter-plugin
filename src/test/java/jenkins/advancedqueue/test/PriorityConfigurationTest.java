@@ -32,8 +32,8 @@ class PriorityConfigurationTest {
 
     @Test
     void testDoCheckJobPattern(JenkinsRule j) throws IOException, ServletException {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
         // Valid pattern
         FormValidation validation = configuration.doCheckJobPattern("test.*");
@@ -50,8 +50,8 @@ class PriorityConfigurationTest {
 
     @Test
     void testIconClassName(JenkinsRule j) throws IOException, ServletException {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
         // When admin can edit
         PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
@@ -70,15 +70,15 @@ class PriorityConfigurationTest {
 
     @Test
     void testGetDisplayName(JenkinsRule j) {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
         assertNotNull(configuration.getDisplayName());
     }
 
     @Test
     void testGetUrlName(JenkinsRule j) throws IOException, ServletException {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
         // When admin can edit
         PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
@@ -97,29 +97,29 @@ class PriorityConfigurationTest {
 
     @Test
     void testGetPriorityStrategyDescriptors(JenkinsRule j) {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
         assertNotNull(configuration.getPriorityStrategyDescriptors());
     }
 
     @Test
     void testGetJobInclusionStrategyDescriptors(JenkinsRule j) {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
         assertNotNull(configuration.getJobInclusionStrategyDescriptors());
     }
 
     @Test
     void testGetPriorities(JenkinsRule j) {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
         assertNotNull(configuration.getPriorities());
     }
 
     @Test
     void testIsJobInView(JenkinsRule j) throws Exception {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
         // Create a test job and view
         FreeStyleProject testJob = j.createFreeStyleProject("test-job-view");
@@ -140,8 +140,8 @@ class PriorityConfigurationTest {
 
     @Test
     void testGetJobGroup(JenkinsRule j) {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
         try {
             // Create a real job using JenkinsRule
@@ -182,8 +182,8 @@ class PriorityConfigurationTest {
 
     @Test
     void testGetPriority(JenkinsRule j) {
-        PriorityConfiguration configuration = (PriorityConfiguration) j.jenkins
-                .getDescriptor(PriorityConfiguration.class);
+        PriorityConfiguration configuration =
+                (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
         try {
             // Create a real job using JenkinsRule
