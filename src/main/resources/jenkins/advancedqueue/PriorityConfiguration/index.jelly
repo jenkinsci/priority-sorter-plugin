@@ -25,16 +25,18 @@
 									<f:dropdownDescriptorSelector title="${%Jobs_to_include}" field="jobGroupStrategy" descriptors="${it.jobInclusionStrategyDescriptors}"/>
 								</f:entry>
 								<f:entry title="${%Priority}">
-									<select name="priority">
-										<j:forEach var="priority" items="${it.priorities}">
-											<j:if test="${priority.value == jobGroup.priority}">
-												<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
-											</j:if>
-											<j:if test="${priority.value != jobGroup.priority}">
-												<f:option value="${priority.value}">${priority.name}</f:option>
-											</j:if>
-										</j:forEach>
-									</select>
+                  <div class="jenkins-select">
+                    <select name="priority" class="jenkins-select__input">
+                      <j:forEach var="priority" items="${it.priorities}">
+                        <j:if test="${priority.value == jobGroup.priority}">
+                          <f:option value="${priority.value}" selected="true">${priority.name}</f:option>
+                        </j:if>
+                        <j:if test="${priority.value != jobGroup.priority}">
+                          <f:option value="${priority.value}">${priority.name}</f:option>
+                        </j:if>
+                      </j:forEach>
+                    </select>
+                  </div>
 								</f:entry>
 								<f:entry title="${%Run_exclusive}" help="/descriptor/jenkins.advancedqueue.PriorityConfiguration/help/runExclusive">
 									<f:checkbox name="runExclusive" value="${jobGroup.runExclusive}" checked="${jobGroup.runExclusive}"/>
