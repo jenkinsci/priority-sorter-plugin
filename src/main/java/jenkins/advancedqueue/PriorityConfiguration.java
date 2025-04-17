@@ -38,6 +38,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewGroup;
 import hudson.security.ACL;
+import hudson.util.FormApply;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jakarta.servlet.ServletException;
@@ -186,7 +187,7 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
             id2jobGroup.put(jobGroup.getId(), jobGroup);
         }
         save();
-        rsp.sendRedirect(Jenkins.get().getRootUrl());
+        FormApply.success("..").generateResponse(req, rsp, this);
     }
 
     public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {
