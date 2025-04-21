@@ -1,18 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-	<l:layout norefresh="true" title="${%Job_Priorities}">
-	 	<l:side-panel>
-            <l:tasks>
-                <l:task icon="icon-up icon-md" href="${rootURL}/" title="${%Back_to_Dashboard}"/>
-            </l:tasks>
-        </l:side-panel>
+	<l:layout norefresh="true" title="${%Job_Priorities}" type="one-column">
 		<l:main-panel>
 			<!-- make the page not so wide on large screens -->
 			<div class="col-xlg-14 col-lg-20 col-md-24">
-				<div>
-					<h2>${%Job_Priorities}</h2>
-					<p>${%Assign_priorities_by_creating_job_groups}</p>
-				</div>
+        <l:app-bar title="${%Job_Priorities}"/>
+        ${%Assign_priorities_by_creating_job_groups}
 				<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 					<f:entry>
 						<f:repeatable var="jobGroup" items="${it.jobGroups}" header="${%Job_group}">
@@ -58,27 +51,19 @@
 														<st:include it="${descriptor}" page="${descriptor.configPage}" />
 													</f:entry>
 												</j:if>
-												<f:entry>
-													<div align="right">
-														<f:repeatableDeleteButton />
-													</div>
-												</f:entry>
+												<f:repeatableDeleteButton />
 											</div>
 										</f:repeatable>
 									</f:entry>
 								</f:optionalBlock>
-								<f:entry>
-									<div align="right">
-										<f:repeatableDeleteButton />
-									</div>
-								</f:entry>
+								<f:repeatableDeleteButton />
 							</div>
 						</f:repeatable>
-						<br/>
-						<br/>
-						<f:entry>
+            <br/>
+            <f:bottomButtonBar>
 							<f:submit value="${%Save}" />
-						</f:entry>
+              <f:apply/>
+            </f:bottomButtonBar>
 					</f:entry>
 				</f:form>
 			</div>
