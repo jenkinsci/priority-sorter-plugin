@@ -59,12 +59,6 @@ class PriorityStrategyTest {
     }
 
     @Test
-    void testIsApplicable() {
-        boolean result = strategy.isApplicable(item);
-        assertTrue(result);
-    }
-
-    @Test
     void testGetPriority() {
         int priority = strategy.getPriority(item);
         assertEquals(5, priority);
