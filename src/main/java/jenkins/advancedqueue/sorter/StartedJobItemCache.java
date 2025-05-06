@@ -127,8 +127,8 @@ public class StartedJobItemCache {
             final PendingItem pi = it.next();
             final Executable e = pi.workUnit.getExecutable();
 
-            if (e instanceof Run) {
-                startedItems.put(new StartedItem(pi.itemInfo.getJobName(), ((Run<?, ?>) e).getNumber()), pi.itemInfo);
+            if (e instanceof Run<?, ?> run) {
+                startedItems.put(new StartedItem(pi.itemInfo.getJobName(), run.getNumber()), pi.itemInfo);
                 it.remove();
             }
         }

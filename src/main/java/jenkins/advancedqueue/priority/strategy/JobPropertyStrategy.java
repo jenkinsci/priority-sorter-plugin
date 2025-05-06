@@ -51,8 +51,7 @@ public class JobPropertyStrategy extends AbstractDynamicPriorityStrategy {
 
     @CheckForNull
     private Integer getPriorityInternal(Queue.Item item) {
-        if (item.task instanceof Job<?, ?>) {
-            Job<?, ?> job = (Job<?, ?>) item.task;
+        if (item != null && item.task instanceof Job<?, ?> job) {
             PriorityJobProperty priorityProperty = job.getProperty(PriorityJobProperty.class);
             if (priorityProperty != null && priorityProperty.getUseJobPriority()) {
                 return priorityProperty.priority;

@@ -25,8 +25,8 @@ package jenkins.advancedqueue.sorter.strategy;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.util.ListBoxModel;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
-import javax.servlet.ServletException;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyDescriptor;
@@ -95,8 +95,9 @@ public abstract class MultiBucketStrategy extends SorterStrategy {
             return items;
         }
 
+        /* package-protected for testing */
         @CheckForNull
-        private MultiBucketStrategy getStrategy() {
+        MultiBucketStrategy getStrategy() {
             SorterStrategy strategy = PrioritySorterConfiguration.get().getStrategy();
             if (strategy == null || !(strategy instanceof MultiBucketStrategy)) {
                 return null;

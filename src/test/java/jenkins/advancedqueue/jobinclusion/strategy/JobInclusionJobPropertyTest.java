@@ -1,55 +1,127 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import hudson.model.FreeStyleProject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class JobInclusionJobPropertyTest {
+@WithJenkins
+class JobInclusionJobPropertyTest {
+
+    private static JenkinsRule j;
+
     private JobInclusionJobProperty jobProperty;
+    private FreeStyleProject jobProject;
     private JobInclusionJobProperty.DescriptorImpl descriptor;
 
-    @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
+    }
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void beforeEach(TestInfo info) throws Exception {
         jobProperty = new JobInclusionJobProperty(true, "TestJobGroup");
-        descriptor = new JobInclusionJobProperty.DescriptorImpl();
+        descriptor = jobProperty.getDescriptor();
+        jobProject = j.createFreeStyleProject(
+                "testFolder_" + info.getTestMethod().orElseThrow().getName());
+    }
+
+    @AfterEach
+    void afterEach() throws Exception {
+        jobProject.delete();
     }
 
     @Test
-    public void getJobGroupNameTest() {
+    void getJobGroupNameTest() {
         assertEquals("TestJobGroup", jobProperty.getJobGroupName());
     }
 
     @Test
-    public void isUseJobGroupTest() {
+    void getJobGroupNameReturnsNullWhenNotSetAndFalse() {
+        // Create a JobInclusionJobProperty with useJobGroup set to false and jobGroupName set to null
+        jobProperty = new JobInclusionJobProperty(false, null);
+        assertFalse(jobProperty.isUseJobGroup());
+        assertNull(jobProperty.getJobGroupName());
+    }
+
+    @Test
+    void getJobGroupNameReturnsNullWhenNotSetAndTrue() {
+        // Create a JobInclusionJobProperty with useJobGroup set to true and jobGroupName set to null
+        jobProperty = new JobInclusionJobProperty(true, null);
         assertTrue(jobProperty.isUseJobGroup());
+        assertNull(jobProperty.getJobGroupName());
     }
 
     @Test
-    public void getDescriptorTest() {
-        assertNotNull(jobProperty.getDescriptor());
+    void isUseJobGroupReturnsCorrectValue() {
+        // Create a JobInclusionJobProperty with useJobGroup set to true
+        jobProperty = new JobInclusionJobProperty(true, "groupName");
+        assertTrue(jobProperty.isUseJobGroup());
+        assertEquals("groupName", jobProperty.getJobGroupName());
+
+        // Create a JobInclusionJobProperty with useJobGroup set to false
+        JobInclusionJobProperty jobPropertyFalse = new JobInclusionJobProperty(false, "groupName");
+        assertFalse(jobPropertyFalse.isUseJobGroup());
+        assertEquals("groupName", jobPropertyFalse.getJobGroupName());
+
+        // Create a JobInclusionJobProperty with null jobGroupName
+        JobInclusionJobProperty jobPropertyNull = new JobInclusionJobProperty(true, null);
+        assertTrue(jobPropertyNull.isUseJobGroup());
+        assertNull(jobPropertyNull.getJobGroupName());
     }
 
     @Test
-    public void getDisplayNameTest() {
+    void isUseJobGroupTest() {
+        assertTrue(jobProperty.isUseJobGroup());
+
+        // Create a JobInclusionJobProperty with useJobGroup set to false
+        JobInclusionJobProperty jobPropertyFalse = new JobInclusionJobProperty(false, "groupName2");
+        assertFalse(jobPropertyFalse.isUseJobGroup());
+        assertEquals("groupName2", jobPropertyFalse.getJobGroupName());
+
+        // Create a JobInclusionJobProperty with null jobGroupName
+        JobInclusionJobProperty jobPropertyNull = new JobInclusionJobProperty(true, null);
+        assertTrue(jobPropertyNull.isUseJobGroup());
+        assertNull(jobPropertyNull.getJobGroupName());
+    }
+
+    @Test
+    void getJobGroupNameReturnsNullWhenJobGroupNameNotSet() {
+        // Create a JobInclusionJobProperty with useJobGroup set to true and jobGroupName set to null
+        JobInclusionJobProperty jobProperty = new JobInclusionJobProperty(true, null);
+        assertTrue(jobProperty.isUseJobGroup());
+        assertNull(jobProperty.getJobGroupName());
+
+        // Create a JobInclusionJobProperty with useJobGroup set to false and jobGroupName set to null
+        JobInclusionJobProperty jobPropertyFalse = new JobInclusionJobProperty(false, null);
+        assertFalse(jobPropertyFalse.isUseJobGroup());
+        assertNull(jobPropertyFalse.getJobGroupName());
+
+        // Create a JobInclusionJobProperty with useJobGroup set to true and jobGroupName set to a non-null value
+        JobInclusionJobProperty jobPropertyWithGroupName = new JobInclusionJobProperty(true, "testJobGroupName");
+        assertTrue(jobPropertyWithGroupName.isUseJobGroup());
+        assertEquals("testJobGroupName", jobPropertyWithGroupName.getJobGroupName());
+    }
+
+    @Test
+    void getDisplayNameTest() {
         assertEquals("XXX", descriptor.getDisplayName());
     }
 
     @Test
-    public void getJobGroupsTest() {
+    void getJobGroupsTest() {
         assertNotNull(descriptor.getJobGroups());
     }
 
     @Test
-    public void isUsedTest() {
+    void isUsedTest() {
         assertFalse(descriptor.isUsed());
     }
 }
