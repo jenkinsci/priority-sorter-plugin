@@ -1,8 +1,6 @@
 package jenkins.advancedqueue.priority;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import hudson.DescriptorExtensionList;
 import hudson.model.Action;
@@ -14,29 +12,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class PriorityStrategyTest {
+@WithJenkins
+class PriorityStrategyTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static PriorityStrategy strategy;
     private static Queue.Item item;
     private static FreeStyleProject project;
     private static Action action;
 
-    @BeforeClass
-    public static void setUp() throws IOException {
+    @BeforeAll
+    static void setUp(JenkinsRule rule) throws IOException {
+        j = rule;
         project = j.createFreeStyleProject();
         strategy = new TestPriorityStrategy();
     }
 
-    @BeforeClass
-    public static void createActionAndItem() {
+    @BeforeAll
+    static void createActionAndItem() {
         action = new Action() {
 
             @Override
@@ -60,19 +59,19 @@ public class PriorityStrategyTest {
     }
 
     @Test
-    public void testIsApplicable() {
+    void testIsApplicable() {
         boolean result = strategy.isApplicable(item);
         assertTrue(result);
     }
 
     @Test
-    public void testGetPriority() {
+    void testGetPriority() {
         int priority = strategy.getPriority(item);
         assertEquals(5, priority);
     }
 
     @Test
-    public void testNumberPrioritiesUpdates() {
+    void testNumberPrioritiesUpdates() {
         strategy.numberPrioritiesUpdates(3, 5);
         // Add assertions to verify the behavior
         TestPriorityStrategy testStrategy = new TestPriorityStrategy();
@@ -81,9 +80,9 @@ public class PriorityStrategyTest {
     }
 
     @Test
-    public void testAll() {
+    void testAll() {
         DescriptorExtensionList<PriorityStrategy, Descriptor<PriorityStrategy>> list = PriorityStrategy.all();
-        assertNotNull("DescriptorExtensionList should not be null", list);
+        assertNotNull(list, "DescriptorExtensionList should not be null");
         // The list.size() method returns 7 because the DescriptorExtensionList for PriorityStrategy contains 7
         // descriptors. This means there are 7 different implementations of the PriorityStrategy class registered in the
         // Jenkins instance.
@@ -91,7 +90,7 @@ public class PriorityStrategyTest {
     }
 
     @Test
-    public void testItemTaskIsInstanceOfJob() {
+    void testItemTaskIsInstanceOfJob() {
         item = new Queue.WaitingItem(Calendar.getInstance(), project, new ArrayList<>());
         assertTrue(item.task instanceof Job);
     }
