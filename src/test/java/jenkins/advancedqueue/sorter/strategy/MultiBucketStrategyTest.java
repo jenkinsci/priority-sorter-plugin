@@ -1,17 +1,19 @@
 package jenkins.advancedqueue.sorter.strategy;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Queue;
 import hudson.util.ListBoxModel;
 import jenkins.advancedqueue.sorter.SorterStrategyCallback;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class MultiBucketStrategyTest extends MultiBucketStrategy {
+@WithJenkins
+class MultiBucketStrategyTest extends MultiBucketStrategy {
 
     /** @{inheritDoc} */
     @Override
@@ -19,16 +21,20 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
         return weightCallback;
     }
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static MultiBucketStrategy strategy;
     private static MultiBucketStrategy.MultiBucketStrategyDescriptor descriptor;
     private static final int TEST_PRIORITY_COUNT = 10;
     private static final int TEST_PRIORITY_DEFAULT = 5;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) {
+        j = rule;
+    }
+
+    @BeforeEach
+    void beforeEach() {
         strategy = new MultiBucketStrategy(TEST_PRIORITY_COUNT, TEST_PRIORITY_DEFAULT) {
             @Override
             public SorterStrategyCallback onNewItem(@NonNull Queue.Item item, SorterStrategyCallback weightCallback) {
@@ -50,17 +56,17 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     }
 
     @Test
-    public void getNumberOfPrioritiesReturnsCorrectValue() {
+    void getNumberOfPrioritiesReturnsCorrectValue() {
         assertEquals(TEST_PRIORITY_COUNT, strategy.getNumberOfPriorities());
     }
 
     @Test
-    public void getDefaultPriorityReturnsCorrectValue() {
+    void getDefaultPriorityReturnsCorrectValue() {
         assertEquals(TEST_PRIORITY_DEFAULT, strategy.getDefaultPriority());
     }
 
     @Test
-    public void doFillDefaultPriorityItemsReturnsCorrectItems() {
+    void doFillDefaultPriorityItemsReturnsCorrectItems() {
         ListBoxModel items = descriptor.doFillDefaultPriorityItems();
         assertEquals(TEST_PRIORITY_COUNT, items.size());
         for (int i = 0; i < TEST_PRIORITY_COUNT; i++) {
@@ -69,7 +75,7 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     }
 
     @Test
-    public void doUpdateDefaultPriorityItemsHandlesInvalidInput() {
+    void doUpdateDefaultPriorityItemsHandlesInvalidInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("invalid");
         assertEquals(MultiBucketStrategy.DEFAULT_PRIORITY, items.size());
         for (int i = 0; i < MultiBucketStrategy.DEFAULT_PRIORITY; i++) {
@@ -78,7 +84,7 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     }
 
     @Test
-    public void doUpdateDefaultPriorityItemsHandlesValidInput() {
+    void doUpdateDefaultPriorityItemsHandlesValidInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("3");
         assertEquals(3, items.size());
         for (int i = 0; i < 3; i++) {
@@ -87,19 +93,19 @@ public class MultiBucketStrategyTest extends MultiBucketStrategy {
     }
 
     @Test
-    public void doUpdateDefaultPriorityItemsHandlesNegativeInput() {
+    void doUpdateDefaultPriorityItemsHandlesNegativeInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("-1");
         assertEquals(0, items.size());
     }
 
     @Test
-    public void doUpdateDefaultPriorityItemsHandlesZeroInput() {
+    void doUpdateDefaultPriorityItemsHandlesZeroInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("0");
         assertEquals(0, items.size());
     }
 
     @Test
-    public void doUpdateDefaultPriorityItemsHandlesLargeInput() {
+    void doUpdateDefaultPriorityItemsHandlesLargeInput() {
         ListBoxModel items = descriptor.doUpdateDefaultPriorityItems("100");
         assertEquals(100, items.size());
         for (int i = 0; i < 100; i++) {

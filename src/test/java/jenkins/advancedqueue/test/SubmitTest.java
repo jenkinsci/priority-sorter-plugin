@@ -6,35 +6,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.Charsets;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import javax.servlet.ServletException;
 import jenkins.advancedqueue.JobGroup;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.strategy.UserIdCauseStrategy;
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.kohsuke.stapler.MockStaplerRequest;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
-public class SubmitTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class SubmitTest {
 
     @Test
     @LocalData
-    public void shouldGeneratePriorityConfigurationUsingDataBoundConstructor() throws IOException, ServletException {
+    void shouldGeneratePriorityConfigurationUsingDataBoundConstructor(JenkinsRule j)
+            throws IOException, ServletException {
         PriorityConfiguration priorityConfiguration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
-        StaplerResponse staplerResponse = mock(StaplerResponse.class);
-        StaplerRequest staplerRequest = new MockStaplerRequest.MockStaplerRequestBuilder(
+        StaplerResponse2 staplerResponse = mock(StaplerResponse2.class);
+        StaplerRequest2 staplerRequest = new MockStaplerRequest.MockStaplerRequestBuilder(
                         j, "advanced-build-queue/priorityConfigSubmit")
                 .build();
 

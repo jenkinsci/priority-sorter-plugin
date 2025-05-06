@@ -149,4 +149,4 @@ Steps to test a pull request build are:
 ## Reporting Issues
 
 Report issues in the [Jenkins issue tracker](https://www.jenkins.io/participate/report-issue/redirect/#15771).
-Please use the link:https://www.jenkins.io/participate/report-issue/["How to Report an Issue"] guidelines when reporting issues.
+Please use the ["How to Report an Issue"](https://www.jenkins.io/participate/report-issue/) guidelines when reporting issues.

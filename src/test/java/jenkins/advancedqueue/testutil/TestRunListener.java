@@ -1,5 +1,8 @@
 package jenkins.advancedqueue.testutil;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -10,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
-import org.junit.Assert;
 
 @Extension
 public class TestRunListener extends RunListener<Run> {
@@ -42,17 +44,17 @@ public class TestRunListener extends RunListener<Run> {
     }
 
     public static void assertStartedItems() {
-        Assert.assertEquals("Wrong number of started items", expected.length, actual.size());
+        assertEquals(expected.length, actual.size(), "Wrong number of started items");
         for (int i = 0; i < actual.size(); i++) {
             LOGGER.info("Validating Build " + i);
-            Assert.assertTrue(
+            assertTrue(
+                    actual.get(i).getJobName().matches(expected[i].getJobName()),
                     "Job mismatch at position [" + i + "] expected <" + expected[i].getJobName() + "> was <"
-                            + actual.get(i).getJobName() + ">",
-                    actual.get(i).getJobName().matches(expected[i].getJobName()));
-            Assert.assertEquals(
-                    "Priority mismatch at position [" + i + "]",
+                            + actual.get(i).getJobName() + ">");
+            assertEquals(
                     expected[i].getPriority(),
-                    actual.get(i).getPriority());
+                    actual.get(i).getPriority(),
+                    "Priority mismatch at position [" + i + "]");
         }
     }
 }

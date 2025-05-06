@@ -17,17 +17,15 @@ import jenkins.advancedqueue.priority.strategy.HealthStrategy;
 import jenkins.advancedqueue.priority.strategy.JobPropertyStrategy;
 import jenkins.advancedqueue.priority.strategy.UpstreamCauseStrategy;
 import jenkins.advancedqueue.priority.strategy.UserIdCauseStrategy;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class ConfigurationAsCodeTest {
-
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+@WithJenkins
+class ConfigurationAsCodeTest {
 
     @Test
-    public void PrioritySorterConfiguration() throws ConfiguratorException {
+    void prioritySorterConfiguration(JenkinsRule r) throws ConfiguratorException {
         ConfigurationAsCode.get()
                 .configure(ConfigurationAsCodeTest.class
                         .getResource("ConfigurationAsCodeTest/PrioritySorterConfiguration.yaml")
@@ -39,7 +37,7 @@ public class ConfigurationAsCodeTest {
     }
 
     @Test
-    public void PriorityConfiguration() throws ConfiguratorException {
+    void priorityConfiguration(JenkinsRule r) throws ConfiguratorException {
         ConfigurationAsCode.get()
                 .configure(ConfigurationAsCodeTest.class
                         .getResource("ConfigurationAsCodeTest/PriorityConfiguration.yaml")

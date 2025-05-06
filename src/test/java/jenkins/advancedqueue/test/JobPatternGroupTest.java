@@ -4,21 +4,27 @@ import hudson.model.Cause.UserIdCause;
 import jenkins.advancedqueue.testutil.ExpectedItem;
 import jenkins.advancedqueue.testutil.JobHelper;
 import jenkins.advancedqueue.testutil.TestRunListener;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-public class JobPatternGroupTest {
+@WithJenkins
+class JobPatternGroupTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
+    private JobHelper jobHelper;
 
-    private JobHelper jobHelper = new JobHelper(j);
+    @BeforeEach
+    void beforeEach(JenkinsRule j) throws Exception {
+        this.j = j;
+        jobHelper = new JobHelper(j);
+    }
 
     @Test
     @LocalData
-    public void test_job_pattern_1() throws Exception {
+    void test_job_pattern_1() throws Exception {
         TestRunListener.init(new ExpectedItem("Job 0", 3));
         jobHelper.scheduleProjects(new UserIdCause()).go();
         j.waitUntilNoActivity();
@@ -27,7 +33,7 @@ public class JobPatternGroupTest {
 
     @Test
     @LocalData
-    public void test_job_pattern_2() throws Exception {
+    void test_job_pattern_2() throws Exception {
         TestRunListener.init(new ExpectedItem("Job 0", 3), new ExpectedItem("Job 1", 9));
         jobHelper.scheduleProjects(new UserIdCause(), new UserIdCause()).go();
         j.waitUntilNoActivity();
@@ -36,7 +42,7 @@ public class JobPatternGroupTest {
 
     @Test
     @LocalData
-    public void test_job_pattern_3() throws Exception {
+    void test_job_pattern_3() throws Exception {
         TestRunListener.init(
                 new ExpectedItem("Job 0", 3),
                 new ExpectedItem("Job 3", 3),

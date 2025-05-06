@@ -1,30 +1,30 @@
 package jenkins.advancedqueue.sorter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import jenkins.advancedqueue.PrioritySorterJobColumn;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class PrioritySorterJobColumnTest {
+@WithJenkins
+class PrioritySorterJobColumnTest {
 
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    private static JenkinsRule j;
 
     private static FreeStyleProject project;
     private static ItemInfo itemInfo;
     private static PrioritySorterJobColumn column;
 
-    @BeforeClass
-    public static void setUp() throws IOException {
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) throws Exception {
+        j = rule;
         project = j.createFreeStyleProject("test-job");
         Queue.WaitingItem waitingItem = new Queue.WaitingItem(Calendar.getInstance(), project, new ArrayList<>());
         itemInfo = new ItemInfo(waitingItem);
@@ -32,28 +32,28 @@ public class PrioritySorterJobColumnTest {
     }
 
     @Test
-    public void getPriorityReturnsPendingWhenItemInfoIsNull() throws Exception {
+    void getPriorityReturnsPendingWhenItemInfoIsNull() throws Exception {
         assertEquals("Pending", column.getPriority(project));
     }
 
     @Test
-    public void getPriorityReturnsCorrectPriority() throws Exception {
+    void getPriorityReturnsCorrectPriority() throws Exception {
         QueueItemCache.get().addItem(itemInfo);
         assertEquals("0", column.getPriority(project));
     }
 
     @Test
-    public void getPriorityReturnsPendingForNonExistentJob() throws Exception {
+    void getPriorityReturnsPendingForNonExistentJob() throws Exception {
         assertEquals("Pending", column.getPriority(project));
     }
 
     @Test
-    public void descriptorImplDisplayNameIsCorrect() {
+    void descriptorImplDisplayNameIsCorrect() {
         assertEquals("Priority Value", column.getDescriptor().getDisplayName());
     }
 
     @Test
-    public void descriptorImplShownByDefaultIsFalse() {
+    void descriptorImplShownByDefaultIsFalse() {
         PrioritySorterJobColumn.DescriptorImpl descriptor =
                 (PrioritySorterJobColumn.DescriptorImpl) column.getDescriptor();
         assertFalse(descriptor.shownByDefault());
