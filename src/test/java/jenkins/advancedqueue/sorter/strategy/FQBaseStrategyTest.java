@@ -73,12 +73,10 @@ class FQBaseStrategyTest {
         // Set a weight less than initialMaxWeight
         strategy.onStartedItem(leftItem, initialMaxWeight - 0.5F);
         // maxStartedWeight should remain unchanged
-
         // Set a weight greater than initialMaxWeight
         float newWeight = initialMaxWeight + 1.0F;
         strategy.onStartedItem(leftItem, newWeight);
         // maxStartedWeight should now be newWeight
-
         // Verify by getting a minimum weight for a new priority
         // This should return at least the new maxStartedWeight
         float minWeight = strategy.getMinimumWeightToAssign(999);

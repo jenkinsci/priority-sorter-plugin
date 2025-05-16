@@ -40,7 +40,6 @@ class WFQStrategyTest {
 
     @Test
     void testStepSize() {
-        // The step size should be priority * MIN_STEP_SIZE
         assertEquals(1 * FQBaseStrategy.MIN_STEP_SIZE, new WFQStrategy().getStepSize(1), 0F);
         assertEquals(2 * FQBaseStrategy.MIN_STEP_SIZE, new WFQStrategy().getStepSize(2), 0F);
         assertEquals(3 * FQBaseStrategy.MIN_STEP_SIZE, new WFQStrategy().getStepSize(3), 0F);
@@ -65,8 +64,7 @@ class WFQStrategyTest {
         when(callback.getPriority()).thenReturn(priority);
         when(callback.setWeightSelection(expectedWeight)).thenReturn(callback);
 
-        // Add to prio2weight map to ensure getMinimumWeightToAssign returns the
-        // expected value
+        // Add to prio2weight map to ensure getMinimumWeightToAssign returns the expected value
         FQBaseStrategy.prio2weight.put(priority, startWeight);
 
         SorterStrategyCallback result = strategy.onNewItem(item, callback);

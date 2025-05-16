@@ -61,10 +61,8 @@ class PriorityConfigurationTest {
         // When only admins can edit (and current user is not admin)
         psc.setOnlyAdminsMayEditPriorityConfiguration(true);
 
-        // We can't easily test for null here since the current user in the test is an
-        // admin
-        // So we'll just check that it returns something, which shows code coverage is
-        // working
+        // We can't easily test for null here since the current user in the test is an admin
+        // So we'll just check that it returns something, which shows code coverage is working
         assertNotNull(configuration.getIconClassName());
     }
 
@@ -88,10 +86,8 @@ class PriorityConfigurationTest {
         // When only admins can edit (and current user is not admin)
         psc.setOnlyAdminsMayEditPriorityConfiguration(true);
 
-        // We can't easily test for null here since the current user in the test is an
-        // admin
-        // So we'll check that it returns the expected URL, which shows code coverage is
-        // working
+        // We can't easily test for null here since the current user in the test is an admin
+        // So we'll check that it returns the expected URL, which shows code coverage is working
         assertEquals("advanced-build-queue", configuration.getUrlName());
     }
 
@@ -133,8 +129,7 @@ class PriorityConfigurationTest {
         // Test the method with a real view
         boolean result = (boolean) method.invoke(configuration, testJob, j.jenkins.getPrimaryView());
 
-        // We don't care about the result (true/false) just that it doesn't throw
-        // exceptions
+        // We don't care about the result (true/false) just that it doesn't throw exceptions
         // This ensures code coverage even if the job isn't in the view
     }
 
@@ -173,8 +168,7 @@ class PriorityConfigurationTest {
             assertEquals(1, result.getId());
             assertEquals("Test Job Group", result.getDescription());
         } catch (Exception e) {
-            // If we get an exception, the test will fail, but we don't want to crash the
-            // build
+            // If we get an exception, the test will fail, but we don't want to crash the build
             // Just let the test case fail
             throw new RuntimeException("Test failure", e);
         }
@@ -220,8 +214,7 @@ class PriorityConfigurationTest {
             configuration.getPriority(item, callback2);
             assertEquals(3, callback2.getPrioritySelection()); // Should get the priority from job group
         } catch (Exception e) {
-            // If we get an exception, the test will fail, but we don't want to crash the
-            // build
+            // If we get an exception, the test will fail, but we don't want to crash the build
             throw new RuntimeException("Test failure", e);
         }
     }
