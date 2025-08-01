@@ -37,6 +37,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 
@@ -55,18 +56,14 @@ public class AdvancedQueueSorter extends QueueSorter {
         List<BuildableItem> items = Queue.getInstance().getBuildableItems();
         // Sort the queue in the order the items entered the queue
         // so that onNewItem() happens in the correct order below
-        Collections.sort(items, new Comparator<BuildableItem>() {
-            public int compare(BuildableItem o1, BuildableItem o2) {
-                return (int) (o1.getInQueueSince() - o2.getInQueueSince());
-            }
-        });
+        Collections.sort(items, Comparator.comparingLong(BuildableItem::getInQueueSince));
         AdvancedQueueSorter advancedQueueSorter = AdvancedQueueSorter.get();
         for (BuildableItem item : items) {
             advancedQueueSorter.onNewItem(item);
             // Listener called before we get here so make sure we mark buildable
             QueueItemCache.get().getItem(item.getId()).setBuildable();
         }
-        LOGGER.info("Initialized the QueueSorter with " + items.size() + " Buildable Items");
+        LOGGER.log(Level.INFO, "Initialized the QueueSorter with {0} Buildable Items", items.size());
     }
 
     public void sortNotWaitingItems(List<? extends Queue.NotWaitingItem> items) {
@@ -80,7 +77,7 @@ public class AdvancedQueueSorter extends QueueSorter {
             return item1.compareTo(item2);
         });
         //
-        if (items.size() > 0 && LOGGER.isLoggable(Level.FINE)) {
+        if (!items.isEmpty() && LOGGER.isLoggable(Level.FINE)) {
             float minWeight = QueueItemCache.get().getItem(items.get(0).getId()).getWeight();
             float maxWeight = QueueItemCache.get()
                     .getItem(items.get(items.size() - 1).getId())
@@ -90,26 +87,8 @@ public class AdvancedQueueSorter extends QueueSorter {
             });
         }
         //
-        if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
-            StringBuilder queueStr = new StringBuilder(items.get(0).getClass().getName());
-            queueStr.append(
-                    """
-                     Queue:
-                    +----------------------------------------------------------------------+
-                    |   Item Id  |        Job Name       | Priority |        Weight        |
-                    +----------------------------------------------------------------------+
-                    """);
-            for (Queue.NotWaitingItem item : items) {
-                ItemInfo itemInfo = QueueItemCache.get().getItem(item.getId());
-                String jobName = itemInfo.getJobName();
-                if (jobName.length() > 21) {
-                    jobName = jobName.substring(0, 9) + "..." + jobName.substring(jobName.length() - 9);
-                }
-                queueStr.append("| %10d | %20s | %8d | %20.5f |%n"
-                        .formatted(item.getId(), jobName, itemInfo.getPriority(), itemInfo.getWeight()));
-            }
-            queueStr.append("+----------------------------------------------------------------------+");
-            LOGGER.log(Level.FINER, queueStr.toString());
+        if (!items.isEmpty() && LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.log(Level.FINER, buildQueueTable(items));
         }
     }
 
@@ -159,5 +138,45 @@ public class AdvancedQueueSorter extends QueueSorter {
 
     public static AdvancedQueueSorter get() {
         return QueueSorter.all().get(AdvancedQueueSorter.class);
+    }
+
+    /**
+     * Builds a formatted table showing queue details for logging.
+     * Uses lazy evaluation - only called when FINER logging is enabled.
+     */
+    private String buildQueueTable(List<? extends Queue.NotWaitingItem> items) {
+        var header =
+                """
+            %s Queue:
+            +----------------------------------------------------------------------+
+            |   Item Id  |        Job Name       | Priority |        Weight        |
+            +----------------------------------------------------------------------+
+            """
+                        .formatted(items.get(0).getClass().getName());
+
+        var tableRows = items.stream().map(this::formatQueueItem).collect(Collectors.joining());
+
+        return header + tableRows + "+----------------------------------------------------------------------+";
+    }
+
+    /**
+     * Formats a single queue item for the table display.
+     * Truncates long job names to fit the table format.
+     */
+    private String formatQueueItem(Queue.NotWaitingItem item) {
+        ItemInfo itemInfo = QueueItemCache.get().getItem(item.getId());
+        String jobName = truncateJobName(itemInfo.getJobName());
+        return "| %10d | %20s | %8d | %20.5f |%n"
+                .formatted(item.getId(), jobName, itemInfo.getPriority(), itemInfo.getWeight());
+    }
+
+    /**
+     * Truncates job names that are too long for the table format.
+     * Shows first 9 and last 9 characters with "..." in between.
+     */
+    private String truncateJobName(String jobName) {
+        return jobName.length() > 21
+                ? "%s...%s".formatted(jobName.substring(0, 9), jobName.substring(jobName.length() - 9))
+                : jobName;
     }
 }
