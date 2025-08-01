@@ -145,18 +145,14 @@ public class AdvancedQueueSorter extends QueueSorter {
      * Uses lazy evaluation - only called when FINER logging is enabled.
      */
     private String buildQueueTable(List<? extends Queue.NotWaitingItem> items) {
-        var header =
-                """
-            %s Queue:
-            +----------------------------------------------------------------------+
-            |   Item Id  |        Job Name       | Priority |        Weight        |
-            +----------------------------------------------------------------------+
-            """
-                        .formatted(items.get(0).getClass().getName());
+        var header = "%s Queue:%n+----------------------------------------------------------------------+%n"
+                + "|   Item Id  |        Job Name       | Priority |        Weight        |%n"
+                + "+----------------------------------------------------------------------+%n";
 
+        var formattedHeader = header.formatted(items.get(0).getClass().getName());
         var tableRows = items.stream().map(this::formatQueueItem).collect(Collectors.joining());
 
-        return header + tableRows + "+----------------------------------------------------------------------+";
+        return formattedHeader + tableRows + "+----------------------------------------------------------------------+";
     }
 
     /**
