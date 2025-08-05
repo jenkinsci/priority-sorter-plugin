@@ -25,10 +25,10 @@ package jenkins.advancedqueue.sorter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
@@ -40,29 +40,35 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import jenkins.advancedqueue.priority.strategy.JobPropertyStrategy;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Tests for ItemInfo string formatting optimizations.
  * Focuses on decision log formatting and toString optimizations.
  */
-public class ItemInfoTest {
+@WithJenkins
+class ItemInfoTest {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
+    private static JenkinsRule jenkins;
+
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) {
+        jenkins = rule;
+    }
 
     @Test
     public void testDecisionLogFormatting() throws Exception {
         // Create test item
-        FreeStyleProject project = jenkins.createFreeStyleProject("test-job");
+        FreeStyleProject project = jenkins.createFreeStyleProject("test-job-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
         // Test empty decision log
         String emptyLog = itemInfo.getDescisionLog();
-        assertEquals("Empty decision log should return empty string", "", emptyLog);
+        assertEquals("", emptyLog, "Empty decision log should return empty string");
 
         // Add various decision log entries with different indentations
         itemInfo.addDecisionLog(0, "Evaluating JobGroup [1] ...");
@@ -77,18 +83,18 @@ public class ItemInfoTest {
         assertThat("Decision log should end with newline", decisionLog, endsWith("\n"));
 
         String[] lines = decisionLog.split("\n");
-        assertEquals("Should have 4 log entries", 4, lines.length);
+        assertEquals(4, lines.length, "Should have 4 log entries");
 
         // Verify indentation formatting
-        assertTrue("First entry should have minimal indentation", lines[0].startsWith("  Evaluating JobGroup"));
-        assertTrue("Second entry should have more indentation", lines[1].startsWith("    Strategy is applicable"));
-        assertTrue("Third entry should have most indentation", lines[2].startsWith("      Priority found"));
-        assertTrue("Fourth entry should return to minimal indentation", lines[3].startsWith("  Final decision made"));
+        assertTrue(lines[0].startsWith("  Evaluating JobGroup"), "First entry should have minimal indentation");
+        assertTrue(lines[1].startsWith("    Strategy is applicable"), "Second entry should have more indentation");
+        assertTrue(lines[2].startsWith("      Priority found"), "Third entry should have most indentation");
+        assertTrue(lines[3].startsWith("  Final decision made"), "Fourth entry should return to minimal indentation");
     }
 
     @Test
     public void testDecisionLogIndentationLevels() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("indent-test");
+        FreeStyleProject project = jenkins.createFreeStyleProject("indent-test-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -100,19 +106,19 @@ public class ItemInfoTest {
         String decisionLog = itemInfo.getDescisionLog();
         String[] lines = decisionLog.split("\n");
 
-        assertEquals("Should have 6 log entries", 6, lines.length);
+        assertEquals(6, lines.length, "Should have 6 log entries");
 
         // Verify each indentation level
         for (int i = 0; i < lines.length; i++) {
             int expectedSpaces = (i + 1) * 2; // (indent + 1) * 2
             String expectedPrefix = " ".repeat(expectedSpaces) + "Message at indent " + i;
-            assertEquals("Indentation should be correct for level " + i, expectedPrefix, lines[i]);
+            assertEquals(expectedPrefix, lines[i], "Indentation should be correct for level " + i);
         }
     }
 
     @Test
     public void testFormatLogEntryMethod() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("format-test");
+        FreeStyleProject project = jenkins.createFreeStyleProject("format-test-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -122,27 +128,27 @@ public class ItemInfoTest {
 
         // Test various combinations
         String result0 = (String) formatMethod.invoke(itemInfo, 0, "Test message");
-        assertEquals("Indent 0 should produce 2 spaces", "  Test message", result0);
+        assertEquals("  Test message", result0, "Indent 0 should produce 2 spaces");
 
         String result1 = (String) formatMethod.invoke(itemInfo, 1, "Test message");
-        assertEquals("Indent 1 should produce 4 spaces", "    Test message", result1);
+        assertEquals("    Test message", result1, "Indent 1 should produce 4 spaces");
 
         String result3 = (String) formatMethod.invoke(itemInfo, 3, "Test message");
-        assertEquals("Indent 3 should produce 8 spaces", "        Test message", result3);
+        assertEquals("        Test message", result3, "Indent 3 should produce 8 spaces");
 
         // Test with empty message
         String resultEmpty = (String) formatMethod.invoke(itemInfo, 1, "");
-        assertEquals("Empty message should still get proper indentation", "    ", resultEmpty);
+        assertEquals("    ", resultEmpty, "Empty message should still get proper indentation");
 
         // Test with special characters
         String resultSpecial = (String) formatMethod.invoke(itemInfo, 0, "Message with \t tabs and \n newlines");
         assertTrue(
-                "Special characters should be preserved", resultSpecial.contains("\t") && resultSpecial.contains("\n"));
+                resultSpecial.contains("\t") && resultSpecial.contains("\n"), "Special characters should be preserved");
     }
 
     @Test
     public void testToStringFormatting() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("toString-test");
+        FreeStyleProject project = jenkins.createFreeStyleProject("toString-test-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -173,7 +179,7 @@ public class ItemInfoTest {
 
     @Test
     public void testDecisionLogWithLargeContent() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("large-content-test");
+        FreeStyleProject project = jenkins.createFreeStyleProject("large-content-test-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -189,13 +195,13 @@ public class ItemInfoTest {
         assertThat("Large decision log should not be empty", decisionLog, not(emptyString()));
 
         String[] lines = decisionLog.split("\n");
-        assertEquals("Should have correct number of lines", entryCount, lines.length);
+        assertEquals(entryCount, lines.length, "Should have correct number of lines");
 
         // Verify first and last entries
-        assertTrue("First entry should be correctly formatted", lines[0].contains("Log entry number 0"));
+        assertTrue(lines[0].contains("Log entry number 0"), "First entry should be correctly formatted");
         assertTrue(
-                "Last entry should be correctly formatted",
-                lines[entryCount - 1].contains("Log entry number " + (entryCount - 1)));
+                lines[entryCount - 1].contains("Log entry number " + (entryCount - 1)),
+                "Last entry should be correctly formatted");
 
         // Test that String.join is more efficient than StringBuilder for large logs
         long startTime = System.nanoTime();
@@ -204,12 +210,12 @@ public class ItemInfoTest {
 
         // Just verify it completes in reasonable time (< 10ms for 1000 entries)
         long durationMs = (endTime - startTime) / 1_000_000;
-        assertTrue("Large decision log should format quickly", durationMs < 10);
+        assertTrue(durationMs < 10, "Large decision log should format quickly");
     }
 
     @Test
     public void testConcurrentDecisionLogAccess() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("concurrent-test");
+        FreeStyleProject project = jenkins.createFreeStyleProject("concurrent-test-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -240,10 +246,10 @@ public class ItemInfoTest {
         }
 
         // Wait for completion
-        assertTrue("All threads should complete within timeout", latch.await(30, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS), "All threads should complete within timeout");
 
         executor.shutdown();
-        assertTrue("Executor should terminate", executor.awaitTermination(10, TimeUnit.SECONDS));
+        assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS), "Executor should terminate");
 
         // Verify final state
         String finalLog = itemInfo.getDescisionLog();
@@ -253,13 +259,13 @@ public class ItemInfoTest {
         // This is expected behavior and demonstrates the need for proper synchronization in production code
         int totalEntries = finalLog.split("\n").length;
         assertTrue(
-                "Should have substantial number of entries from concurrent access",
-                totalEntries > threadCount * operationsPerThread / 10); // At least 10% of expected entries
+                totalEntries > threadCount * operationsPerThread / 10, // At least 10% of expected entries
+                "Should have substantial number of entries from concurrent access");
     }
 
     @Test
     public void testDecisionLogEdgeCases() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("edge-cases");
+        FreeStyleProject project = jenkins.createFreeStyleProject("edge-cases-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -267,7 +273,7 @@ public class ItemInfoTest {
         try {
             itemInfo.addDecisionLog(0, null);
             String log = itemInfo.getDescisionLog();
-            assertTrue("Should handle null message gracefully", log.contains("null"));
+            assertTrue(log.contains("null"), "Should handle null message gracefully");
         } catch (Exception e) {
             fail("Should not throw exception for null message");
         }
@@ -276,25 +282,25 @@ public class ItemInfoTest {
         itemInfo.addDecisionLog(1, "");
         String log = itemInfo.getDescisionLog();
         String[] lines = log.split("\n");
-        assertTrue("Should handle empty message", lines[lines.length - 1].trim().isEmpty());
+        assertTrue(lines[lines.length - 1].trim().isEmpty(), "Should handle empty message");
 
         // Test with very long message
         String longMessage = "x".repeat(10000);
         itemInfo.addDecisionLog(0, longMessage);
         log = itemInfo.getDescisionLog();
-        assertTrue("Should handle very long messages", log.contains(longMessage));
+        assertTrue(log.contains(longMessage), "Should handle very long messages");
 
         // Test with negative indent (edge case)
         itemInfo.addDecisionLog(-1, "Negative indent test");
         log = itemInfo.getDescisionLog();
         // Should still work (indent + 1 = 0, so no spaces)
-        assertTrue("Should handle negative indent", log.contains("Negative indent test"));
+        assertTrue(log.contains("Negative indent test"), "Should handle negative indent");
     }
 
     @Test
     public void testMemoryEfficiencyOfStringJoin() throws Exception {
         // Compare memory usage of String.join vs StringBuilder approach
-        FreeStyleProject project = jenkins.createFreeStyleProject("memory-test");
+        FreeStyleProject project = jenkins.createFreeStyleProject("memory-test-" + System.nanoTime());
         Queue.Item queueItem = new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList());
         ItemInfo itemInfo = new ItemInfo(queueItem);
 
@@ -314,6 +320,6 @@ public class ItemInfoTest {
         long durationMs = (endTime - startTime) / 1_000_000;
 
         // Should complete 1000 operations in reasonable time
-        assertTrue("String.join approach should be efficient", durationMs < 100);
+        assertTrue(durationMs < 100, "String.join approach should be efficient");
     }
 }

@@ -28,8 +28,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
@@ -48,41 +48,57 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.LoggerRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Tests for AdvancedQueueSorter string formatting optimizations.
  * Focuses on testing the lazy evaluation and text block improvements.
  */
-public class AdvancedQueueSorterTest {
+@WithJenkins
+class AdvancedQueueSorterTest {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
+    private static JenkinsRule jenkins;
 
-    @Rule
-    public LoggerRule loggerRule = new LoggerRule();
+    private Logger logger;
+    private TestLogHandler handler;
+
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) {
+        jenkins = rule;
+    }
+
+    @BeforeEach
+    void setUp() {
+        logger = Logger.getLogger("PrioritySorter.Queue.Sorter");
+        handler = new TestLogHandler();
+        logger.addHandler(handler);
+        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (handler != null && logger != null) {
+            logger.removeHandler(handler);
+        }
+    }
 
     @Test
     public void testLazyLoggingEvaluationForFineLevel() throws Exception {
-        // Setup
-        Logger logger = Logger.getLogger("PrioritySorter.Queue.Sorter");
         logger.setLevel(Level.WARNING); // Disable FINE logging
 
-        TestLogHandler handler = new TestLogHandler();
-        logger.addHandler(handler);
-
         // Create test items
-        FreeStyleProject project = jenkins.createFreeStyleProject("test-job");
+        FreeStyleProject project = jenkins.createFreeStyleProject("test-job-" + System.nanoTime());
         Queue.BuildableItem item = new Queue.BuildableItem(
                 new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList()));
 
         List<Queue.BuildableItem> items = new ArrayList<>(List.of(item));
 
         // Configure sorter
-        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
         AdvancedQueueSorter sorter = AdvancedQueueSorter.get();
 
         // Add item to cache for sorting
@@ -107,23 +123,17 @@ public class AdvancedQueueSorterTest {
         boolean foundExpectedLog = handler.getRecords().stream()
                 .anyMatch(record -> record.getMessage().contains("Sorted")
                         && record.getMessage().contains("with Min Weight"));
-        assertTrue("Should find expected log message format", foundExpectedLog);
-
-        logger.removeHandler(handler);
+        assertTrue(foundExpectedLog, "Should find expected log message format");
     }
 
     @Test
     public void testLazyLoggingEvaluationForFinerLevel() throws Exception {
-        // Setup
-        Logger logger = Logger.getLogger("PrioritySorter.Queue.Sorter");
         logger.setLevel(Level.INFO); // Disable FINER logging
 
-        TestLogHandler handler = new TestLogHandler();
-        logger.addHandler(handler);
-
         // Create test items with different job names to test table formatting
-        FreeStyleProject shortJob = jenkins.createFreeStyleProject("short");
-        FreeStyleProject longJob = jenkins.createFreeStyleProject("very-long-job-name-that-exceeds-limit");
+        String uniqueId = String.valueOf(System.nanoTime());
+        FreeStyleProject shortJob = jenkins.createFreeStyleProject("short-" + uniqueId);
+        FreeStyleProject longJob = jenkins.createFreeStyleProject("very-long-job-name-that-exceeds-limit-" + uniqueId);
 
         Queue.BuildableItem shortItem = new Queue.BuildableItem(
                 new Queue.WaitingItem(Calendar.getInstance(), shortJob, Collections.emptyList()));
@@ -133,7 +143,6 @@ public class AdvancedQueueSorterTest {
         List<Queue.BuildableItem> items = new ArrayList<>(List.of(shortItem, longItem));
 
         // Configure sorter
-        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
         AdvancedQueueSorter sorter = AdvancedQueueSorter.get();
 
         // Add items to cache
@@ -164,9 +173,7 @@ public class AdvancedQueueSorterTest {
                 .anyMatch(record -> record.getMessage().contains("Queue:")
                         && record.getMessage()
                                 .contains("+----------------------------------------------------------------------+"));
-        assertTrue("Should find table header in logs", foundTableHeader);
-
-        logger.removeHandler(handler);
+        assertTrue(foundTableHeader, "Should find table header in logs");
     }
 
     @Test
@@ -179,40 +186,40 @@ public class AdvancedQueueSorterTest {
         // Test short name (no truncation)
         String shortName = "short-job";
         String result = (String) truncateMethod.invoke(sorter, shortName);
-        assertEquals("Short names should not be truncated", shortName, result);
+        assertEquals(shortName, result, "Short names should not be truncated");
 
         // Test exact limit (21 characters - no truncation)
         String exactLimit = "a".repeat(21);
         result = (String) truncateMethod.invoke(sorter, exactLimit);
-        assertEquals("Names at exact limit should not be truncated", exactLimit, result);
+        assertEquals(exactLimit, result, "Names at exact limit should not be truncated");
 
         // Test long name (should be truncated)
         String longName = "very-long-job-name-that-definitely-exceeds-the-twenty-one-character-limit";
         result = (String) truncateMethod.invoke(sorter, longName);
 
         // Should be: "very-long..." + "...it"
-        assertTrue("Long names should be truncated", result.length() < longName.length());
-        assertTrue("Truncated name should contain ellipsis", result.contains("..."));
-        assertTrue("Truncated name should start with first 9 chars", result.startsWith("very-long"));
-        assertTrue("Truncated name should end with last 9 chars", result.endsWith("r-limit"));
+        assertTrue(result.length() < longName.length(), "Long names should be truncated");
+        assertTrue(result.contains("..."), "Truncated name should contain ellipsis");
+        assertTrue(result.startsWith("very-long"), "Truncated name should start with first 9 chars");
+        assertTrue(result.endsWith("r-limit"), "Truncated name should end with last 9 chars");
 
         // Test null and empty edge cases
         result = (String) truncateMethod.invoke(sorter, "");
-        assertEquals("Empty string should remain empty", "", result);
+        assertEquals("", result, "Empty string should remain empty");
     }
 
     @Test
     public void testQueueTableFormatting() throws Exception {
         // Create jobs with various name lengths
+        String uniqueId = String.valueOf(System.nanoTime());
         FreeStyleProject[] projects = {
-            jenkins.createFreeStyleProject("job1"),
-            jenkins.createFreeStyleProject("medium-length-job-name"),
-            jenkins.createFreeStyleProject("extremely-long-job-name-that-will-be-truncated-for-display")
+            jenkins.createFreeStyleProject("job1-" + uniqueId),
+            jenkins.createFreeStyleProject("medium-length-job-name-" + uniqueId),
+            jenkins.createFreeStyleProject("extremely-long-job-name-that-will-be-truncated-for-display-" + uniqueId)
         };
 
         List<Queue.BuildableItem> items = new ArrayList<>();
         AdvancedQueueSorter sorter = AdvancedQueueSorter.get();
-        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
 
         // Create items and add to cache
         for (FreeStyleProject project : projects) {
@@ -245,7 +252,7 @@ public class AdvancedQueueSorterTest {
                 "Medium job name should appear (possibly truncated)",
                 tableOutput,
                 anyOf(containsString("medium-length-job-name"), containsString("medium-le")));
-        assertThat("Long job should be truncated", tableOutput, containsString("extremely...r-display"));
+        assertThat("Long job should be truncated", tableOutput, containsString("extremely..."));
 
         // Verify table formatting consistency
         String[] lines = tableOutput.split("\n");
@@ -253,7 +260,7 @@ public class AdvancedQueueSorterTest {
                 .filter(line ->
                         line.contains("+----------------------------------------------------------------------+"))
                 .count();
-        assertTrue("Should have at least 2 separator lines", separatorLines >= 2);
+        assertTrue(separatorLines >= 2, "Should have at least 2 separator lines");
     }
 
     @Test
@@ -264,19 +271,14 @@ public class AdvancedQueueSorterTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
-        Logger logger = Logger.getLogger("PrioritySorter.Queue.Sorter");
         logger.setLevel(Level.FINER);
 
-        TestLogHandler handler = new TestLogHandler();
-        logger.addHandler(handler);
-
         AdvancedQueueSorter sorter = AdvancedQueueSorter.get();
-        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
 
         // Create test items
         List<Queue.BuildableItem> items = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            FreeStyleProject project = jenkins.createFreeStyleProject("concurrent-job-" + i);
+            FreeStyleProject project = jenkins.createFreeStyleProject("concurrent-job-" + System.nanoTime() + "-" + i);
             Queue.BuildableItem item = new Queue.BuildableItem(
                     new Queue.WaitingItem(Calendar.getInstance(), project, Collections.emptyList()));
             items.add(item);
@@ -297,10 +299,10 @@ public class AdvancedQueueSorterTest {
         }
 
         // Wait for completion
-        assertTrue("All threads should complete within timeout", latch.await(30, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS), "All threads should complete within timeout");
 
         executor.shutdown();
-        assertTrue("Executor should terminate", executor.awaitTermination(10, TimeUnit.SECONDS));
+        assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS), "Executor should terminate");
 
         // Verify no exceptions occurred and logs were generated
         assertThat(
@@ -310,9 +312,7 @@ public class AdvancedQueueSorterTest {
         boolean allValidLogs = handler.getRecords().stream()
                 .allMatch(record ->
                         record.getMessage() != null && !record.getMessage().isEmpty());
-        assertTrue("All log messages should be valid", allValidLogs);
-
-        logger.removeHandler(handler);
+        assertTrue(allValidLogs, "All log messages should be valid");
     }
 
     /**

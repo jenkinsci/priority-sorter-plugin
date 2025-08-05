@@ -23,8 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
@@ -39,27 +39,51 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Performance benchmarks for string formatting optimizations.
  * These tests validate that the optimizations provide the expected performance improvements.
  */
-public class StringFormattingPerformanceTest {
+@WithJenkins
+class StringFormattingPerformanceTest {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
+    private static JenkinsRule jenkins;
+
+    private Logger logger;
+    private NoOpHandler handler;
+
+    @BeforeAll
+    static void beforeAll(JenkinsRule rule) {
+        jenkins = rule;
+    }
+
+    @BeforeEach
+    void setUp() {
+        logger = Logger.getLogger("PrioritySorter.Queue.Sorter");
+        handler = new NoOpHandler();
+        logger.addHandler(handler);
+        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (handler != null && logger != null) {
+            logger.removeHandler(handler);
+        }
+    }
 
     @Test
     public void benchmarkLazyLoggingPerformance() throws Exception {
-        Logger logger = Logger.getLogger("PrioritySorter.Queue.Sorter");
 
         // Create test items
         List<Queue.BuildableItem> items = createTestItems(50);
         AdvancedQueueSorter sorter = AdvancedQueueSorter.get();
-        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
 
         // Add items to cache
         for (Queue.BuildableItem item : items) {
@@ -81,8 +105,6 @@ public class StringFormattingPerformanceTest {
 
         // Benchmark with logging ENABLED (will execute string formatting)
         logger.setLevel(Level.FINER);
-        NoOpHandler handler = new NoOpHandler();
-        logger.addHandler(handler);
 
         startTime = System.nanoTime();
 
@@ -93,21 +115,19 @@ public class StringFormattingPerformanceTest {
         long enabledTime = System.nanoTime() - startTime;
         long enabledTimeMs = enabledTime / 1_000_000;
 
-        logger.removeHandler(handler);
-
         // Performance assertions
-        assertTrue("Disabled logging should complete quickly", disabledTimeMs < 1000); // < 1 second
-        assertTrue("Enabled logging should still be reasonable", enabledTimeMs < 5000); // < 5 seconds
+        assertTrue(disabledTimeMs < 1000, "Disabled logging should complete quickly"); // < 1 second
+        assertTrue(enabledTimeMs < 5000, "Enabled logging should still be reasonable"); // < 5 seconds
 
         // The key benefit: disabled logging should be significantly faster
         // Allowing for some variance in timing
         double ratio = (double) enabledTimeMs / Math.max(disabledTimeMs, 1);
         assertTrue(
+                ratio > 2.0 || disabledTimeMs < 10, // Either 2x faster, or very fast overall
                 String.format(
                         "Lazy evaluation should provide significant performance benefit when logging disabled. "
                                 + "Enabled: %dms, Disabled: %dms, Ratio: %.2f",
-                        enabledTimeMs, disabledTimeMs, ratio),
-                ratio > 2.0 || disabledTimeMs < 10); // Either 2x faster, or very fast overall
+                        enabledTimeMs, disabledTimeMs, ratio));
 
         System.out.println("Lazy Logging Benchmark Results:");
         System.out.printf("  Logging Disabled: %dms (%d operations)%n", disabledTimeMs, iterations);
@@ -157,8 +177,8 @@ public class StringFormattingPerformanceTest {
         long oldTimeMs = oldTime / 1_000_000;
 
         // Performance assertions
-        assertTrue("Optimized approach should complete in reasonable time", optimizedTimeMs < 1000);
-        assertTrue("Both approaches should work", oldTimeMs > 0 && optimizedTimeMs > 0);
+        assertTrue(optimizedTimeMs < 1000, "Optimized approach should complete in reasonable time");
+        assertTrue(oldTimeMs > 0 && optimizedTimeMs > 0, "Both approaches should work");
 
         // The optimized approach should be faster or at least comparable
         double improvement = (double) oldTimeMs / Math.max(optimizedTimeMs, 1);
@@ -173,10 +193,10 @@ public class StringFormattingPerformanceTest {
 
         // Should be at least as fast, ideally faster
         assertTrue(
+                improvement >= 0.8, // Allow for 20% variance in timing
                 String.format(
                         "New approach should be at least as fast as old approach. " + "Old: %dms, New: %dms",
-                        oldTimeMs, optimizedTimeMs),
-                improvement >= 0.8); // Allow for 20% variance in timing
+                        oldTimeMs, optimizedTimeMs));
     }
 
     @Test
@@ -207,7 +227,7 @@ public class StringFormattingPerformanceTest {
         long totalTimeMs = (endTime - startTime) / 1_000_000;
 
         // Should complete many operations quickly
-        assertTrue("Job name truncation should be fast", totalTimeMs < 1000); // < 1 second for 400k operations
+        assertTrue(totalTimeMs < 1000, "Job name truncation should be fast"); // < 1 second for 400k operations
 
         double operationsPerMs = (iterations * jobNames.length) / (double) Math.max(totalTimeMs, 1);
 
@@ -216,7 +236,7 @@ public class StringFormattingPerformanceTest {
         System.out.printf("  Total time: %dms%n", totalTimeMs);
         System.out.printf("  Operations per ms: %.0f%n", operationsPerMs);
 
-        assertTrue("Should handle many truncation operations efficiently", operationsPerMs > 100);
+        assertTrue(operationsPerMs > 100, "Should handle many truncation operations efficiently");
     }
 
     @Test
@@ -224,7 +244,6 @@ public class StringFormattingPerformanceTest {
         // Test performance of the new streaming table formatting approach
         List<Queue.BuildableItem> items = createTestItems(100); // Larger queue for realistic test
         AdvancedQueueSorter sorter = AdvancedQueueSorter.get();
-        PrioritySorterConfiguration.get().setStrategy(new AbsoluteStrategy());
 
         // Add items to cache
         for (Queue.BuildableItem item : items) {
@@ -240,7 +259,7 @@ public class StringFormattingPerformanceTest {
         for (int i = 0; i < iterations; i++) {
             String table = (String) buildTableMethod.invoke(sorter, items);
             assertNotNull(table);
-            assertTrue("Table should contain content", table.length() > 100);
+            assertTrue(table.length() > 100, "Table should contain content");
         }
 
         long endTime = System.nanoTime();
@@ -248,7 +267,7 @@ public class StringFormattingPerformanceTest {
 
         // Should format tables efficiently
         assertTrue(
-                "Queue table formatting should be fast", totalTimeMs < 2000); // < 2 seconds for 100 tables of 100 items
+                totalTimeMs < 2000, "Queue table formatting should be fast"); // < 2 seconds for 100 tables of 100 items
 
         double tablesPerSecond = (iterations * 1000.0) / Math.max(totalTimeMs, 1);
 
@@ -258,7 +277,7 @@ public class StringFormattingPerformanceTest {
         System.out.printf("  Total time: %dms%n", totalTimeMs);
         System.out.printf("  Tables per second: %.1f%n", tablesPerSecond);
 
-        assertTrue("Should format tables at reasonable rate", tablesPerSecond > 10);
+        assertTrue(tablesPerSecond > 10, "Should format tables at reasonable rate");
     }
 
     /**
@@ -266,15 +285,18 @@ public class StringFormattingPerformanceTest {
      */
     private List<Queue.BuildableItem> createTestItems(int count) throws Exception {
         List<Queue.BuildableItem> items = new ArrayList<>();
+        String uniqueId = String.valueOf(System.nanoTime());
 
         for (int i = 0; i < count; i++) {
             // Create job names of varying lengths
             String jobName =
                     switch (i % 4) {
-                        case 0 -> "job-" + i;
-                        case 1 -> "medium-length-job-name-" + i;
-                        case 2 -> "very-long-job-name-that-exceeds-normal-length-" + i;
-                        default -> "extremely-long-job-name-that-definitely-needs-truncation-for-display-purposes-" + i;
+                        case 0 -> "job-" + uniqueId + "-" + i;
+                        case 1 -> "medium-length-job-name-" + uniqueId + "-" + i;
+                        case 2 -> "very-long-job-name-that-exceeds-normal-length-" + uniqueId + "-" + i;
+                        default ->
+                            "extremely-long-job-name-that-definitely-needs-truncation-for-display-purposes-" + uniqueId
+                                    + "-" + i;
                     };
 
             FreeStyleProject project = jenkins.createFreeStyleProject(jobName);
