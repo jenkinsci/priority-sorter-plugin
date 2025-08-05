@@ -236,7 +236,7 @@ class ItemInfoTest {
                         // Read decision log periodically
                         if (op % 10 == 0) {
                             String log = itemInfo.getDescisionLog();
-                            assertNotNull("Decision log should never be null", log);
+                            assertNotNull(log, "Decision log should never be null");
                         }
                     }
                 } finally {
@@ -313,7 +313,7 @@ class ItemInfoTest {
         long startTime = System.nanoTime();
         for (int i = 0; i < 1000; i++) {
             String log = itemInfo.getDescisionLog();
-            assertNotNull("Log should not be null", log);
+            assertNotNull(log, "Log should not be null");
         }
         long endTime = System.nanoTime();
 

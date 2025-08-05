@@ -181,7 +181,7 @@ class StringFormattingPerformanceTest {
         assertTrue(oldTimeMs > 0 && optimizedTimeMs > 0, "Both approaches should work");
 
         // The optimized approach should be faster or at least comparable
-        double improvement = (double) oldTimeMs / Math.max(optimizedTimeMs, 1);
+        double improvement = (double) oldTimeMs / optimizedTimeMs;
 
         System.out.println("Decision Log Formatting Benchmark Results:");
         System.out.printf(
