@@ -32,7 +32,6 @@ import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.Item;
 import hudson.model.Queue.LeftItem;
 import hudson.model.queue.QueueSorter;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,11 +54,7 @@ public class AdvancedQueueSorter extends QueueSorter {
         List<BuildableItem> items = Queue.getInstance().getBuildableItems();
         // Sort the queue in the order the items entered the queue
         // so that onNewItem() happens in the correct order below
-        Collections.sort(items, new Comparator<BuildableItem>() {
-            public int compare(BuildableItem o1, BuildableItem o2) {
-                return (int) (o1.getInQueueSince() - o2.getInQueueSince());
-            }
-        });
+        items.sort(Comparator.comparingLong(BuildableItem::getInQueueSince));
         AdvancedQueueSorter advancedQueueSorter = AdvancedQueueSorter.get();
         for (BuildableItem item : items) {
             advancedQueueSorter.onNewItem(item);
@@ -70,17 +65,9 @@ public class AdvancedQueueSorter extends QueueSorter {
     }
 
     public void sortNotWaitingItems(List<? extends Queue.NotWaitingItem> items) {
-        Collections.sort(items, (Comparator<Queue.NotWaitingItem>) (o1, o2) -> {
-            ItemInfo item1 = QueueItemCache.get().getItem(o1.getId());
-            ItemInfo item2 = QueueItemCache.get().getItem(o2.getId());
-            if (item1 == null || item2 == null) {
-                LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
-                return Long.compare(o1.getInQueueSince(), o2.getInQueueSince());
-            }
-            return item1.compareTo(item2);
-        });
+        items.sort(this::compareNotWaitingItems);
         //
-        if (items.size() > 0 && LOGGER.isLoggable(Level.FINE)) {
+        if (!items.isEmpty() && LOGGER.isLoggable(Level.FINE)) {
             float minWeight = QueueItemCache.get().getItem(items.get(0).getId()).getWeight();
             float maxWeight = QueueItemCache.get()
                     .getItem(items.get(items.size() - 1).getId())
@@ -90,7 +77,7 @@ public class AdvancedQueueSorter extends QueueSorter {
             });
         }
         //
-        if (items.size() > 0 && LOGGER.isLoggable(Level.FINER)) {
+        if (!items.isEmpty() && LOGGER.isLoggable(Level.FINER)) {
             StringBuilder queueStr = new StringBuilder(items.get(0).getClass().getName());
             queueStr.append(
                     """
@@ -111,6 +98,19 @@ public class AdvancedQueueSorter extends QueueSorter {
             queueStr.append("+----------------------------------------------------------------------+");
             LOGGER.log(Level.FINER, queueStr.toString());
         }
+    }
+
+    private int compareNotWaitingItems(Queue.NotWaitingItem o1, Queue.NotWaitingItem o2) {
+        var item1 = QueueItemCache.get().getItem(o1.getId());
+        var item2 = QueueItemCache.get().getItem(o2.getId());
+
+        return switch (item1 == null ? 1 : item2 == null ? 2 : 0) {
+            case 1, 2 -> {
+                LOGGER.warning("Requested to sort unknown items, sorting on queue-time only.");
+                yield Long.compare(o1.getInQueueSince(), o2.getInQueueSince());
+            }
+            default -> item1.compareTo(item2);
+        };
     }
 
     @Override
@@ -150,7 +150,7 @@ public class AdvancedQueueSorter extends QueueSorter {
             prioritySorterStrategy.onCanceledItem(li);
             logCanceledItem(itemInfo);
         } else {
-            Float weight = itemInfo.getWeight();
+            float weight = itemInfo.getWeight();
             StartedJobItemCache.get().addItem(itemInfo, li.outcome.getPrimaryWorkUnit());
             prioritySorterStrategy.onStartedItem(li, weight);
             logStartedItem(itemInfo);
