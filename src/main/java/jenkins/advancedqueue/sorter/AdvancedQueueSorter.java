@@ -55,7 +55,7 @@ public class AdvancedQueueSorter extends QueueSorter {
         List<BuildableItem> items = Queue.getInstance().getBuildableItems();
         // Sort the queue in the order the items entered the queue
         // so that onNewItem() happens in the correct order below
-        Collections.sort(items, Comparator.comparingLong(BuildableItem::getInQueueSince));
+        items.sort(Comparator.comparingLong(BuildableItem::getInQueueSince));
         AdvancedQueueSorter advancedQueueSorter = AdvancedQueueSorter.get();
         for (BuildableItem item : items) {
             advancedQueueSorter.onNewItem(item);
