@@ -129,10 +129,11 @@ class StringFormattingPerformanceTest {
                                 + "Enabled: %dms, Disabled: %dms, Ratio: %.2f",
                         enabledTimeMs, disabledTimeMs, ratio));
 
-        System.out.println("Lazy Logging Benchmark Results:");
-        System.out.printf("  Logging Disabled: %dms (%d operations)%n", disabledTimeMs, iterations);
-        System.out.printf("  Logging Enabled:  %dms (%d operations)%n", enabledTimeMs, iterations);
-        System.out.printf("  Performance Ratio: %.2fx%n", ratio);
+        // Uncomment these lines when benchmarking
+        // System.out.println("Lazy Logging Benchmark Results:");
+        // System.out.printf("  Logging Disabled: %dms (%d operations)%n", disabledTimeMs, iterations);
+        // System.out.printf("  Logging Enabled:  %dms (%d operations)%n", enabledTimeMs, iterations);
+        // System.out.printf("  Performance Ratio: %.2fx%n", ratio);
     }
 
     @Test
@@ -183,13 +184,14 @@ class StringFormattingPerformanceTest {
         // The optimized approach should be faster or at least comparable
         double improvement = (double) oldTimeMs / optimizedTimeMs;
 
-        System.out.println("Decision Log Formatting Benchmark Results:");
-        System.out.printf(
-                "  Old StringBuilder: %dms (%d operations, %d entries each)%n", oldTimeMs, iterations, entryCount);
-        System.out.printf(
-                "  New String.join:   %dms (%d operations, %d entries each)%n",
-                optimizedTimeMs, iterations, entryCount);
-        System.out.printf("  Performance Improvement: %.2fx%n", improvement);
+        // Uncomment these lines when benchmarking
+        // System.out.println("Decision Log Formatting Benchmark Results:");
+        // System.out.printf(
+        //         "  Old StringBuilder: %dms (%d operations, %d entries each)%n", oldTimeMs, iterations, entryCount);
+        // System.out.printf(
+        //         "  New String.join:   %dms (%d operations, %d entries each)%n",
+        //         optimizedTimeMs, iterations, entryCount);
+        // System.out.printf("  Performance Improvement: %.2fx%n", improvement);
 
         // Should be at least as fast, ideally faster
         assertTrue(
@@ -231,10 +233,11 @@ class StringFormattingPerformanceTest {
 
         double operationsPerMs = (iterations * jobNames.length) / (double) Math.max(totalTimeMs, 1);
 
-        System.out.println("Job Name Truncation Benchmark Results:");
-        System.out.printf("  Total operations: %d%n", (iterations * jobNames.length));
-        System.out.printf("  Total time: %dms%n", totalTimeMs);
-        System.out.printf("  Operations per ms: %.0f%n", operationsPerMs);
+        // Uncomment these lines when benchmarking
+        // System.out.println("Job Name Truncation Benchmark Results:");
+        // System.out.printf("  Total operations: %d%n", (iterations * jobNames.length));
+        // System.out.printf("  Total time: %dms%n", totalTimeMs);
+        // System.out.printf("  Operations per ms: %.0f%n", operationsPerMs);
 
         assertTrue(operationsPerMs > 100, "Should handle many truncation operations efficiently");
     }
@@ -271,11 +274,12 @@ class StringFormattingPerformanceTest {
 
         double tablesPerSecond = (iterations * 1000.0) / Math.max(totalTimeMs, 1);
 
-        System.out.println("Queue Table Formatting Benchmark Results:");
-        System.out.printf("  Items per table: %d%n", items.size());
-        System.out.printf("  Tables formatted: %d%n", iterations);
-        System.out.printf("  Total time: %dms%n", totalTimeMs);
-        System.out.printf("  Tables per second: %.1f%n", tablesPerSecond);
+        // Uncomment these lines when benchmarking
+        // System.out.println("Queue Table Formatting Benchmark Results:");
+        // System.out.printf("  Items per table: %d%n", items.size());
+        // System.out.printf("  Tables formatted: %d%n", iterations);
+        // System.out.printf("  Total time: %dms%n", totalTimeMs);
+        // System.out.printf("  Tables per second: %.1f%n", tablesPerSecond);
 
         assertTrue(tablesPerSecond > 10, "Should format tables at reasonable rate");
     }
