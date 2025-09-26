@@ -66,7 +66,7 @@ public class JobInclusionJobProperty extends JobProperty<Job<?, ?>> {
 
         @Override
         public String getDisplayName() {
-            return "XXX";
+            return "Priority Sorter Job Group";
         }
 
         public ListBoxModel getJobGroups() {
