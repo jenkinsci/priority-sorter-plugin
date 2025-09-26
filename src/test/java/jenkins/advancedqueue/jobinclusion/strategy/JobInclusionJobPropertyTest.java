@@ -112,7 +112,7 @@ class JobInclusionJobPropertyTest {
 
     @Test
     void getDisplayNameTest() {
-        assertEquals("XXX", descriptor.getDisplayName());
+        assertEquals("Priority Sorter Job Group", descriptor.getDisplayName());
     }
 
     @Test
