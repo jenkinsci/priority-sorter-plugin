@@ -1,0 +1,70 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<jenkins.advancedqueue.PriorityConfiguration>
+  <jobGroups class="linked-list">
+    <jenkins.advancedqueue.JobGroup>
+      <id>0</id>
+      <priority>1</priority>
+      <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+        <name>P1</name>
+      </jobGroupStrategy>
+      <description>Priority 1</description>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>false</useJobFilter>
+      <jobPattern>.*</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies/>
+    </jenkins.advancedqueue.JobGroup>
+    <jenkins.advancedqueue.JobGroup>
+      <id>1</id>
+      <priority>2</priority>
+      <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+        <name>P2</name>
+      </jobGroupStrategy>
+      <description>Priority 2</description>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>false</useJobFilter>
+      <jobPattern>.*</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies/>
+    </jenkins.advancedqueue.JobGroup>
+    <jenkins.advancedqueue.JobGroup>
+      <id>2</id>
+      <priority>3</priority>
+      <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+        <name>P3</name>
+      </jobGroupStrategy>
+      <description>Priority 3</description>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>false</useJobFilter>
+      <jobPattern>.*</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies/>
+    </jenkins.advancedqueue.JobGroup>
+    <jenkins.advancedqueue.JobGroup>
+      <id>3</id>
+      <priority>4</priority>
+      <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+        <name>P4</name>
+      </jobGroupStrategy>
+      <description>Priority 4</description>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>false</useJobFilter>
+      <jobPattern>.*</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies/>
+    </jenkins.advancedqueue.JobGroup>
+    <jenkins.advancedqueue.JobGroup>
+      <id>4</id>
+      <priority>5</priority>
+      <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+        <name>P5</name>
+      </jobGroupStrategy>
+      <description>Priority 5</description>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>false</useJobFilter>
+      <jobPattern>.*</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies/>
+    </jenkins.advancedqueue.JobGroup>
+  </jobGroups>
+</jenkins.advancedqueue.PriorityConfiguration>

@@ -265,6 +265,17 @@ followed by the two low-priority runs, also in the order they were queued.
 
 This is exactly what we wanted!
 
+## Declarative Pipeline support
+
+To configure the Job Group for a declarative pipeline job, follow the below example:
+```
+pipeline {
+    options {
+        jobGroup jobGroupName: 'MyJobGroup', useJobGroup: true
+    }
+}
+```
+
 ## Configuration as Code support
 
 Priority Sorter Plugin has support for use of [Configuration as Code plugin](https://plugins.jenkins.io/configuration-as-code/).

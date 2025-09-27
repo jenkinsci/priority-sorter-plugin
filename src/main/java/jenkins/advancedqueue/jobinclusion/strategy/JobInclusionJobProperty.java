@@ -28,6 +28,7 @@ import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.util.ListBoxModel;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -60,11 +61,12 @@ public class JobInclusionJobProperty extends JobProperty<Job<?, ?>> {
     }
 
     @Extension
+    @Symbol("jobGroup")
     public static final class DescriptorImpl extends JobPropertyDescriptor {
 
         @Override
         public String getDisplayName() {
-            return "XXX";
+            return "Priority Sorter Job Group";
         }
 
         public ListBoxModel getJobGroups() {
