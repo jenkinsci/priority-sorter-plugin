@@ -271,7 +271,7 @@ To configure the Job Group for a declarative pipeline job, follow the below exam
 ```
 pipeline {
     options {
-        jobGroup(jobGroupName: 'MyJobGroup', useJobGroup: true)
+        jobGroup jobGroupName: 'MyJobGroup', useJobGroup: true
     }
 }
 ```

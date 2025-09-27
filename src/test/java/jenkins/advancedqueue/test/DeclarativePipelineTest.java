@@ -37,7 +37,7 @@ class DeclarativePipelineTest {
                 pipeline {
                     agent none
                     options {
-                        jobGroup(jobGroupName: '%s', useJobGroup: true)
+                        jobGroup jobGroupName: '%s', useJobGroup: true
                     }
                     stages {
                         stage('Test') {
