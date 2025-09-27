@@ -1,0 +1,9 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<jenkins.advancedqueue.PrioritySorterConfiguration>
+  <allowPriorityOnJobs>false</allowPriorityOnJobs>
+  <onlyAdminsMayEditPriorityConfiguration>true</onlyAdminsMayEditPriorityConfiguration>
+  <strategy class="jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy">
+    <numberOfPriorities>5</numberOfPriorities>
+    <defaultPriority>3</defaultPriority>
+  </strategy>
+</jenkins.advancedqueue.PrioritySorterConfiguration>
