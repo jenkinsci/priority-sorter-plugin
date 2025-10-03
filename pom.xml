@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
@@ -16,7 +17,7 @@
 
   <licenses>
     <license>
-      <name>MIT</name>
+      <name>MIT License</name>
       <url>https://opensource.org/licenses/MIT</url>
       <comments>Copyright 2020- Frank Ittermann. All rights reserved. Copyright 2013- Magnus Sandberg. All rights reserved. Copyright 2010- Brad Larson. All rights reserved.</comments>
     </license>
@@ -34,7 +35,7 @@
     <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
     <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.baseline>2.492</jenkins.baseline>
+    <jenkins.baseline>2.504</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -50,7 +51,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>5473.vb_9533d9e5d88</version>
+        <version>5506.va_222b_131ec34</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
