@@ -19,8 +19,7 @@ import org.jvnet.hudson.test.recipes.LocalData;
 @WithJenkins
 class DeclarativePipelineTest {
 
-    private static final String DEFAULT_SCRIPT =
-            """
+    private static final String DEFAULT_SCRIPT = """
                 pipeline {
                     agent none
                     stages {
@@ -32,8 +31,7 @@ class DeclarativePipelineTest {
                     }
                 }
             """;
-    private static final String PRIORITY_SCRIPT =
-            """
+    private static final String PRIORITY_SCRIPT = """
                 pipeline {
                     agent none
                     options {
