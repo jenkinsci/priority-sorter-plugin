@@ -107,7 +107,7 @@ class DeclarativePipelineTest {
     private WorkflowJob createPipelineJob(String jobName, String script, String jobGroupName)
             throws FormException, IOException {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, jobName);
-        job.setDefinition(new CpsFlowDefinition(String.format(script, jobGroupName), true));
+        job.setDefinition(new CpsFlowDefinition(script.formatted(jobGroupName), true));
         return job;
     }
 }
