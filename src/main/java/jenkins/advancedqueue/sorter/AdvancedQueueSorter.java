@@ -61,7 +61,10 @@ public class AdvancedQueueSorter extends QueueSorter {
         for (BuildableItem item : items) {
             advancedQueueSorter.onNewItem(item);
             // Listener called before we get here so make sure we mark buildable
-            QueueItemCache.get().getItem(item.getId()).setBuildable();
+            ItemInfo info = QueueItemCache.get().getItem(item.getId());
+            if (info != null) {
+                info.setBuildable();
+            }
         }
         LOGGER.log(Level.INFO, "Initialized the QueueSorter with {0} Buildable Items", items.size());
     }
@@ -78,10 +81,11 @@ public class AdvancedQueueSorter extends QueueSorter {
         });
         //
         if (!items.isEmpty() && LOGGER.isLoggable(Level.FINE)) {
-            float minWeight = QueueItemCache.get().getItem(items.get(0).getId()).getWeight();
-            float maxWeight = QueueItemCache.get()
-                    .getItem(items.get(items.size() - 1).getId())
-                    .getWeight();
+            ItemInfo minItem = QueueItemCache.get().getItem(items.get(0).getId());
+            ItemInfo maxItem =
+                    QueueItemCache.get().getItem(items.get(items.size() - 1).getId());
+            float minWeight = minItem != null ? minItem.getWeight() : 0;
+            float maxWeight = maxItem != null ? maxItem.getWeight() : 0;
             LOGGER.log(Level.FINE, "Sorted {0} {1}s with Min Weight {2} and Max Weight {3}", new Object[] {
                 items.size(), items.get(0).getClass().getName(), minWeight, maxWeight
             });
@@ -161,9 +165,11 @@ public class AdvancedQueueSorter extends QueueSorter {
      */
     private String formatQueueItem(Queue.NotWaitingItem item) {
         ItemInfo itemInfo = QueueItemCache.get().getItem(item.getId());
-        String jobName = truncateJobName(itemInfo.getJobName());
-        return "| %10d | %20s | %8d | %20.5f |%n"
-                .formatted(item.getId(), jobName, itemInfo.getPriority(), itemInfo.getWeight());
+        String itemName = itemInfo != null ? itemInfo.getJobName() : item.task.getName();
+        int itemPriority = itemInfo != null ? itemInfo.getPriority() : 0;
+        float itemWeight = itemInfo != null ? itemInfo.getWeight() : 0;
+        String jobName = truncateJobName(itemName);
+        return "| %10d | %20s | %8d | %20.5f |%n".formatted(item.getId(), jobName, itemPriority, itemWeight);
     }
 
     /**
