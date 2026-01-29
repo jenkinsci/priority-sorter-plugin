@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.advancedqueue.sorter.ItemInfo;
 import jenkins.advancedqueue.sorter.QueueItemCache;
 
 public class RunExclusiveThrottler {
 
-    private static List<String> exclusiveJobs = Collections.synchronizedList(new ArrayList<String>());
+    private static final List<String> exclusiveJobs = Collections.synchronizedList(new ArrayList<>());
     private static int exclusiveJobGroupId = -1;
     private static String exclusiveJobName = "";
 
@@ -73,7 +74,8 @@ public class RunExclusiveThrottler {
         @Override
         public CauseOfBlockage canRun(Item item) {
             if (exclusiveJobs.size() > 0) {
-                if (QueueItemCache.get().getItem(item.getId()).getJobGroupId() != exclusiveJobGroupId) {
+                ItemInfo info = QueueItemCache.get().getItem(item.getId());
+                if (info == null || info.getJobGroupId() != exclusiveJobGroupId) {
                     return new RunExclusiveMode();
                 }
             }
