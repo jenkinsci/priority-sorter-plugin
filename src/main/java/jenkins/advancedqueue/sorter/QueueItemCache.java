@@ -63,7 +63,7 @@ public class QueueItemCache {
     private QueueItemCache() {}
 
     /**
-     * Gets the Item for and itemId/queueId
+     * Gets the Item for an itemId/queueId
      *
      * @param itemId the id of a Job currently in the queue
      * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
