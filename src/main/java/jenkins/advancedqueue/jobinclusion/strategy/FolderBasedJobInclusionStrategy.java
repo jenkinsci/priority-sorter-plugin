@@ -24,14 +24,19 @@
 package jenkins.advancedqueue.jobinclusion.strategy;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.util.ListBoxModel;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import jenkins.advancedqueue.DecisionLogger;
 import jenkins.advancedqueue.Messages;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.model.Jenkins;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -59,9 +64,32 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
     }
     ;
 
+    @Restricted(NoExternalUse.class)
+    public static class JobPattern {
+        private String jobPattern;
+
+        @DataBoundConstructor
+        public JobPattern(String jobPattern) {
+            this.jobPattern = jobPattern;
+        }
+    }
+
     private String folderName;
 
+    private boolean useJobFilter = false;
+
+    private String jobPattern;
+    private transient Pattern compiledPattern;
+
     @DataBoundConstructor
+    public FolderBasedJobInclusionStrategy(String folderName, JobPattern jobFilter) {
+        this.folderName = folderName;
+        this.useJobFilter = (jobFilter != null);
+        if (this.useJobFilter) {
+            this.jobPattern = jobFilter.jobPattern;
+        }
+    }
+
     public FolderBasedJobInclusionStrategy(String folderName) {
         this.folderName = folderName;
     }
@@ -70,8 +98,56 @@ public class FolderBasedJobInclusionStrategy extends JobInclusionStrategy {
         return folderName;
     }
 
+    public boolean isUseJobFilter() {
+        return useJobFilter;
+    }
+
+    @CheckForNull
+    public String getJobPattern() {
+        return jobPattern;
+    }
+
+    @CheckForNull
+    private Pattern getCompiledPattern() throws PatternSyntaxException {
+        if (jobPattern == null) return null;
+
+        if (compiledPattern == null) compiledPattern = Pattern.compile(jobPattern);
+
+        return compiledPattern;
+    }
+
     @Override
     public boolean contains(DecisionLogger decisionLogger, Job<?, ?> job) {
-        return job.getFullName().startsWith(folderName);
+        if (job != null && job.getFullName().startsWith(folderName)) {
+            if (!isUseJobFilter() || getJobPattern() == null || getCompiledPattern() == null) {
+                decisionLogger.addDecisionLog(2, "Not using filter ...");
+                return true;
+            } else {
+                decisionLogger.addDecisionLog(2, "Using filter ...");
+                try {
+                    Pattern pattern = getCompiledPattern();
+                    if (pattern == null) {
+                        decisionLogger.addDecisionLog(3, "Job filter is null ...");
+                        return false;
+                    }
+                    if (job.getName() == null) {
+                        decisionLogger.addDecisionLog(3, "Job name is null ...");
+                        return false;
+                    }
+                    java.util.regex.Matcher matcher = pattern.matcher(job.getName());
+                    if (matcher.matches()) {
+                        decisionLogger.addDecisionLog(3, "Job is matching the filter ...");
+                        return true;
+                    } else {
+                        decisionLogger.addDecisionLog(3, "Job is not matching the filter ...");
+                        return false;
+                    }
+                } catch (PatternSyntaxException e) {
+                    decisionLogger.addDecisionLog(3, "Filter has syntax error");
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 }
