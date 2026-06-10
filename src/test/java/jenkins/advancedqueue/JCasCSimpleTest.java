@@ -24,12 +24,15 @@
 package jenkins.advancedqueue;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import io.jenkins.plugins.casc.misc.junit.jupiter.AbstractRoundTripTest;
 import java.util.List;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
+import org.htmlunit.html.HtmlPage;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class JCasCSimpleTest extends AbstractRoundTripTest {
@@ -48,6 +51,18 @@ public class JCasCSimpleTest extends AbstractRoundTripTest {
         assertThat(jobGroups.get(0).getDescription(), is("Group 1 - default priority"));
         assertThat(jobGroups.get(0).getPriority(), is(-1));
         assertThat(jobGroups.get(0).getJobGroupStrategy().getDescriptor().getDisplayName(), is("All Jobs"));
+
+        // Confirm that job groups are visible to unauthenticated users if there is no security realm
+        JenkinsRule.WebClient webClient = j.createWebClient();
+        assertDoesNotThrow(() -> {
+            HtmlPage page = webClient.goTo("advanced-build-queue/");
+            assertThat(page.asNormalizedText(), containsString("Group 1 - default priority"));
+        });
+        globalConfig.setOnlyAdminsMayEditPriorityConfiguration(true);
+        assertDoesNotThrow(() -> {
+            HtmlPage page = webClient.goTo("advanced-build-queue/");
+            assertThat(page.asNormalizedText(), containsString("Group 1 - default priority"));
+        });
     }
 
     @Override
