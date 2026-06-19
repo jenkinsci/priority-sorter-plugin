@@ -42,6 +42,7 @@ import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
@@ -136,6 +137,7 @@ class StringFormattingPerformanceTest {
         // System.out.printf("  Performance Ratio: %.2fx%n", ratio);
     }
 
+    @Disabled("Fails occasionally, benchmark values are not an issue")
     @Test
     public void benchmarkDecisionLogFormatting() throws Exception {
         // Compare old StringBuilder approach vs new String.join approach

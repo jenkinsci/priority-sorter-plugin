@@ -65,6 +65,7 @@ import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * @author Magnus Sandberg
@@ -166,7 +167,12 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
         return items;
     }
 
+    @RequirePOST
     public void doPriorityConfigSubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException {
+        if (!checkActive()) {
+            FormApply.success("..").generateResponse(req, rsp, this);
+            return;
+        }
         jobGroups = new LinkedList<JobGroup>();
         id2jobGroup = new HashMap<Integer, JobGroup>();
         //
