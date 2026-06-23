@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>6.2153.vcf31911d10c4</version>
+    <version>6.2189.v695a_c41f5249</version>
     <relativePath />
   </parent>
 
@@ -35,7 +35,7 @@
     <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
     <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.baseline>2.504</jenkins.baseline>
+    <jenkins.baseline>2.528</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -45,6 +45,7 @@
     <linkXRef>false</linkXRef>
     <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
     <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
+    <banObsoleteDependencyOverrides.skip>false</banObsoleteDependencyOverrides.skip>
   </properties>
 
   <dependencyManagement>
