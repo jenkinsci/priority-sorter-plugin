@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>PrioritySorter</artifactId>
-  <version>936.${changelist}</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
   <name>Jenkins Priority Sorter Plugin</name>
   <url>https://github.com/jenkinsci/priority-sorter-plugin</url>
