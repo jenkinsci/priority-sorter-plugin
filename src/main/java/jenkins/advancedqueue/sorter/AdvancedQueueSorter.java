@@ -52,7 +52,7 @@ public class AdvancedQueueSorter extends QueueSorter {
 
     private static final Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Sorter");
     private static final String PIPELINE_PLACEHOLDER_TASK_CLASS =
-      "org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution$PlaceholderTask";
+            "org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution$PlaceholderTask";
 
     public AdvancedQueueSorter() {}
 
@@ -124,9 +124,9 @@ public class AdvancedQueueSorter extends QueueSorter {
                 }
             } catch (ReflectiveOperationException | SecurityException e) {
                 LOGGER.log(
-                  Level.FINEST,
-                  "Failed to resolve pipeline parent run start time due to reflection/invocation error",
-                  e);
+                        Level.FINEST,
+                        "Failed to resolve pipeline parent run start time due to reflection/invocation error",
+                        e);
             }
         }
 

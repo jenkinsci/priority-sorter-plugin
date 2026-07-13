@@ -94,7 +94,7 @@ class AdvancedQueueSorterTest {
         FreeStyleProject p1 = jenkins.createFreeStyleProject("pipe1-" + nanoTime());
         FreeStyleProject p2 = jenkins.createFreeStyleProject("pipe2-" + nanoTime());
 
-       Queue.BuildableItem q1 =
+        Queue.BuildableItem q1 =
                 new Queue.BuildableItem(new Queue.WaitingItem(Calendar.getInstance(), p1, emptyList()));
         Queue.BuildableItem q2 =
                 new Queue.BuildableItem(new Queue.WaitingItem(Calendar.getInstance(), p2, emptyList()));
@@ -123,11 +123,9 @@ class AdvancedQueueSorterTest {
         Calendar newTime = Calendar.getInstance();
         newTime.setTimeInMillis(2000L);
 
-        Queue.BuildableItem qFree =
-                new Queue.BuildableItem(new Queue.WaitingItem(oldTime, freestyleJob, emptyList()));
+        Queue.BuildableItem qFree = new Queue.BuildableItem(new Queue.WaitingItem(oldTime, freestyleJob, emptyList()));
 
-        Queue.BuildableItem qPipe =
-                new Queue.BuildableItem(new Queue.WaitingItem(newTime, pipelineJob, emptyList()));
+        Queue.BuildableItem qPipe = new Queue.BuildableItem(new Queue.WaitingItem(newTime, pipelineJob, emptyList()));
 
         ItemInfo infoFree = new ItemInfo(qFree);
         infoFree.setWeightSelection(5.0f);
@@ -203,7 +201,6 @@ class AdvancedQueueSorterTest {
         oldTime.setTimeInMillis(1000L);
         Calendar newTime = Calendar.getInstance();
         newTime.setTimeInMillis(2000L);
-
 
         Queue.BuildableItem q1 = new Queue.BuildableItem(new Queue.WaitingItem(oldTime, p1, emptyList()));
 
