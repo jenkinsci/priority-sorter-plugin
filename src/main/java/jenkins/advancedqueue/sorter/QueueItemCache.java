@@ -24,6 +24,7 @@
 package jenkins.advancedqueue.sorter;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Queue.BlockedItem;
 import hudson.model.Queue.BuildableItem;
 import java.util.ArrayList;
@@ -70,6 +71,9 @@ public class QueueItemCache {
      *         queue
      */
     @CheckForNull
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized ItemInfo getItem(long itemId) {
         return item2info.get(itemId);
     }
@@ -83,6 +87,9 @@ public class QueueItemCache {
      */
     @CheckForNull
     @Deprecated
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized ItemInfo getItem(Integer itemId) {
         return item2info.get(itemId.longValue());
     }
@@ -95,10 +102,16 @@ public class QueueItemCache {
      *         Can be {@code null} if job didn't run yet
      */
     @CheckForNull
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized ItemInfo getItem(String jobName) {
         return jobName2info.get(jobName);
     }
 
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized ItemInfo addItem(ItemInfo itemInfo) {
         long itemId = itemInfo.getItemId();
         item2info.put(itemId, itemInfo);
@@ -108,11 +121,17 @@ public class QueueItemCache {
 
     @CheckForNull
     @Deprecated
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized ItemInfo removeItem(Integer itemId) {
         return item2info.remove(itemId.longValue());
     }
 
     @CheckForNull
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized ItemInfo removeItem(long itemId) {
         return item2info.remove(itemId);
     }
@@ -123,6 +142,9 @@ public class QueueItemCache {
      *
      * @return the sorted list of all {@link ItemInfo}s
      */
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized List<ItemInfo> getSortedList() {
         ArrayList<ItemInfo> list = new ArrayList<ItemInfo>(item2info.values());
         Collections.sort(list);

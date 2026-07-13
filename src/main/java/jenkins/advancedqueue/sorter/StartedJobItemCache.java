@@ -27,6 +27,7 @@ import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Queue.Executable;
 import hudson.model.Run;
 import hudson.model.queue.WorkUnit;
@@ -110,11 +111,17 @@ public class StartedJobItemCache {
      * @return the {@link ItemInfo} for the provided id or <code>null</code> if
      *         projectName/buildNumber combination is unknown
      */
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized @CheckForNull ItemInfo getStartedItem(final String projectName, final int buildNumber) {
         maintainCache();
         return startedItems.getIfPresent(new StartedItem(projectName, buildNumber));
     }
 
+    @SuppressFBWarnings(
+            value = "USO_UNSAFE_METHOD_SYNCHRONIZATION",
+            justification = "Safe to synchronize internally here")
     public synchronized void addItem(final ItemInfo itemInfo, final WorkUnit primaryWorkUnit) {
         pendingItems.addLast(new PendingItem(itemInfo, primaryWorkUnit));
         maintainCache();
