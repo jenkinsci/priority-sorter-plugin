@@ -3,6 +3,7 @@ package jenkins.advancedqueue.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -136,18 +137,14 @@ class PriorityConfigurationTest {
 
         // Create a test job and view
         FreeStyleProject testJob = j.createFreeStyleProject("test-job-view");
-        ListView view = new ListView("test-view", j.jenkins);
-        j.jenkins.addView(view);
+        j.jenkins.addView(new ListView("test-view", j.jenkins));
 
         // Use reflection to invoke the private method
         Method method = PriorityConfiguration.class.getDeclaredMethod("isJobInView", Job.class, View.class);
         method.setAccessible(true);
 
         // Test the method with a real view
-        boolean result = (boolean) method.invoke(configuration, testJob, j.jenkins.getPrimaryView());
-
-        // We don't care about the result (true/false) just that it doesn't throw exceptions
-        // This ensures code coverage even if the job isn't in the view
+        assertTrue((boolean) method.invoke(configuration, testJob, j.jenkins.getPrimaryView()));
     }
 
     @Test
