@@ -31,7 +31,9 @@ import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.Item;
 import hudson.model.Queue.LeftItem;
+import hudson.model.Run;
 import hudson.model.queue.QueueSorter;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -49,6 +51,8 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
 public class AdvancedQueueSorter extends QueueSorter {
 
     private static final Logger LOGGER = Logger.getLogger("PrioritySorter.Queue.Sorter");
+    private static final String PIPELINE_PLACEHOLDER_TASK_CLASS =
+            "org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution$PlaceholderTask";
 
     public AdvancedQueueSorter() {}
 
@@ -96,6 +100,39 @@ public class AdvancedQueueSorter extends QueueSorter {
         }
     }
 
+    private Long resolveParentStartTime(Item item) {
+        if (item == null) {
+            return null;
+        }
+
+        Queue.Task task = item.task;
+
+        if (PIPELINE_PLACEHOLDER_TASK_CLASS.equals(task.getClass().getName())) {
+            try {
+                Object run;
+
+                try {
+                    Method getOwnerExecutable = task.getClass().getMethod("getOwnerExecutable");
+                    run = getOwnerExecutable.invoke(task);
+                } catch (NoSuchMethodException e) {
+                    Method runMethod = task.getClass().getMethod("run");
+                    run = runMethod.invoke(task);
+                }
+
+                if (run instanceof hudson.model.Run) {
+                    return ((Run<?, ?>) run).getStartTimeInMillis();
+                }
+            } catch (ReflectiveOperationException | SecurityException e) {
+                LOGGER.log(
+                        Level.FINEST,
+                        "Failed to resolve pipeline parent run start time due to reflection/invocation error",
+                        e);
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public void sortBuildableItems(List<BuildableItem> items) {
         sortNotWaitingItems(items);
@@ -112,6 +149,10 @@ public class AdvancedQueueSorter extends QueueSorter {
         ItemInfo itemInfo = new ItemInfo(item);
         PriorityConfiguration.get().getPriority(item, itemInfo);
         prioritySorterStrategy.onNewItem(item, itemInfo);
+        Long parentStartTime = resolveParentStartTime(item);
+        if (parentStartTime != null) {
+            itemInfo.setParentStartTime(parentStartTime);
+        }
         QueueItemCache.get().addItem(itemInfo);
         logNewItem(itemInfo);
     }
