@@ -151,91 +151,80 @@ class PriorityConfigurationTest {
     }
 
     @Test
-    void testGetJobGroup(JenkinsRule j) {
+    void testGetJobGroup(JenkinsRule j) throws Exception {
         PriorityConfiguration configuration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
-        try {
-            // Create a real job using JenkinsRule
-            FreeStyleProject testJob = j.createFreeStyleProject("test-job-group");
+        // Create a real job using JenkinsRule
+        FreeStyleProject testJob = j.createFreeStyleProject("test-job-group");
 
-            // Create a mock callback
-            TestPriorityConfigurationCallback callback = new TestPriorityConfigurationCallback();
+        // Create a mock callback
+        TestPriorityConfigurationCallback callback = new TestPriorityConfigurationCallback();
 
-            // With no job groups, should return null
-            configuration.getJobGroups().clear();
-            JobGroup result = configuration.getJobGroup(callback, testJob);
-            assertNull(result);
+        // With no job groups, should return null
+        configuration.getJobGroups().clear();
+        JobGroup result = configuration.getJobGroup(callback, testJob);
+        assertNull(result);
 
-            // Add a job group that matches
-            JobGroup jobGroup = new JobGroup();
-            jobGroup.setId(1);
-            jobGroup.setDescription("Test Job Group");
+        // Add a job group that matches
+        JobGroup jobGroup = new JobGroup();
+        jobGroup.setId(1);
+        jobGroup.setDescription("Test Job Group");
 
-            // Create a strategy that will match our job
-            JobInclusionStrategy strategy = mock(JobInclusionStrategy.class);
-            when(strategy.contains(callback, testJob)).thenReturn(true);
-            jobGroup.setJobGroupStrategy(strategy);
+        // Create a strategy that will match our job
+        JobInclusionStrategy strategy = mock(JobInclusionStrategy.class);
+        when(strategy.contains(callback, testJob)).thenReturn(true);
+        jobGroup.setJobGroupStrategy(strategy);
 
-            configuration.getJobGroups().add(jobGroup);
+        configuration.getJobGroups().add(jobGroup);
 
-            // Now it should match
-            result = configuration.getJobGroup(callback, testJob);
-            assertNotNull(result);
-            assertEquals(1, result.getId());
-            assertEquals("Test Job Group", result.getDescription());
-        } catch (Exception e) {
-            // If we get an exception, the test will fail, but we don't want to crash the build
-            // Just let the test case fail
-            throw new RuntimeException("Test failure", e);
-        }
+        // Now it should match
+        result = configuration.getJobGroup(callback, testJob);
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("Test Job Group", result.getDescription());
     }
 
     @Test
-    void testGetPriority(JenkinsRule j) {
+    void testGetPriority(JenkinsRule j) throws Exception {
         PriorityConfiguration configuration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
-        try {
-            // Create a real job using JenkinsRule
-            FreeStyleProject testJob = j.createFreeStyleProject("test-priority-job");
+        // Create a real job using JenkinsRule
+        FreeStyleProject testJob = j.createFreeStyleProject("test-priority-job");
 
-            // Ensure a real queue item is created so PriorityConfiguration (which reads item.task
-            // directly via field access) sees the Job
-            testJob.scheduleBuild2(600); // keep it queued long enough to retrieve
-            Queue.Item item = testJob.getQueueItem();
-            assertNotNull(item, "Expected a queue item for the scheduled build");
+        // Ensure a real queue item is created so PriorityConfiguration (which reads item.task
+        // directly via field access) sees the Job
+        testJob.scheduleBuild2(600); // keep it queued long enough to retrieve
+        Queue.Item item = testJob.getQueueItem();
+        assertNotNull(item, "Expected a queue item for the scheduled build");
 
-            // Create a mock callback
-            TestPriorityConfigurationCallback callback = new TestPriorityConfigurationCallback();
+        // Create a mock callback
+        TestPriorityConfigurationCallback callback = new TestPriorityConfigurationCallback();
 
-            // 1. Test when no job group matches - should get default priority
-            configuration.getJobGroups().clear();
-            configuration.getPriority(item, callback);
-            assertEquals(MultiBucketStrategy.DEFAULT_PRIORITY, callback.getPrioritySelection());
+        // 1. Test when no job group matches - should get default priority
+        configuration.getJobGroups().clear();
+        configuration.getPriority(item, callback);
+        assertEquals(MultiBucketStrategy.DEFAULT_PRIORITY, callback.getPrioritySelection());
 
-            // 2. Test with a job group that matches
-            JobGroup jobGroup = new JobGroup();
-            jobGroup.setId(1);
-            jobGroup.setDescription("Test Job Group");
-            jobGroup.setPriority(3); // Set a custom priority
+        // 2. Test with a job group that matches
+        JobGroup jobGroup = new JobGroup();
+        jobGroup.setId(1);
+        jobGroup.setDescription("Test Job Group");
+        jobGroup.setPriority(3); // Set a custom priority
 
-            // Create a strategy that will match our job
-            JobInclusionStrategy strategy = mock(JobInclusionStrategy.class);
-            when(strategy.contains(callback, testJob)).thenReturn(true);
-            jobGroup.setJobGroupStrategy(strategy);
+        // Create a strategy that will match our job
+        JobInclusionStrategy strategy = mock(JobInclusionStrategy.class);
+        when(strategy.contains(callback, testJob)).thenReturn(true);
+        jobGroup.setJobGroupStrategy(strategy);
 
-            configuration.getJobGroups().clear(); // Clear previous groups
-            configuration.getJobGroups().add(jobGroup);
+        configuration.getJobGroups().clear(); // Clear previous groups
+        configuration.getJobGroups().add(jobGroup);
 
-            // Create another callback for second test
-            TestPriorityConfigurationCallback callback2 = new TestPriorityConfigurationCallback();
-            configuration.getPriority(item, callback2);
-            assertEquals(3, callback2.getPrioritySelection()); // Should get the priority from job group
-        } catch (Exception e) {
-            // If we get an exception, the test will fail, but we don't want to crash the build
-            throw new RuntimeException("Test failure", e);
-        }
+        // Create another callback for second test
+        TestPriorityConfigurationCallback callback2 = new TestPriorityConfigurationCallback();
+        configuration.getPriority(item, callback2);
+        assertEquals(3, callback2.getPrioritySelection()); // Should get the priority from job group
     }
 
     private static class TestPriorityConfigurationCallback implements PriorityConfigurationCallback {
