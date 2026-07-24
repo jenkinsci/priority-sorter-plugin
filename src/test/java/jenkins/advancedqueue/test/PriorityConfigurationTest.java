@@ -23,12 +23,27 @@ import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 @WithJenkins
 class PriorityConfigurationTest {
+    private Boolean originalOnlyAdminsMayEdit;
+
+    @AfterEach
+    void resetInitialSettings() {
+        if (originalOnlyAdminsMayEdit != null) {
+            PrioritySorterConfiguration.get().setOnlyAdminsMayEditPriorityConfiguration(originalOnlyAdminsMayEdit);
+        }
+    }
+
+    private PrioritySorterConfiguration saveInitialSettings() {
+        PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
+        originalOnlyAdminsMayEdit = psc.getOnlyAdminsMayEditPriorityConfiguration();
+        return psc;
+    }
 
     @Test
     void testDoCheckJobPattern(JenkinsRule j) throws IOException, ServletException {
@@ -53,22 +68,18 @@ class PriorityConfigurationTest {
         PriorityConfiguration configuration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
-        PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
-        boolean original = psc.getOnlyAdminsMayEditPriorityConfiguration();
-        try {
-            // When admin can edit
-            psc.setOnlyAdminsMayEditPriorityConfiguration(false);
-            assertNotNull(configuration.getIconClassName());
+        PrioritySorterConfiguration psc = saveInitialSettings();
 
-            // When only admins can edit (and current user is not admin)
-            psc.setOnlyAdminsMayEditPriorityConfiguration(true);
+        // When admin can edit
+        psc.setOnlyAdminsMayEditPriorityConfiguration(false);
+        assertNotNull(configuration.getIconClassName());
 
-            // We can't easily test for null here since the current user in the test is an admin
-            // So we'll just check that it returns something, which shows code coverage is working
-            assertNotNull(configuration.getIconClassName());
-        } finally {
-            psc.setOnlyAdminsMayEditPriorityConfiguration(original);
-        }
+        // When only admins can edit (and current user is not admin)
+        psc.setOnlyAdminsMayEditPriorityConfiguration(true);
+
+        // We can't easily test for null here since the current user in the test is an admin
+        // So we'll just check that it returns something, which shows code coverage is working
+        assertNotNull(configuration.getIconClassName());
     }
 
     @Test
@@ -83,22 +94,18 @@ class PriorityConfigurationTest {
         PriorityConfiguration configuration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
-        PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
-        boolean original = psc.getOnlyAdminsMayEditPriorityConfiguration();
-        try {
-            // When admin can edit
-            psc.setOnlyAdminsMayEditPriorityConfiguration(false);
-            assertEquals("advanced-build-queue", configuration.getUrlName());
+        PrioritySorterConfiguration psc = saveInitialSettings();
 
-            // When only admins can edit (and current user is not admin)
-            psc.setOnlyAdminsMayEditPriorityConfiguration(true);
+        // When admin can edit
+        psc.setOnlyAdminsMayEditPriorityConfiguration(false);
+        assertEquals("advanced-build-queue", configuration.getUrlName());
 
-            // We can't easily test for null here since the current user in the test is an admin
-            // So we'll check that it returns the expected URL, which shows code coverage is working
-            assertEquals("advanced-build-queue", configuration.getUrlName());
-        } finally {
-            psc.setOnlyAdminsMayEditPriorityConfiguration(original);
-        }
+        // When only admins can edit (and current user is not admin)
+        psc.setOnlyAdminsMayEditPriorityConfiguration(true);
+
+        // We can't easily test for null here since the current user in the test is an admin
+        // So we'll check that it returns the expected URL, which shows code coverage is working
+        assertEquals("advanced-build-queue", configuration.getUrlName());
     }
 
     @Test
