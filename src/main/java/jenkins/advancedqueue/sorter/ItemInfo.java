@@ -61,7 +61,7 @@ public class ItemInfo
 
     private ItemStatus itemStatus;
 
-    private List<String> decisionLog = new ArrayList<String>(10);
+    private List<String> decisionLog = new ArrayList<>(10);
 
     ItemInfo(Item item) {
         this.itemId = item.getId();
@@ -87,7 +87,7 @@ public class ItemInfo
     }
 
     public PriorityConfigurationCallback addDecisionLog(int indent, String log) {
-        this.decisionLog.add(("%" + ((indent + 1) * 2) + "s%s").formatted("", log));
+        this.decisionLog.add(formatLogEntry(indent, log));
         return this;
     }
 
@@ -150,6 +150,7 @@ public class ItemInfo
         return itemStatus;
     }
 
+    @Override
     public int compareTo(ItemInfo o) {
         if (this.getWeight() == o.getWeight()) {
             if (this.getSortableInQueueSince() == o.getSortableInQueueSince()) {
@@ -194,10 +195,18 @@ public class ItemInfo
     }
 
     public String getDescisionLog() {
-        StringBuilder buffer = new StringBuilder();
-        for (String log : decisionLog) {
-            buffer.append(log).append("\n");
+        return decisionLog.isEmpty() ? "" : String.join("\n", decisionLog) + "\n";
+    }
+
+    /**
+     * Formats a log entry with appropriate indentation.
+     * Uses cached format strings to avoid repeated formatting pattern construction.
+     */
+    private String formatLogEntry(int indent, String log) {
+        int spaces = Math.max(0, (indent + 1) * 2);
+        if (spaces == 0) {
+            return log;
         }
-        return buffer.toString();
+        return ("%" + spaces + "s%s").formatted("", log);
     }
 }

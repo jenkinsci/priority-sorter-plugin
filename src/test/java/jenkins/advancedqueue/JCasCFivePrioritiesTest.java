@@ -24,13 +24,16 @@
 package jenkins.advancedqueue;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import io.jenkins.plugins.casc.misc.junit.jupiter.AbstractRoundTripTest;
 import java.util.List;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy;
+import org.htmlunit.html.HtmlPage;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class JCasCFivePrioritiesTest extends AbstractRoundTripTest {
@@ -71,6 +74,18 @@ public class JCasCFivePrioritiesTest extends AbstractRoundTripTest {
         List<JobGroup.PriorityStrategyHolder> strategies4 = jobGroups.get(4).getPriorityStrategies();
         PriorityStrategy strategy4 = strategies4.get(0).getPriorityStrategy();
         assertThat(strategy4.getDescriptor().getDisplayName(), is("Take the priority from property on the job"));
+
+        // Confirm that job groups are visible to unauthenticated users if there is no security realm
+        JenkinsRule.WebClient webClient = j.createWebClient();
+        assertDoesNotThrow(() -> {
+            HtmlPage page = webClient.goTo("advanced-build-queue/");
+            assertThat(page.asNormalizedText(), containsString("Group 4 - priority two"));
+        });
+        globalConfig.setOnlyAdminsMayEditPriorityConfiguration(true);
+        assertDoesNotThrow(() -> {
+            HtmlPage page = webClient.goTo("advanced-build-queue/");
+            assertThat(page.asNormalizedText(), containsString("Group 4 - priority two"));
+        });
     }
 
     @Override

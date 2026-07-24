@@ -41,8 +41,7 @@ class PriorityConfigurationPlaceholderTaskHelperTest {
         // Start a Pipeline with a quiet period of 37 seconds before it runs
         String pipelineName = "my-pipeline-in-the-quiet-period";
         WorkflowJob pipeline = j.createProject(WorkflowJob.class, pipelineName);
-        String pipelineDefinition =
-                """
+        String pipelineDefinition = """
                    node {
                        echo 'Hello from a node'
                        sleep 41

@@ -10,11 +10,13 @@
 	<j:if test="${descriptor.isUsed()}">
 		<f:optionalBlock name="useJobGroup" inline="true" checked="${instance.useJobGroup}" title="${%Include_this_job_in_a_job_group}">
 			<f:entry title="${%Job_Group}" field="jobGroupName">
-				<select name="jobGroupName">
-					<j:forEach var="jobGroup" items="${descriptor.getJobGroups()}">
-						<f:option value="${jobGroup.value}" selected="${jobGroup.value == instance.jobGroupName}">${jobGroup.name}</f:option>
-					</j:forEach>
-				</select>
+        <div class="jenkins-select">
+          <select name="jobGroupName" class="jenkins-select__input">
+            <j:forEach var="jobGroup" items="${descriptor.getJobGroups()}">
+              <f:option value="${jobGroup.value}" selected="${jobGroup.value == instance.jobGroupName}">${jobGroup.name}</f:option>
+            </j:forEach>
+          </select>
+        </div>
 			</f:entry>
 		</f:optionalBlock>
 	</j:if>

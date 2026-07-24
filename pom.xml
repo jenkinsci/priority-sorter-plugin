@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.9</version>
+    <version>6.2211.v27f680c93c53</version>
     <relativePath />
   </parent>
 
@@ -16,7 +17,7 @@
 
   <licenses>
     <license>
-      <name>MIT</name>
+      <name>MIT License</name>
       <url>https://opensource.org/licenses/MIT</url>
       <comments>Copyright 2020- Frank Ittermann. All rights reserved. Copyright 2013- Magnus Sandberg. All rights reserved. Copyright 2010- Brad Larson. All rights reserved.</comments>
     </license>
@@ -32,8 +33,9 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/priority-sorter-plugin</gitHubRepo>
+    <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.baseline>2.528</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -41,6 +43,9 @@
     <!-- Silence Maven XREF warning, don't need hyperlinked source code -->
     <!-- https://stackoverflow.com/questions/12038238/unable-to-locate-source-xref-to-link-to -->
     <linkXRef>false</linkXRef>
+    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
+    <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
+    <banObsoleteDependencyOverrides.skip>false</banObsoleteDependencyOverrides.skip>
   </properties>
 
   <dependencyManagement>
@@ -48,7 +53,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>4488.v7fe26526366e</version>
+        <version>5983.v443959746f1f</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -108,14 +113,19 @@
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>matrix-auth</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>nested-view</artifactId>
-      <version>1.35</version>
+      <version>241.v178f0b_a_cd76a_</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>sectioned-view</artifactId>
-      <version>1.28</version>
+      <version>1.32</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -131,6 +141,11 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkinsci.plugins</groupId>
+      <artifactId>pipeline-model-definition</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -159,7 +174,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.26.0</version>
+        <version>3.28.0</version>
         <executions>
           <execution>
             <goals>

@@ -1,11 +1,13 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
 	<f:entry title="${%Apply_to_Jobs_in_View}">
-		<select name="viewName">
-			<j:forEach var="view" items="${descriptor.listViewItems}">
-				<f:option value="${view.value}" selected="${view.value==instance.viewName}">${view.name}</f:option>
-			</j:forEach>
-		</select>
+    <div class="jenkins-select">
+      <select name="viewName" class="jenkins-select__input jenkins-!-margin-bottom-2">
+        <j:forEach var="view" items="${descriptor.listViewItems}">
+          <f:option value="${view.value}" selected="${view.value==instance.viewName}">${view.name}</f:option>
+        </j:forEach>
+      </select>
+    </div>
         <f:optionalBlock name="jobFilter" checked="${instance.useJobFilter}" title="${%Use_a_regular_expression_to_only_include_a_subset_of_the_included_jobs}">
             <f:entry title="${%Regular_Expression}">
                 <f:textbox name="jobPattern" field="jobPattern" value="${instance.jobPattern}" />

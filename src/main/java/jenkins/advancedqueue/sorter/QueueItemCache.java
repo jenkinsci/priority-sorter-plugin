@@ -62,6 +62,14 @@ public class QueueItemCache {
 
     private QueueItemCache() {}
 
+    /**
+     * Gets the Item for an itemId/queueId
+     *
+     * @param itemId the id of a Job currently in the queue
+     * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
+     *         queue
+     */
+    @CheckForNull
     public synchronized ItemInfo getItem(long itemId) {
         return item2info.get(itemId);
     }
@@ -73,6 +81,7 @@ public class QueueItemCache {
      * @return the {@link ItemInfo} for the provided id or <code>null</code> if the id is not in the
      *         queue
      */
+    @CheckForNull
     @Deprecated
     public synchronized ItemInfo getItem(Integer itemId) {
         return item2info.get(itemId.longValue());

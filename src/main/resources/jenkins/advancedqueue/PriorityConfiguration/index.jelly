@@ -1,18 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-	<l:layout norefresh="true" title="${%Job_Priorities}">
-	 	<l:side-panel>
-            <l:tasks>
-                <l:task icon="icon-up icon-md" href="${rootURL}/" title="${%Back_to_Dashboard}"/>
-            </l:tasks>
-        </l:side-panel>
+	<l:layout norefresh="true" title="${%Job_Priorities}" type="one-column">
 		<l:main-panel>
 			<!-- make the page not so wide on large screens -->
 			<div class="col-xlg-14 col-lg-20 col-md-24">
-				<div>
-					<h2>${%Job_Priorities}</h2>
-					<p>${%Assign_priorities_by_creating_job_groups}</p>
-				</div>
+        <l:app-bar title="${%Job_Priorities}"/>
+        ${%Assign_priorities_by_creating_job_groups}
 				<f:form method="post" name="priorityConfigSubmit" action="priorityConfigSubmit">
 					<f:entry>
 						<f:repeatable var="jobGroup" items="${it.jobGroups}" header="${%Job_group}">
@@ -25,16 +18,18 @@
 									<f:dropdownDescriptorSelector title="${%Jobs_to_include}" field="jobGroupStrategy" descriptors="${it.jobInclusionStrategyDescriptors}"/>
 								</f:entry>
 								<f:entry title="${%Priority}">
-									<select name="priority">
-										<j:forEach var="priority" items="${it.priorities}">
-											<j:if test="${priority.value == jobGroup.priority}">
-												<f:option value="${priority.value}" selected="true">${priority.name}</f:option>
-											</j:if>
-											<j:if test="${priority.value != jobGroup.priority}">
-												<f:option value="${priority.value}">${priority.name}</f:option>
-											</j:if>
-										</j:forEach>
-									</select>
+                  <div class="jenkins-select">
+                    <select name="priority" class="jenkins-select__input">
+                      <j:forEach var="priority" items="${it.priorities}">
+                        <j:if test="${priority.value == jobGroup.priority}">
+                          <f:option value="${priority.value}" selected="true">${priority.name}</f:option>
+                        </j:if>
+                        <j:if test="${priority.value != jobGroup.priority}">
+                          <f:option value="${priority.value}">${priority.name}</f:option>
+                        </j:if>
+                      </j:forEach>
+                    </select>
+                  </div>
 								</f:entry>
 								<f:entry title="${%Run_exclusive}" help="/descriptor/jenkins.advancedqueue.PriorityConfiguration/help/runExclusive">
 									<f:checkbox name="runExclusive" value="${jobGroup.runExclusive}" checked="${jobGroup.runExclusive}"/>
@@ -56,27 +51,19 @@
 														<st:include it="${descriptor}" page="${descriptor.configPage}" />
 													</f:entry>
 												</j:if>
-												<f:entry>
-													<div align="right">
-														<f:repeatableDeleteButton />
-													</div>
-												</f:entry>
+												<f:repeatableDeleteButton />
 											</div>
 										</f:repeatable>
 									</f:entry>
 								</f:optionalBlock>
-								<f:entry>
-									<div align="right">
-										<f:repeatableDeleteButton />
-									</div>
-								</f:entry>
+								<f:repeatableDeleteButton />
 							</div>
 						</f:repeatable>
-						<br/>
-						<br/>
-						<f:entry>
+            <br/>
+            <f:bottomButtonBar>
 							<f:submit value="${%Save}" />
-						</f:entry>
+              <f:apply/>
+            </f:bottomButtonBar>
 					</f:entry>
 				</f:form>
 			</div>

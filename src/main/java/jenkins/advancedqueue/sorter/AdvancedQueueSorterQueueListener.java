@@ -59,7 +59,11 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
                     + bi.task.getDisplayName() + "'");
             AdvancedQueueSorter.get().onNewItem(bi);
         }
-        QueueItemCache.get().getItem(bi.getId()).setBuildable();
+
+        item = QueueItemCache.get().getItem(bi.getId());
+        if (item != null) {
+            item.setBuildable();
+        }
     }
 
     @Override
@@ -71,6 +75,10 @@ public class AdvancedQueueSorterQueueListener extends QueueListener {
                     + bi.task.getDisplayName() + "'");
             AdvancedQueueSorter.get().onNewItem(bi);
         }
-        QueueItemCache.get().getItem(bi.getId()).setBlocked();
+
+        item = QueueItemCache.get().getItem(bi.getId());
+        if (item != null) {
+            item.setBlocked();
+        }
     }
 }
