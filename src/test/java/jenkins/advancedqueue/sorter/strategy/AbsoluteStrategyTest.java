@@ -1,6 +1,8 @@
 package jenkins.advancedqueue.sorter.strategy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +58,9 @@ class AbsoluteStrategyTest {
         String displayName = descriptor.getDisplayName();
         String shortName = descriptor.getShortName();
 
-        assertEquals(false, displayName == null || displayName.isEmpty(), "Display name should not be null or empty");
-        assertEquals(false, shortName == null || shortName.isEmpty(), "Short name should not be null or empty");
+        assertNotNull(displayName);
+        assertFalse(displayName.isEmpty(), "Display name should not be empty");
+        assertNotNull(shortName);
+        assertFalse(shortName.isEmpty(), "Short name should not be empty");
     }
 }

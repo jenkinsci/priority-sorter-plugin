@@ -53,17 +53,22 @@ class PriorityConfigurationTest {
         PriorityConfiguration configuration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
-        // When admin can edit
         PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
-        psc.setOnlyAdminsMayEditPriorityConfiguration(false);
-        assertNotNull(configuration.getIconClassName());
+        boolean original = psc.getOnlyAdminsMayEditPriorityConfiguration();
+        try {
+            // When admin can edit
+            psc.setOnlyAdminsMayEditPriorityConfiguration(false);
+            assertNotNull(configuration.getIconClassName());
 
-        // When only admins can edit (and current user is not admin)
-        psc.setOnlyAdminsMayEditPriorityConfiguration(true);
+            // When only admins can edit (and current user is not admin)
+            psc.setOnlyAdminsMayEditPriorityConfiguration(true);
 
-        // We can't easily test for null here since the current user in the test is an admin
-        // So we'll just check that it returns something, which shows code coverage is working
-        assertNotNull(configuration.getIconClassName());
+            // We can't easily test for null here since the current user in the test is an admin
+            // So we'll just check that it returns something, which shows code coverage is working
+            assertNotNull(configuration.getIconClassName());
+        } finally {
+            psc.setOnlyAdminsMayEditPriorityConfiguration(original);
+        }
     }
 
     @Test
@@ -78,17 +83,22 @@ class PriorityConfigurationTest {
         PriorityConfiguration configuration =
                 (PriorityConfiguration) j.jenkins.getDescriptor(PriorityConfiguration.class);
 
-        // When admin can edit
         PrioritySorterConfiguration psc = PrioritySorterConfiguration.get();
-        psc.setOnlyAdminsMayEditPriorityConfiguration(false);
-        assertEquals("advanced-build-queue", configuration.getUrlName());
+        boolean original = psc.getOnlyAdminsMayEditPriorityConfiguration();
+        try {
+            // When admin can edit
+            psc.setOnlyAdminsMayEditPriorityConfiguration(false);
+            assertEquals("advanced-build-queue", configuration.getUrlName());
 
-        // When only admins can edit (and current user is not admin)
-        psc.setOnlyAdminsMayEditPriorityConfiguration(true);
+            // When only admins can edit (and current user is not admin)
+            psc.setOnlyAdminsMayEditPriorityConfiguration(true);
 
-        // We can't easily test for null here since the current user in the test is an admin
-        // So we'll check that it returns the expected URL, which shows code coverage is working
-        assertEquals("advanced-build-queue", configuration.getUrlName());
+            // We can't easily test for null here since the current user in the test is an admin
+            // So we'll check that it returns the expected URL, which shows code coverage is working
+            assertEquals("advanced-build-queue", configuration.getUrlName());
+        } finally {
+            psc.setOnlyAdminsMayEditPriorityConfiguration(original);
+        }
     }
 
     @Test
@@ -183,9 +193,11 @@ class PriorityConfigurationTest {
             // Create a real job using JenkinsRule
             FreeStyleProject testJob = j.createFreeStyleProject("test-priority-job");
 
-            // Create a mock queue item with our real job
-            Queue.Item item = mock(Queue.Item.class);
-            when(item.getTask()).thenReturn(testJob);
+            // Ensure a real queue item is created so PriorityConfiguration (which reads item.task
+            // directly via field access) sees the Job
+            testJob.scheduleBuild2(600); // keep it queued long enough to retrieve
+            Queue.Item item = testJob.getQueueItem();
+            assertNotNull(item, "Expected a queue item for the scheduled build");
 
             // Create a mock callback
             TestPriorityConfigurationCallback callback = new TestPriorityConfigurationCallback();

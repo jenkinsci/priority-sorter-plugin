@@ -23,6 +23,9 @@ class WFQStrategyTest {
         strategy = new WFQStrategy();
         item = mock(Queue.Item.class);
         callback = mock(SorterStrategyCallback.class);
+        // Reset static state to avoid test order dependency
+        FQBaseStrategy.prio2weight.clear();
+        FQBaseStrategy.maxStartedWeight = 1.0F;
     }
 
     @Test
