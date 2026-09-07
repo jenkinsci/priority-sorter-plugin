@@ -23,6 +23,8 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import static java.lang.System.nanoTime;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -85,6 +87,135 @@ class AdvancedQueueSorterTest {
         if (handler != null && logger != null) {
             logger.removeHandler(handler);
         }
+    }
+
+    @Test
+    public void testPipelineParentStartTimeTieBreaker() throws Exception {
+        FreeStyleProject p1 = jenkins.createFreeStyleProject("pipe1-" + nanoTime());
+        FreeStyleProject p2 = jenkins.createFreeStyleProject("pipe2-" + nanoTime());
+
+        Queue.BuildableItem q1 =
+                new Queue.BuildableItem(new Queue.WaitingItem(Calendar.getInstance(), p1, emptyList()));
+        Queue.BuildableItem q2 =
+                new Queue.BuildableItem(new Queue.WaitingItem(Calendar.getInstance(), p2, emptyList()));
+
+        ItemInfo info1 = new ItemInfo(q1);
+        info1.setWeightSelection(5.0f);
+
+        ItemInfo info2 = new ItemInfo(q2);
+        info2.setWeightSelection(5.0f);
+
+        info1.setParentStartTime(100L);
+        info2.setParentStartTime(200L);
+
+        assertTrue(info1.compareTo(info2) < 0, "Older pipeline stage should be sorted first");
+        assertTrue(info2.compareTo(info1) > 0, "Newer pipeline stage should be sorted later");
+    }
+
+    @Test
+    public void testPipelineIsolationIgnoresNonPipelineJobs() throws Exception {
+        FreeStyleProject pipelineJob = jenkins.createFreeStyleProject("pipeline-stage-" + nanoTime());
+        FreeStyleProject freestyleJob = jenkins.createFreeStyleProject("freestyle-job-" + nanoTime());
+
+        Calendar oldTime = Calendar.getInstance();
+        oldTime.setTimeInMillis(1000L);
+
+        Calendar newTime = Calendar.getInstance();
+        newTime.setTimeInMillis(2000L);
+
+        Queue.BuildableItem qFree = new Queue.BuildableItem(new Queue.WaitingItem(oldTime, freestyleJob, emptyList()));
+
+        Queue.BuildableItem qPipe = new Queue.BuildableItem(new Queue.WaitingItem(newTime, pipelineJob, emptyList()));
+
+        ItemInfo infoFree = new ItemInfo(qFree);
+        infoFree.setWeightSelection(5.0f);
+        infoFree.setParentStartTime(null);
+
+        ItemInfo infoPipe = new ItemInfo(qPipe);
+        infoPipe.setWeightSelection(5.0f);
+        infoPipe.setParentStartTime(500L);
+
+        assertTrue(
+                infoFree.compareTo(infoPipe) < 0,
+                "Freestyle job should win based on earlier queue time, strictly ignoring pipeline parent times");
+        assertTrue(infoPipe.compareTo(infoFree) > 0, "Pipeline job should be sorted later based on queue ingress time");
+    }
+
+    @Test
+    public void testWeightOverridesParentStartTime() throws Exception {
+        FreeStyleProject p1 = jenkins.createFreeStyleProject("p1-" + nanoTime());
+        FreeStyleProject p2 = jenkins.createFreeStyleProject("p2-" + nanoTime());
+
+        Queue.BuildableItem q1 =
+                new Queue.BuildableItem(new Queue.WaitingItem(Calendar.getInstance(), p1, emptyList()));
+        Queue.BuildableItem q2 =
+                new Queue.BuildableItem(new Queue.WaitingItem(Calendar.getInstance(), p2, emptyList()));
+
+        ItemInfo info1 = new ItemInfo(q1);
+        info1.setWeightSelection(1.0f);
+        info1.setParentStartTime(1000L);
+
+        ItemInfo info2 = new ItemInfo(q2);
+        info2.setWeightSelection(10.0f);
+        info2.setParentStartTime(100L);
+
+        int weightCompare = Float.compare(1.0f, 10.0f);
+        assertEquals(
+                weightCompare,
+                info1.compareTo(info2),
+                "Primary strategy weight should always take precedence over pipeline tie-breakers");
+    }
+
+    @Test
+    public void testQueueTimeUsedWhenParentStartTimesMatch() throws Exception {
+        FreeStyleProject p1 = jenkins.createFreeStyleProject("same-pipe-1-" + nanoTime());
+        FreeStyleProject p2 = jenkins.createFreeStyleProject("same-pipe-2-" + nanoTime());
+
+        Calendar oldTime = Calendar.getInstance();
+        oldTime.setTimeInMillis(1000L);
+        Calendar newTime = Calendar.getInstance();
+        newTime.setTimeInMillis(2000L);
+
+        Queue.BuildableItem q1 = new Queue.BuildableItem(new Queue.WaitingItem(oldTime, p1, emptyList()));
+
+        Queue.BuildableItem q2 = new Queue.BuildableItem(new Queue.WaitingItem(newTime, p2, emptyList()));
+
+        ItemInfo info1 = new ItemInfo(q1);
+        info1.setWeightSelection(5.0f);
+        info1.setParentStartTime(100L);
+
+        ItemInfo info2 = new ItemInfo(q2);
+        info2.setWeightSelection(5.0f);
+        info2.setParentStartTime(100L);
+
+        assertTrue(info1.compareTo(info2) < 0, "Earlier queue time should win when parent start times are identical");
+        assertTrue(info2.compareTo(info1) > 0, "Later queue time should lose when parent start times are identical");
+    }
+
+    @Test
+    public void testNullParentStartTimesUseQueueTime() throws Exception {
+        FreeStyleProject p1 = jenkins.createFreeStyleProject("freestyle-1-" + nanoTime());
+        FreeStyleProject p2 = jenkins.createFreeStyleProject("freestyle-2-" + nanoTime());
+
+        Calendar oldTime = Calendar.getInstance();
+        oldTime.setTimeInMillis(1000L);
+        Calendar newTime = Calendar.getInstance();
+        newTime.setTimeInMillis(2000L);
+
+        Queue.BuildableItem q1 = new Queue.BuildableItem(new Queue.WaitingItem(oldTime, p1, emptyList()));
+
+        Queue.BuildableItem q2 = new Queue.BuildableItem(new Queue.WaitingItem(newTime, p2, emptyList()));
+
+        ItemInfo info1 = new ItemInfo(q1);
+        info1.setWeightSelection(5.0f);
+        info1.setParentStartTime(null);
+
+        ItemInfo info2 = new ItemInfo(q2);
+        info2.setWeightSelection(5.0f);
+        info2.setParentStartTime(null);
+
+        assertTrue(info1.compareTo(info2) < 0, "Earlier queue time should win when both parent start times are null");
+        assertTrue(info2.compareTo(info1) > 0, "Later queue time should lose when both parent start times are null");
     }
 
     @Test
