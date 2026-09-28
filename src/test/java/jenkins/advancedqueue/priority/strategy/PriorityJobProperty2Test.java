@@ -1,10 +1,9 @@
 package jenkins.advancedqueue.priority.strategy;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
-import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
+import hudson.model.ListView;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
@@ -12,17 +11,21 @@ import jenkins.advancedqueue.JobGroup;
 import jenkins.advancedqueue.PriorityConfiguration;
 import jenkins.advancedqueue.PrioritySorterConfiguration;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
-import net.sf.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-import org.kohsuke.stapler.StaplerRequest2;
 
+/**
+ * Surefire 3.6.0 changed the order of execution of unit tests.  That
+ * exposed an order dependency in the tests, so these tests were split
+ * to a separate source file.  That was simpler than identifying the
+ * cause of the order dependency in the tests.
+ */
 @WithJenkins
-class PriorityJobPropertyTest {
+class PriorityJobProperty2Test {
 
     private static JenkinsRule j;
 
@@ -47,32 +50,6 @@ class PriorityJobPropertyTest {
         testName = info.getTestMethod().orElseThrow().getName();
     }
 
-    @Test
-    void priorityJobProperty_returnsCorrectPriority() {
-        assertEquals(PRIORITY, property.getPriority());
-    }
-
-    @Test
-    void priorityJobProperty_returnsCorrectUseJobPriority() {
-        assertTrue(property.getUseJobPriority());
-    }
-
-    @Test
-    void priorityJobProperty_reconfigureNullOnEmpty() throws Descriptor.FormException {
-        StaplerRequest2 req = mock(StaplerRequest2.class);
-        assertNull(property.reconfigure(req, new JSONObject()));
-    }
-
-    @Test
-    void descriptorImpl_getDefaultReturnsDefaultPriority() {
-        assertEquals(PrioritySorterConfiguration.get().getStrategy().getDefaultPriority(), descriptor.getDefault());
-    }
-
-    @Test
-    void descriptorImpl_getPrioritiesReturnsNonEmptyList() {
-        assertFalse(descriptor.getPriorities().isEmpty());
-    }
-
     private final Random random = new Random();
 
     private JobGroup createJobGroup(String viewName) {
@@ -85,24 +62,45 @@ class PriorityJobPropertyTest {
     }
 
     @Test
-    void isUsedWhenViewDoesNotExist() throws IOException {
+    void isUsedWhenViewExists() throws IOException {
+        // Create a new FreeStyleProject
         FreeStyleProject project = j.createFreeStyleProject();
+
+        // Create a new view named "existingView"
+        ListView view = new ListView("existingView", j.jenkins);
+        j.jenkins.addView(view);
+
+        // Add the project to the view
+        view.add(project);
+
+        // Verify that the view was created successfully
+        assertNotNull(j.jenkins.getView("existingView"));
+
+        // Set up the PriorityJobProperty.DescriptorImpl
         PriorityConfiguration configuration = PriorityConfiguration.get();
         List<JobGroup> jobGroups = configuration.getJobGroups();
-        JobGroup jobGroup = createJobGroup("intentionally-non-existent-view");
-
-        // Use priority strategies does not make a non-existing view used
+        JobGroup jobGroup = createJobGroup(view.getViewName());
         jobGroup.setUsePriorityStrategies(true);
+
+        // Add a PriorityStrategyHolder with a JobPropertyStrategy to the JobGroup
+        JobPropertyStrategy jobPropertyStrategy = new JobPropertyStrategy();
+        JobGroup.PriorityStrategyHolder priorityStrategyHolder =
+                new JobGroup.PriorityStrategyHolder(1, jobPropertyStrategy);
+        jobGroup.getPriorityStrategies().add(priorityStrategyHolder);
+
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
-        assertFalse(descriptor.isUsed(project));
 
-        // Not using priority strategies does not make a non-existing view used
+        // Assert the strategy is used when priority strategies are used and view exists
+        assertTrue(descriptor.isUsed(project));
+
         // Replace the jobGroup with one that does not use priority strategies
         jobGroups.remove(jobGroup);
         jobGroup.setUsePriorityStrategies(false);
         jobGroups.add(jobGroup);
         configuration.setJobGroups(jobGroups);
+
+        // Assert the strategy is not used when priority strategies are not used even if view exists
         assertFalse(descriptor.isUsed(project));
     }
 }
