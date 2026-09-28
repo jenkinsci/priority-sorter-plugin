@@ -1,7 +1,6 @@
 package jenkins.advancedqueue.sorter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
@@ -13,8 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
+/**
+ * Surefire 3.6.0 changed the order of execution of unit tests.  That
+ * exposed an order dependency in the tests, so these tests were split
+ * to a separate source file.  That was simpler than identifying the
+ * cause of the order dependency in the tests.
+ */
 @WithJenkins
-class PrioritySorterJobColumnTest {
+class PrioritySorterJobColumn2Test {
 
     private static JenkinsRule j;
 
@@ -32,20 +37,12 @@ class PrioritySorterJobColumnTest {
     }
 
     @Test
-    void getPriorityReturnsCorrectPriority() throws Exception {
-        QueueItemCache.get().addItem(itemInfo);
-        assertEquals("0", column.getPriority(project));
+    void getPriorityReturnsPendingWhenItemInfoIsNull() throws Exception {
+        assertEquals("Pending", column.getPriority(project));
     }
 
     @Test
-    void descriptorImplDisplayNameIsCorrect() {
-        assertEquals("Priority Value", column.getDescriptor().getDisplayName());
-    }
-
-    @Test
-    void descriptorImplShownByDefaultIsFalse() {
-        PrioritySorterJobColumn.DescriptorImpl descriptor =
-                (PrioritySorterJobColumn.DescriptorImpl) column.getDescriptor();
-        assertFalse(descriptor.shownByDefault());
+    void getPriorityReturnsPendingForNonExistentJob() throws Exception {
+        assertEquals("Pending", column.getPriority(project));
     }
 }

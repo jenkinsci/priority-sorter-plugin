@@ -2,7 +2,6 @@ package jenkins.advancedqueue.jobinclusion.strategy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
@@ -16,8 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
+/**
+ * Surefire 3.6.0 changed the order of execution of unit tests.  That
+ * exposed an order dependency in the tests, so these tests were split
+ * to a separate source file.  That was simpler than identifying the
+ * cause of the order dependency in the tests.
+ */
 @WithJenkins
-class FolderPropertyLoaderTest {
+class FolderPropertyLoader2Test {
 
     private static JenkinsRule j;
 
@@ -46,21 +51,19 @@ class FolderPropertyLoaderTest {
     }
 
     @Test
-    void getJobGroupName_returnsGroupName_whenJobGroupIsEnabled() throws Exception {
-        JobInclusionFolderProperty property = new JobInclusionFolderProperty(true, "TestGroup");
-        folder.getProperties().add(property);
-
+    void getJobGroupName_returnsNull_whenNoJobGroupProperty() throws Exception {
         String result = FolderPropertyLoader.getJobGroupName(decisionLogger, project);
 
-        assertEquals("TestGroup", result);
-        assertThat(loggedMessages, hasItem("JobGroup is enabled, with JobGroup [TestGroup] ..."));
+        assertNull(result);
+        assertThat(loggedMessages, hasItem("No match ..."));
     }
 
     @Test
-    void getJobGroupName_returnsNull_whenParentIsNotFolder() throws Exception {
-        FreeStyleProject standaloneProject = j.createFreeStyleProject("standaloneProject");
+    void getJobGroupName_returnsNull_whenJobGroupIsDisabled() throws Exception {
+        JobInclusionFolderProperty property = new JobInclusionFolderProperty(false, "TestGroup");
+        folder.getProperties().add(property);
 
-        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, standaloneProject);
+        String result = FolderPropertyLoader.getJobGroupName(decisionLogger, project);
 
         assertNull(result);
         assertThat(loggedMessages, hasItem("No match ..."));
