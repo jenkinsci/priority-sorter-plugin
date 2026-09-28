@@ -23,6 +23,7 @@
  */
 package jenkins.advancedqueue.sorter;
 
+import static java.lang.Long.compare;
 import static jenkins.advancedqueue.ItemTransitionLogger.logBlockedItem;
 import static jenkins.advancedqueue.ItemTransitionLogger.logBuilableItem;
 
@@ -56,6 +57,8 @@ public class ItemInfo
     private String jobName;
 
     private float weight;
+
+    private Long parentStartTime = null;
 
     private int priority;
 
@@ -152,13 +155,24 @@ public class ItemInfo
 
     @Override
     public int compareTo(ItemInfo o) {
-        if (this.getWeight() == o.getWeight()) {
-            if (this.getSortableInQueueSince() == o.getSortableInQueueSince()) {
-                return Long.compare(this.getItemId(), o.getItemId());
-            }
-            return Long.compare(this.getSortableInQueueSince(), o.getSortableInQueueSince());
+        int weightCompare = Float.compare(this.getWeight(), o.getWeight());
+        if (weightCompare != 0) {
+            return weightCompare;
         }
-        return Float.compare(this.getWeight(), o.getWeight());
+
+        if (this.parentStartTime != null && o.parentStartTime != null) {
+            int parentTimeCompare = compare(this.parentStartTime, o.parentStartTime);
+            if (parentTimeCompare != 0) {
+                return parentTimeCompare;
+            }
+        }
+
+        int queueTimeCompare = compare(this.getSortableInQueueSince(), o.getSortableInQueueSince());
+        if (queueTimeCompare != 0) {
+            return queueTimeCompare;
+        }
+
+        return compare(this.getItemId(), o.getItemId());
     }
 
     @Override
@@ -179,6 +193,7 @@ public class ItemInfo
                 priorityStrategy,
                 jobName,
                 weight,
+                parentStartTime,
                 priority,
                 itemStatus,
                 decisionLog);
@@ -208,5 +223,9 @@ public class ItemInfo
             return log;
         }
         return ("%" + spaces + "s%s").formatted("", log);
+    }
+
+    public void setParentStartTime(Long parentStartTime) {
+        this.parentStartTime = parentStartTime;
     }
 }
