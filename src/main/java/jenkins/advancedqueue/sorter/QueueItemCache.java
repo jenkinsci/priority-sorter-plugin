@@ -59,6 +59,8 @@ public class QueueItemCache {
     private Map<Long, ItemInfo> item2info = new HashMap<>();
     // Keeps track of the last started item of the Job
     private Map<String, ItemInfo> jobName2info = new HashMap<>();
+    // Same, keyed by the Job's full name, which is unique across folders
+    private Map<String, ItemInfo> jobFullName2info = new HashMap<>();
 
     private QueueItemCache() {}
 
@@ -93,16 +95,32 @@ public class QueueItemCache {
      * @param jobName a name of a Job
      * @return the {@link ItemInfo} for the last know start of the Job.
      *         Can be {@code null} if job didn't run yet
+     * @deprecated Jobs in different folders can share a name, and then share the result.
+     *             Use {@link #getItemByFullName(String)}.
      */
     @CheckForNull
+    @Deprecated
     public synchronized ItemInfo getItem(String jobName) {
         return jobName2info.get(jobName);
+    }
+
+    /**
+     * Get the ItemInfo for the last knows start of this Job
+     *
+     * @param jobFullName the full name of a Job (see {@link hudson.model.Item#getFullName()})
+     * @return the {@link ItemInfo} for the last know start of the Job.
+     *         Can be {@code null} if job didn't run yet
+     */
+    @CheckForNull
+    public synchronized ItemInfo getItemByFullName(String jobFullName) {
+        return jobFullName2info.get(jobFullName);
     }
 
     public synchronized ItemInfo addItem(ItemInfo itemInfo) {
         long itemId = itemInfo.getItemId();
         item2info.put(itemId, itemInfo);
         jobName2info.put(itemInfo.getJobName(), itemInfo);
+        jobFullName2info.put(itemInfo.getJobFullName(), itemInfo);
         return itemInfo;
     }
 

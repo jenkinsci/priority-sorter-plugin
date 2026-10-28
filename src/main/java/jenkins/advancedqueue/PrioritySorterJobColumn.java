@@ -39,7 +39,7 @@ public class PrioritySorterJobColumn extends ListViewColumn {
     public PrioritySorterJobColumn() {}
 
     public String getPriority(final Job<?, ?> job) {
-        ItemInfo itemInfo = QueueItemCache.get().getItem(job.getName());
+        ItemInfo itemInfo = QueueItemCache.get().getItemByFullName(job.getFullName());
         if (itemInfo == null) {
             return "Pending"; // You need to run a Job
         }

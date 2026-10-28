@@ -14,6 +14,8 @@ import hudson.model.Queue;
 import java.util.ArrayList;
 import java.util.List;
 import jenkins.advancedqueue.priority.PriorityStrategy;
+import jenkins.advancedqueue.sorter.ItemInfo;
+import jenkins.advancedqueue.sorter.QueueItemCache;
 import jenkins.advancedqueue.sorter.SorterStrategy;
 import jenkins.advancedqueue.sorter.SorterStrategyCallback;
 import jenkins.advancedqueue.sorter.strategy.MultiBucketStrategy;
@@ -139,6 +141,33 @@ class PriorityConfigurationPlaceholderTaskHelperTest {
 
         // Verify that the default priority from the strategy is returned
         assertEquals(strategy.getDefaultPriority(), callback.getPrioritySelection());
+    }
+
+    @Test
+    void testGetPrioritySameNameInDifferentFolders() throws Exception {
+        // Two Pipelines with the same name in different folders
+        WorkflowJob pipelineA = j.createFolder("folder-a").createProject(WorkflowJob.class, "main");
+        WorkflowJob pipelineB = j.createFolder("folder-b").createProject(WorkflowJob.class, "main");
+        addCachedItem(pipelineA, 1001L, 1);
+        addCachedItem(pipelineB, 1002L, 4); // cached last, so it would win a lookup by short name
+
+        PriorityConfigurationPlaceholderTaskHelper helper = new PriorityConfigurationPlaceholderTaskHelper();
+        ExecutorStepExecution.PlaceholderTask task = mock(ExecutorStepExecution.PlaceholderTask.class);
+        when(task.getOwnerTask()).thenReturn(pipelineA);
+        PriorityConfigurationCallbackImpl callback = new PriorityConfigurationCallbackImpl();
+        helper.getPriority(task, callback);
+
+        // The placeholder takes the priority of its own Pipeline
+        assertEquals(1, callback.getPrioritySelection());
+    }
+
+    private static void addCachedItem(WorkflowJob job, long itemId, int priority) {
+        ItemInfo itemInfo = mock(ItemInfo.class);
+        when(itemInfo.getItemId()).thenReturn(itemId);
+        when(itemInfo.getJobName()).thenReturn(job.getName());
+        when(itemInfo.getJobFullName()).thenReturn(job.getFullName());
+        when(itemInfo.getPriority()).thenReturn(priority);
+        QueueItemCache.get().addItem(itemInfo);
     }
 
     @Test

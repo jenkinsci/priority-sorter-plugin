@@ -55,6 +55,8 @@ public class ItemInfo
 
     private String jobName;
 
+    private String jobFullName;
+
     private float weight;
 
     private int priority;
@@ -67,6 +69,8 @@ public class ItemInfo
         this.itemId = item.getId();
         this.inQueueSince = item.getInQueueSince();
         this.jobName = item.task.getName();
+        // Jobs in different folders can share a name; the full name is unique.
+        this.jobFullName = item.task instanceof hudson.model.Item task ? task.getFullName() : item.task.getName();
         this.itemStatus = ItemStatus.WAITING;
     }
 
@@ -136,6 +140,13 @@ public class ItemInfo
 
     public String getJobName() {
         return jobName;
+    }
+
+    /**
+     * @return the full name of the Job (including its folders), or its name if the task is not an Item
+     */
+    public String getJobFullName() {
+        return jobFullName;
     }
 
     public float getWeight() {

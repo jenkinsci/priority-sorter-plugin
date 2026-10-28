@@ -104,7 +104,7 @@ public class StartedJobItemCache {
      * Gets the Item for a started job, already removed from the queue
      *
      * @param projectName
-     *            the project name
+     *            the full project name (see {@link hudson.model.Item#getFullName()})
      * @param buildNumber
      *            the build number
      * @return the {@link ItemInfo} for the provided id or <code>null</code> if
@@ -128,7 +128,7 @@ public class StartedJobItemCache {
             final Executable e = pi.workUnit.getExecutable();
 
             if (e instanceof Run<?, ?> run) {
-                startedItems.put(new StartedItem(pi.itemInfo.getJobName(), run.getNumber()), pi.itemInfo);
+                startedItems.put(new StartedItem(pi.itemInfo.getJobFullName(), run.getNumber()), pi.itemInfo);
                 it.remove();
             }
         }
