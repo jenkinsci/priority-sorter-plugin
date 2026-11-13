@@ -295,15 +295,14 @@ class StringFormattingPerformanceTest {
 
         for (int i = 0; i < count; i++) {
             // Create job names of varying lengths
-            String jobName =
-                    switch (i % 4) {
-                        case 0 -> "job-" + uniqueId + "-" + i;
-                        case 1 -> "medium-length-job-name-" + uniqueId + "-" + i;
-                        case 2 -> "very-long-job-name-that-exceeds-normal-length-" + uniqueId + "-" + i;
-                        default ->
-                            "extremely-long-job-name-that-definitely-needs-truncation-for-display-purposes-" + uniqueId
-                                    + "-" + i;
-                    };
+            String jobName = switch (i % 4) {
+                case 0 -> "job-" + uniqueId + "-" + i;
+                case 1 -> "medium-length-job-name-" + uniqueId + "-" + i;
+                case 2 -> "very-long-job-name-that-exceeds-normal-length-" + uniqueId + "-" + i;
+                default ->
+                    "extremely-long-job-name-that-definitely-needs-truncation-for-display-purposes-" + uniqueId + "-"
+                            + i;
+            };
 
             FreeStyleProject project = jenkins.createFreeStyleProject(jobName);
             Queue.BuildableItem item = new Queue.BuildableItem(
