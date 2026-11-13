@@ -19,6 +19,15 @@
     <Class name="jenkins.advancedqueue.sorter.ItemInfo"/>
     <Method name="compareTo"/>
   </Match>
+  <Match>
+    <!-- Intentionally not fixing it -->
+    <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
+    <Or>
+      <Class name="jenkins.advancedqueue.priority.strategy.CLICauseStrategy"/>
+      <Class name="jenkins.advancedqueue.priority.strategy.HealthStrategy"/>
+      <Class name="jenkins.advancedqueue.priority.strategy.UserIdCauseStrategy"/>
+    </Or>
+  </Match>
 
   <!--
     Here lies technical debt. Exclusions in this section have not yet
