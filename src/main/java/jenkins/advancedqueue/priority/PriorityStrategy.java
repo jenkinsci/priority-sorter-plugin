@@ -41,7 +41,7 @@ public abstract class PriorityStrategy implements ExtensionPoint, Describable<Pr
     /**
      * Method that checks if strategy can assign a priority to the provided {@link Item}
      *
-     * The caller guaranties that the {@link Item#task} is a {@link Job}
+     * The caller guarantees that the {@link Item#task} is a {@link Job}
      *
      * @param item the {@link Item} to check
      * @return <code>true</code> if the {@link PriorityStrategy} is applicable else <code>false</code>
@@ -52,7 +52,7 @@ public abstract class PriorityStrategy implements ExtensionPoint, Describable<Pr
      * Method that that return the priority that should be used for this {@link Item}, this method is only called id
      * {@link PriorityStrategy#isApplicable(Queue.Item)} returned true
      *
-     * The caller garanties that the {@link Item#task} is a {@link Job}
+     * The caller guarantees that the {@link Item#task} is a {@link Job}
      *
      * @param item the {@link Item} to check
      * @return the priority to be used by the provided {@link Item}
