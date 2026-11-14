@@ -2,6 +2,7 @@ package jenkins.advancedqueue.jobinclusion.strategy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,6 +27,7 @@ class FolderBasedJobInclusionStrategyTest {
     private static FolderBasedJobInclusionStrategy strategy;
     private static DecisionLogger decisionLogger;
     private static List<String> loggedMessages;
+    private static String expectedMessage;
 
     @BeforeAll
     static void beforeAll(JenkinsRule rule) throws Exception {
@@ -42,12 +44,17 @@ class FolderBasedJobInclusionStrategyTest {
 
     @BeforeEach
     void beforeEach() throws Exception {
+        expectedMessage = null;
         loggedMessages = new ArrayList<>();
     }
 
     @AfterEach
     void afterEach() throws Exception {
-        assertThat(loggedMessages, is(empty()));
+        if (expectedMessage == null) {
+            assertThat(loggedMessages, is(empty()));
+        } else {
+            assertThat(loggedMessages, hasItem(expectedMessage));
+        }
     }
 
     @Test
@@ -70,7 +77,8 @@ class FolderBasedJobInclusionStrategyTest {
 
     @Test
     void contains() throws Exception {
-        FreeStyleProject project = this.j.createFreeStyleProject("testFolder_jobName");
+        FreeStyleProject project = j.createFreeStyleProject("testFolder_jobName");
+        expectedMessage = "Not using filter ..."; // Used by AfterEach assertion
 
         assertTrue(strategy.contains(decisionLogger, project));
     }
@@ -85,6 +93,7 @@ class FolderBasedJobInclusionStrategyTest {
     @Test
     void containsReturnsTrueForJobInSubFolder() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("testFolder_subFolder_jobName");
+        expectedMessage = "Not using filter ..."; // Used by AfterEach assertion
 
         assertTrue(strategy.contains(decisionLogger, project));
     }
