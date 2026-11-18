@@ -49,10 +49,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
+import jenkins.advancedqueue.jobinclusion.strategy.JobInclusionJobProperty;
+import jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
@@ -173,8 +176,9 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
             FormApply.success("..").generateResponse(req, rsp, this);
             return;
         }
-        jobGroups = new LinkedList<JobGroup>();
-        id2jobGroup = new HashMap<Integer, JobGroup>();
+        List<JobGroup> previousGroups = jobGroups;
+        List<JobGroup> updatedGroups = new LinkedList<>();
+        Map<Integer, JobGroup> updatedGroupsById = new HashMap<>();
         //
         String parameter = req.getParameter("json");
         JSONObject jobGroupsObject = JSONObject.fromObject(parameter);
@@ -189,11 +193,75 @@ public class PriorityConfiguration extends GlobalConfiguration implements RootAc
             transformPriorityStrategiesData(jobGroupObject);
 
             JobGroup jobGroup = req.bindJSON(JobGroup.class, jobGroupObject);
-            jobGroups.add(jobGroup);
-            id2jobGroup.put(jobGroup.getId(), jobGroup);
+            updatedGroups.add(jobGroup);
+            updatedGroupsById.put(jobGroup.getId(), jobGroup);
         }
+        Map<String, String> renamedGroups = findRenamedGroups(previousGroups, updatedGroups);
+        jobGroups = updatedGroups;
+        id2jobGroup = updatedGroupsById;
         save();
+        updateJobGroupReferences(renamedGroups);
         FormApply.success("..").generateResponse(req, rsp, this);
+    }
+
+    private Map<String, String> findRenamedGroups(List<JobGroup> previousGroups, List<JobGroup> updatedGroups)
+            throws ServletException {
+        Map<String, JobGroup> previousByPersistentId = new HashMap<>();
+        Map<String, Integer> previousNameCounts = countPropertyBasedGroupNames(previousGroups);
+        Map<String, Integer> updatedNameCounts = countPropertyBasedGroupNames(updatedGroups);
+        for (JobGroup group : previousGroups) {
+            previousByPersistentId.put(group.getPersistentId(), group);
+        }
+
+        Map<String, String> renamed = new HashMap<>();
+        for (JobGroup updated : updatedGroups) {
+            JobGroup previous = previousByPersistentId.get(updated.getPersistentId());
+            if (previous == null
+                    || !(previous.getJobGroupStrategy() instanceof PropertyBasedJobInclusionStrategy oldStrategy)
+                    || !(updated.getJobGroupStrategy() instanceof PropertyBasedJobInclusionStrategy newStrategy)) {
+                continue;
+            }
+            String oldName = oldStrategy.getName();
+            String newName = newStrategy.getName();
+            if (oldName != null && newName != null && !Objects.equals(oldName, newName)) {
+                if (previousNameCounts.getOrDefault(oldName, 0) != 1
+                        || updatedNameCounts.getOrDefault(newName, 0) != 1) {
+                    throw new ServletException("Cannot rename a job group when its old or new name is ambiguous");
+                }
+                renamed.put(oldName, newName);
+            }
+        }
+        return renamed;
+    }
+
+    private Map<String, Integer> countPropertyBasedGroupNames(List<JobGroup> groups) {
+        Map<String, Integer> counts = new HashMap<>();
+        for (JobGroup group : groups) {
+            if (group.getJobGroupStrategy() instanceof PropertyBasedJobInclusionStrategy strategy) {
+                counts.merge(strategy.getName(), 1, Integer::sum);
+            }
+        }
+        return counts;
+    }
+
+    private void updateJobGroupReferences(Map<String, String> renamedGroups) throws IOException {
+        if (renamedGroups.isEmpty()) {
+            return;
+        }
+        for (Job<?, ?> job : Jenkins.get().getAllItems(Job.class)) {
+            JobInclusionJobProperty property = job.getProperty(JobInclusionJobProperty.class);
+            if (property != null && property.isUseJobGroup()) {
+                String replacement = renamedGroups.get(property.getJobGroupName());
+                if (replacement != null) {
+                    property.setJobGroupName(replacement);
+                    job.save();
+                }
+            }
+        }
+        Plugin folders = Jenkins.get().getPlugin("cloudbees-folder");
+        if (folders != null && folders.getWrapper().isEnabled()) {
+            JobGroupFolderUpdater.update(renamedGroups);
+        }
     }
 
     public FormValidation doCheckJobPattern(@QueryParameter String value) throws IOException, ServletException {

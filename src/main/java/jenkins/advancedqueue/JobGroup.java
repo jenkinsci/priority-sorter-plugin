@@ -30,6 +30,7 @@ import hudson.model.Descriptor;
 import hudson.model.Queue.Item;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import jenkins.advancedqueue.jobinclusion.JobInclusionStrategy;
 import jenkins.advancedqueue.jobinclusion.strategy.ViewBasedJobInclusionStrategy;
 import jenkins.advancedqueue.priority.PriorityStrategy;
@@ -101,6 +102,7 @@ public class JobGroup {
     }
 
     private int id = 0;
+    private String persistentId;
     private int priority = 2;
     /**
      * @deprecated Used in 2.x now replaced with dynamic {@link JobGroup#jobGroupStrategy}
@@ -134,6 +136,19 @@ public class JobGroup {
      */
     public int getId() {
         return id;
+    }
+
+    /** Stable identity across configuration edits, including renames and reordering. */
+    public String getPersistentId() {
+        if (persistentId == null || persistentId.isBlank()) {
+            persistentId = UUID.randomUUID().toString();
+        }
+        return persistentId;
+    }
+
+    @DataBoundSetter
+    public void setPersistentId(String persistentId) {
+        this.persistentId = persistentId;
     }
 
     /**

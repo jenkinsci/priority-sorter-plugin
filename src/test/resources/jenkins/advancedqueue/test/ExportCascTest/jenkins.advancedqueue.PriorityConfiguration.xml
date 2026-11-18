@@ -3,6 +3,7 @@
     <jobGroups class="linked-list">
         <jenkins.advancedqueue.JobGroup>
             <id>0</id>
+            <persistentId>00000000-0000-0000-0000-000000000001</persistentId>
             <priority>1</priority>
             <description>complex</description>
             <runExclusive>false</runExclusive>
@@ -34,6 +35,7 @@
         </jenkins.advancedqueue.JobGroup>
         <jenkins.advancedqueue.JobGroup>
             <id>1</id>
+            <persistentId>00000000-0000-0000-0000-000000000002</persistentId>
             <priority>3</priority>
             <description>special</description>
             <runExclusive>true</runExclusive>
@@ -47,6 +49,7 @@
         </jenkins.advancedqueue.JobGroup>
         <jenkins.advancedqueue.JobGroup>
             <id>2</id>
+            <persistentId>00000000-0000-0000-0000-000000000003</persistentId>
             <priority>-1</priority>
             <description>default</description>
             <runExclusive>false</runExclusive>
