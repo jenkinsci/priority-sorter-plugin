@@ -10,6 +10,7 @@
 					<f:entry>
 						<f:repeatable var="jobGroup" items="${it.jobGroups}" header="${%Job_group}">
 							<div>
+							   <input type="hidden" name="persistentId" value="${jobGroup.persistentId}"/>
 							   <f:entry title="${%Description}">
 										<f:textarea name="description" value="${jobGroup.description}"/>
 								</f:entry>

@@ -50,6 +50,10 @@ public class JobInclusionFolderProperty extends FolderProperty<Folder> {
         return jobGroupName;
     }
 
+    public void setJobGroupName(String jobGroupName) {
+        this.jobGroupName = jobGroupName;
+    }
+
     public boolean isUseJobGroup() {
         return useJobGroup;
     }

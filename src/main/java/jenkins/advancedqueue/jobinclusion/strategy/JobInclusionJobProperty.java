@@ -51,6 +51,10 @@ public class JobInclusionJobProperty extends JobProperty<Job<?, ?>> {
         return jobGroupName;
     }
 
+    public void setJobGroupName(String jobGroupName) {
+        this.jobGroupName = jobGroupName;
+    }
+
     public boolean isUseJobGroup() {
         return useJobGroup;
     }

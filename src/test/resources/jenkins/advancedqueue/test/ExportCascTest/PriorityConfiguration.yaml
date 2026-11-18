@@ -3,6 +3,7 @@ unclassified:
   priorityConfiguration:
     jobGroups:
       - description: "complex"
+        persistentId: "00000000-0000-0000-0000-000000000001"
         priority: 1
         usePriorityStrategies: true
         priorityStrategies:
@@ -26,6 +27,7 @@ unclassified:
                 buildParameterStrategy:
                   parameterName: "BuildPriority"
       - description: "special"
+        persistentId: "00000000-0000-0000-0000-000000000002"
         id: 1
         priority: 3
         runExclusive: true
@@ -33,6 +35,7 @@ unclassified:
           propertyBased:
             name: "specialGroup"
       - description: "default"
+        persistentId: "00000000-0000-0000-0000-000000000003"
         id: 2
         priority: -1
         jobGroupStrategy:
